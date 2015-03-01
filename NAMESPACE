@@ -1,0 +1,17 @@
+export(
+  friedman.test,
+  iman.daveport.test,
+  anova.test,
+  nemenyi.test,
+  tukey.test,
+  shaffer.static,
+  bergmann.hommel.dynamic,
+  exhaustive.sets,
+  rank.matrix,
+  plot.pvalues,
+  plot.densities,
+  gaussian.qqplot,
+  critical.difference.plot,
+  algorithm.graph,
+  pairwise.test
+)

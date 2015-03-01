@@ -1,0 +1,17 @@
+Package: scma
+Type: Package
+Title: Statistical comparison of multiple algorithms
+Version: 0.1
+Date: 2015-02-25
+Author: Borja Calvo
+Maintainer: Borja Calvo <borja.calvo@ehu.eus>
+LazyData: yes
+Suggests: ggplot2, reshape2, knitr, Rgraphviz
+VignetteBuilder: knitr 
+Description: Given a matrix with results of different algorithms for different problems, the package uses statistical tests and corrections to assess the diferences between algorithms.
+License: GPL-2
+Collate: 
+  tests.R
+  pvalue_corrections.R
+  plotting.R
+  scma.R
