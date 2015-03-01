@@ -207,6 +207,7 @@ bergmann.hommel.dynamic <- function (raw.matrix){
   ## Load the exhaustive sets
   data("exhaustive.sets")
   k <- dim(raw.matrix)[1]
+  if(k>8) stop ("Sorry, this method is only available for 8 or less algorithms.")
   pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
   Ek <- E[[k]]
   raw.pvalues <- raw.matrix[pairs]

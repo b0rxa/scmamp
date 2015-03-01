@@ -20,9 +20,9 @@ if (!require("devtools"))
 devtools::install_github("b0rxa/scma")
 ```
 
-The package includes a vignette explaining the basic use of the package. It can be accessed typing (once the package is installed):
+The package includes a [vignette](http://htmlpreview.github.io/?https://github.com/b0rxa/scma/blob/master/inst/doc/Statistical%20comparison%20of%20multiple%20algorithms%20in%20multiple%20problems.html) explaining the basic use of the package. It can be accessed typing (once the package is installed):
 
 ```r
 library("scma")
 browseVignettes("scma")
-```
+``` 
