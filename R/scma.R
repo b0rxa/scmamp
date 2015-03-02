@@ -59,21 +59,21 @@ pairwise.test <- function(results.matrix ,  test="Friedman post" , correction="S
   
   test.name <- "NA"
   if (is.function(test)){
-    matrix.raw <- custom.post(data, test)
+    matrix.raw <- custom.post(results.matrix, test)
     test.name <- paste("Ad hoc function:" , deparse(substitute(test)))
   }else{
     matrix.raw <- switch(test,
                       "t-test" = {
                         test.name <- "Paired t-test"
-                        custom.post(data , function(x,y) t.test(x,y,paired=T)$p.value)
+                        custom.post(results.matrix , function(x,y) t.test(x,y,paired=T)$p.value)
                       },
                       "Wilcoxon" = {
                         test.name <- "Paired Wilcoxon test"
-                        custom.post(data , function(x,y) wilcoxon.signed.test(x,y)$p.value)
+                        custom.post(results.matrix , function(x,y) wilcoxon.signed.test(x,y)$p.value)
                       },
                       "Friedman post" = {
                         test.name <- "Friedman test's post hoc"
-                        friedman.post(data)
+                        friedman.post(results.matrix)
                       },
                       stop("Unknown test. Valid options in the current version are 'Friedman post', 'Wilcoxon' ,'ANOVA post' and 't-test'. Alternatively, you can pass a function that performs a paired statistical texts which should have, at least, two parameters, 'x' and 'y' and returns the p-value associted to the comparison"))
   }
@@ -89,21 +89,23 @@ pairwise.test <- function(results.matrix ,  test="Friedman post" , correction="S
                       },
                       "Nemenyi" = {
                         correction.name <- "Nemenyi test"
-                        res <- friedman.post(data)*(k*(k-1)/2)
+                        res <- friedman.post(results.matrix)*(k*(k-1)/2)
                         res[res>1] <- 1
                         res
                       },
                       "Tukey" = {
                         correction.name <- "Tukey test"
-                        anova.post(data)
+                        anova.post(results.matrix)
                       },
                       {
                         if (!(correction %in% p.adjust.methods))
                           stop(paste("Non valid method for p.adjust function. Valid options are " , paste(p.adjust.methods,collapse=";"),sep=""))
                         correction.name <- paste("p.adjust functions with method set at '" , correction , "'", sep = "")
+                        ## Generate all the pairs to test
+                        pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
                         raw.vector <- matrix.raw[pairs]
                         corrected.vector <- p.adjust(p = raw.vector , method = correction )
-                        corrected.matrix <- matrix(rep(NA , dim(raw)[1]^2),ncol=dim(raw)[1])
+                        corrected.matrix <- matrix(rep(NA , k^2),ncol=k)
                         corrected.matrix[pairs] <- corrected.vector
                         corrected.matrix[pairs[,c(2,1)]] <- corrected.vector
                         colnames(corrected.matrix) <- rownames(corrected.matrix) <- colnames(raw)
