@@ -1,7 +1,7 @@
 export(
   wilcoxon.signed.test,
   friedman.test,
-  iman.daveport.test,
+  iman.davenport.test,
   anova.test,
   nemenyi.test,
   tukey.test,
@@ -17,5 +17,6 @@ export(
   gaussian.qqplot,
   critical.difference.plot,
   algorithm.graph,
-  pairwise.test
+  pairwise.test,
+  write.tabular
 )

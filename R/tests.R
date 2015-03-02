@@ -13,6 +13,10 @@ order.with.ties <- function(x , decreasing = TRUE){
 #' @return A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{p.value}, the p-value for the test; \code{method}, a character string indicating what type of test was performed and \code{data.name}, a character string giving the name of the data.
 #' @details The test has been implemented according to the version in Demsar (2006), page 7
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+#' @examples
+#' x <- rbeta(50 , 2 , 20)
+#' y <- x + runif(50)*0.2
+#' wilcoxon.signed.test(x , y)
 
 wilcoxon.signed.test <- function (x , y , ...){
   if (length(x)!=length(y)) stop("This is a paired test, so the two vectors have to have the same length")
@@ -43,12 +47,17 @@ wilcoxon.signed.test <- function (x , y , ...){
 #' @return A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{p.value}, the p-value for the test; \code{method}, a character string indicating what type of test was performed and \code{data.name}, a character string giving the name of the data.
 #' @details The test has been implemented according to Test 22 in Kanji (2006).
 #' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
+#' @examples
+#' data(data.garcia.herrera)
+#' anova.test(data.garcia.herrera)
 
 anova.test <- function (data , ...){
   
   ## Implemented according to Test 22 in 100 statistical tests
   k <- dim(data)[2]
   N <- dim(data)[1]
+  
+  m.x <- colMeans(data)
   
   ## Variance of the observations with respect to their own sample
   var.1 <- mean(apply(data , MARGIN = 2 , FUN = var))
@@ -70,6 +79,7 @@ anova.test <- function (data , ...){
   class(res)<-"htest"
   res
 }
+
 
 #' @title Get the ranking matrix
 #'
@@ -99,7 +109,7 @@ rank.matrix <- function(data , decreasing = TRUE){
 #' 
 #' @examples
 #' data("garcia.herrera")
-#' iman.davenport.test(data.garcia.herrera)
+#' friedman.test(data.garcia.herrera)
 
 friedman.test <- function (data , ...){
   N<-dim(data)[1]
@@ -131,7 +141,7 @@ friedman.test <- function (data , ...){
 #' data("garcia.herrera")
 #' iman.davenport.test(data.garcia.herrera)
 
-iman.daveport.test <- function (data , ...){
+iman.davenport.test <- function (data , ...){
   N<-dim(data)[1]
   k<-dim(data)[2]
   mr <- colMeans(rank.matrix(data))
@@ -150,18 +160,18 @@ iman.daveport.test <- function (data , ...){
   res
 }
 
-
-#' @title Nemenyi test critical difference
-#'
-#' @description This function computes the critical difference for the Nemenyi test
-#' @param alpha Significance of the test
-#' @param num.alg Number of algorithms (treatments, etc.)
-#' @param num.problems Number of problems (samples)
-#' @return Critical difference of averge rankings. When the difference is, in absolute value, greater than this value the null hypothesis (no differences) is rejected.
-#' @details The test has been implemented according to the version in Demsar (2006), page 11
-#' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
-#' @seealso \code{\link{nemenyi.test}}
-#' 
+## DO NOT USE ROXYGENIZE, NOT A PUBLIC FUNCTION
+# @title Nemenyi test critical difference
+#
+# @description This function computes the critical difference for the Nemenyi test
+# @param alpha Significance of the test
+# @param num.alg Number of algorithms (treatments, etc.)
+# @param num.problems Number of problems (samples)
+# @return Critical difference of averge rankings. When the difference is, in absolute value, greater than this value the null hypothesis (no differences) is rejected.
+# @details The test has been implemented according to the version in Demsar (2006), page 11
+# @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+# @seealso \code{\link{nemenyi.test}}
+# 
 nemenyi.cd <- function (alpha = 0.05, num.alg , num.problems){
   qa <- qtukey(1-alpha , num.alg , num.alg * (num.problems-1))/sqrt(2)
   qa*sqrt((num.alg*(num.alg+1))/(6*num.problems))
@@ -175,6 +185,12 @@ nemenyi.cd <- function (alpha = 0.05, num.alg , num.problems){
 #' @return A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{method}, a character string indicating what type of test was performed; \code{data.name}, a character string giving the name of the data and \code{diff.matirx}, a matrix with all the pairwise differences of average rankings
 #' @details The test has been implemented according to the version in Demsar (2006), page 7
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+#' @examples
+#' data(data.garcia.herrera)
+#' res <- nemenyi.test(data.garcia.herrera , alpha = 0.1)
+#' res
+#' res$diff.matrix
+
 nemenyi.test <- function (data , alpha = 0.05){
   k <- dim(data)[2]
   N <- dim(data)[1]
@@ -208,6 +224,11 @@ nemenyi.test <- function (data , alpha = 0.05){
 #' @return A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{method}, a character string indicating what type of test was performed; \code{data.name}, a character string giving the name of the data and \code{diff.matirx}, a matrix with all the pairwise absolute difference of average values.
 #' @details The test has been implemented according to Test 28 in Kanji (2006).
 #' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
+#' @examples
+#' data(data.garcia.herrera)
+#' res <- tukey.test(data.garcia.herrera , alpha = 0.1)
+#' res
+#' res$diff.matrix
 
 tukey.test <- function (data , alpha = 0.05){
   ## Implemented as Test 28 in 100 statistical tests
@@ -228,6 +249,7 @@ tukey.test <- function (data , alpha = 0.05){
   W <- q * sqrt(var / N)
   
   ## Get the absolute difference of means
+  pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
   f<-function(x) abs(m.vector[x[1]] - m.vector[x[2]])
   differences <- apply(pairs , MARGIN = 1 , FUN = f)
   difference.matrix <- matrix(rep(NA , k^2) , k)

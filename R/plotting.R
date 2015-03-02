@@ -6,7 +6,14 @@
 #' @param sample List of data points to check
 #' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_point}} function used to plot the sample points.
 #' @return A \code{\link{ggplot}} object.
-#' @seealso \code{scma} \code{plot.densities}
+#' @seealso \code{\link{plot.densities}}
+#' @examples
+#' ## Skewed distribution
+#' sample <- rbeta(100 , 2 , 50)
+#' gaussian.qqplot(sample)
+#' ## Symmetric distribution
+#' sample <- rbeta(100 , 5 , 5)
+#' gaussian.qqplot(sample)
 
 gaussian.qqplot <- function (sample , ...){
   if(!require(ggplot2)) stop("This function requires the package ggplot2, which is not installed. You can install it typing install.packages('ggplot2')")
@@ -30,7 +37,10 @@ gaussian.qqplot <- function (sample , ...){
 #' @param results.matrix A matrix where columns represent the algorithms
 #' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points.
 #' @return A \code{\link{ggplot}} object.
-#' @seealso \code{scma} \code{gaussian.qqplot}
+#' @seealso \code{\link{gaussian.qqplot}}
+#' @examples
+#' data(data.garcia.herrera)
+#' plot.densities(data.garcia.herrera)
 
 plot.densities <- function (results.matrix , ...){
   if(!require(ggplot2)) stop("This function requires the package ggplot2, which is not installed. You can install it typing install.packages('ggplot2')")
@@ -54,7 +64,12 @@ plot.densities <- function (results.matrix , ...){
 #' @param show.pvalue Logical value indicating whether the numerical values have to be printed
 #' @param font.size Size of the p-values, if printed
 #' @return A \code{\link{ggplot}} object.
-#' @seealso \code{scma} \code{algorithm.graph}
+#' @seealso \code{\link{algorithm.graph}}, \code{\link{critical.difference.plot}}
+#' @examples
+#' data(data.garcia.herrera)
+#' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
+#' plot.pvalues(pwcomp.bh$corrected.pvalues)
+ 
 
 plot.pvalues <- function(pvalue.matrix , alg.order = NULL , show.pvalue = TRUE , font.size = 5){
   if(!require(reshape2)) stop("This function requires the package ggplot2, which is not installed. You can install it typing install.packages('reshape2')")
@@ -74,7 +89,21 @@ plot.pvalues <- function(pvalue.matrix , alg.order = NULL , show.pvalue = TRUE ,
   g
 } 
 
-critical.difference.plot <- function (results.matrix , alpha = 0.05 , cex=0.75){
+
+#' @title Critical difference plot
+#'
+#' @description This function plots the critical difference plots shown in \emph{Demsar (2006)}
+#' @param results.matrix Matrix or data frame with the results for each algorithm
+#' @param alpha Significance level to get the critical difference. By default this value is 0.05
+#' @param cex Numeric value to control the size of the font. By default it is set at 0.75.
+#' @seealso \code{\link{algorithm.graph}}, \code{\link{plot.pvalues}}
+#' @examples
+#' data(data.garcia.herrera)
+#' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
+#' critical.difference.plot(data.garcia.herrera)
+#' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+
+critical.difference.plot <- function (results.matrix , alpha = 0.05 , cex=0.75 , parametric = FALSE){
   k <- dim(results.matrix)[2]
   N <- dim(results.matrix)[1]
   nem <- nemenyi.test (data = results.matrix , alpha = alpha)
@@ -168,10 +197,34 @@ critical.difference.plot <- function (results.matrix , alpha = 0.05 , cex=0.75){
 }
 
 
-algorithm.graph <- function (hypothesis.matrix , mean.value , ... , font.size = 15 , highlight="min" , highlight.color = "chartreuse3" , node.color="gray30" , font.color="white", digits = 2 , node.width = 5 , node.height=2){
+#' @title Hypotheses represented as a graph
+#'
+#' @description This function can be used to plot a graph where algorithms that cannot be regarded as different are joined by an edge.
+#' @param pvalue.matrix Matrix with the p-values
+#' @param mean.value Vector of values to be written together with the name of the algorithm
+#' @param ... Additional parameters to the Rgraphviz function. This is mainly to change the layout of the graph
+#' @param alpha Significance level to determine which hypotheses are rejected.
+#' @param font.size Size of the font for the node labels.
+#' @param highlight A character indicating which node has to be highlighted. It can be the one with the maximum value (\code{'max'}), the minimum value ((\code{'min'})) or none ((\code{'none'})).
+#' @param highlight.color Any R valid color for the highlighted node.
+#' @param node.color Any R valid color for the non-highlighted nodes.
+#' @param font.color Any R valid color for the node labels.
+#' @param digits Number of digits to display the value associated to each node
+#' @param node.width Numeric value for the width of the node
+#' @param node.height Numeric value for the height of the node
+#' @seealso \code{\link{plot.pvalues}}, \code{\link{critical.difference.plot}}
+#' @examples
+#' data(data.garcia.herrera)
+#' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
+#' mean.rank <- colMeans(rank.matrix(data.garcia.herrera))
+#' algorithm.graph(pwcomp.bh$corrected.pvalues , mean.rank , alpha = 0.01 , font.size = 10)
+
+algorithm.graph <- function (pvalue.matrix, mean.value , ... , alpha = 0.05 , font.size = 15 , highlight="min" , highlight.color = "chartreuse3" , node.color="gray30" , font.color="white", digits = 2 , node.width = 5 , node.height=2){
   if(!require(Rgraphviz)) stop("This function requires the package ggplot2, which is not installed. You can install it typing source('http://www.bioconductor.org/biocLite.R') and then biocLite('Rgraphviz')")
   
-  if (!all(colnames(hypothesis.matrix) %in% names(mean.value))) stop ("The names of the algorithms in the matrix and the mean.valu vector do not match")
+  if (!all(colnames(pvalue.matrix) %in% names(mean.value))) stop ("The names of the algorithms in the matrix and the mean.valu vector do not match")
+  
+  hypothesis.matrix <- pvalue.matrix > alpha
   
   nc <- rep(node.color , length(mean.value))
   if(highlight=="min"){

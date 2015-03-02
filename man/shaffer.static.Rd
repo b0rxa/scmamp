@@ -18,6 +18,11 @@ This function implements the Shaffer's multiple testing correction when the p-va
 \details{
 The test has been implemented according to the version in Garcia and Herrera (2008), page 2680.
 }
+\examples{
+data(data.garcia.herrera)
+raw.pvalues <- friedman.post(data.garcia.herrera)
+shaffer.static (raw.pvalues)
+}
 \references{
 Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
 }

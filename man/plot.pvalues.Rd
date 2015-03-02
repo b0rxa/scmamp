@@ -22,7 +22,12 @@ A \code{\link{ggplot}} object.
 \description{
 This function plots the p-value matrix as a \code{\link{ggplot2}}'s tile plot.
 }
+\examples{
+data(data.garcia.herrera)
+pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
+plot.pvalues(pwcomp.bh$corrected.pvalues)
+}
 \seealso{
-\code{scma} \code{algorithm.graph}
+\code{\link{algorithm.graph}}, \code{\link{critical.difference.plot}}
 }
 

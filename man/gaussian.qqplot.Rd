@@ -17,7 +17,15 @@ A \code{\link{ggplot}} object.
 \description{
 This function creates a quantile-quantile plot to assess the goodness of fit of a Gaussian distribution to a given sample.
 }
+\examples{
+## Skewed distribution
+sample <- rbeta(100 , 2 , 50)
+gaussian.qqplot(sample)
+## Symmetric distribution
+sample <- rbeta(100 , 5 , 5)
+gaussian.qqplot(sample)
+}
 \seealso{
-\code{scma} \code{plot.densities}
+\code{\link{plot.densities}}
 }
 

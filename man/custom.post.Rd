@@ -17,4 +17,9 @@ A matrix with all the pairwise raw p-values.
 \description{
 This function computes the raw p-values using a custom function
 }
+\examples{
+data(data.garcia.herrera)
+test <- function(x , y , ...) t.test(x,y,paired=T)$p.value
+custom.post(data.garcia.herrera , test)
+}
 

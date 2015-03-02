@@ -18,6 +18,10 @@ This function computes all the pairwise p-values corrected using Tukey post hoc 
 \details{
 The test has been implemented according to Test 22 in Kanji (2006).
 }
+\examples{
+data(data.garcia.herrera)
+anova.post(data.garcia.herrera)
+}
 \references{
 Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 }

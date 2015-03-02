@@ -5,6 +5,9 @@
 #' @return A matrix with all the pairwise raw p-values.
 #' @details The test has been implemented according to the version in Demsar (2006), page 12
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+#' @examples
+#' data(data.garcia.herrera)
+#' friedman.post(data.garcia.herrera)
 
 friedman.post <- function (data , ...){
   k <- dim(data)[2]
@@ -32,6 +35,10 @@ friedman.post <- function (data , ...){
 #' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
 #' @param test Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return the associeted p-value.
 #' @return A matrix with all the pairwise raw p-values.
+#' @examples
+#' data(data.garcia.herrera)
+#' test <- function(x , y , ...) t.test(x,y,paired=T)$p.value
+#' custom.post(data.garcia.herrera , test)
 
 custom.post <- function(data , test , ...){
   k <- dim(data)[2]
@@ -60,6 +67,9 @@ custom.post <- function(data , test , ...){
 #' @return A matrix with all the pairwise corrected p-values.
 #' @details The test has been implemented according to Test 22 in Kanji (2006).
 #' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
+#' @examples
+#' data(data.garcia.herrera)
+#' anova.post(data.garcia.herrera)
 
 anova.post <- function (data , ...){
   
@@ -92,28 +102,30 @@ anova.post <- function (data , ...){
   matrix.raw
 }
 
-#' @title Enforce the monotocity of a sequence
-#'
-#' @description This function ensures that the i-th element is not smaller than any previous one
-#' @param pvalues Vector where the correction has to be performed
-#' @return A vector with the corrected values
-#' @details In some corrections it can happen that after the correction the order of the resulting p-values is not the same as in the raw pvalues. A very simple example is the Holm correction where the ordered p-values are multiplied by m, m-1, ... , 2, 1. In case the last two p-values are, for instance, 0.7 and 0.8, the corrected p-values would be ... , 0.7*2, 0.8*1, i.e., ... , 1 , 0.8. This situation needs a correction to set the last value at 1.
-#' @examples
-#' pv <- c(4.4870e-07,1.0416e-06,0.00116,0.0288,0.032, 0.0303 , 0.0384 , 0.0384 , 1 , 1)
-#' correct.for.monotocity(pv)
+## DO NOT USE ROXYGENIZE, IT IS NOT A PUBLIC FUNCTION!
+# @title Enforce the monotocity of a sequence
+#
+# @description This function ensures that the i-th element is not smaller than any previous one
+# @param pvalues Vector where the correction has to be performed
+# @return A vector with the corrected values
+# @details In some corrections it can happen that after the correction the order of the resulting p-values is not te same as in the raw pvalues. A very simple example is the Holm correction where the ordered p-values are multiplied by m, m-1, ... , 2, 1. In case the last two p-values are, for instance, 0.7 and 0.8, the corrected p-values would be ... , 0.7*2, 0.8*1, i.e., ... , 1 , 0.8. This situation needs a correction to set the last value at 1.
+# @examples
+# pv <- c(4.4870e-07,1.0416e-06,0.00116,0.0288,0.032, 0.0303 , 0.0384 , 0.0384 , 1 , 1)
+# correct.for.monotocity(pv)
 correct.for.monotocity <- function (pvalues){
   sapply(1:length(pvalues) , function(x) max(pvalues[1:x]))
 }
 
 
-#' @title Maximum number of true hypothesis
-#'
-#' @description This function gets the S(k) set as described in Shaffer (1985)
-#' @param k Number of algorithms
-#' @return List of maximum number of true hypothesis in a pair-wise comparsion of \code{k} classifiers
-#' @examples
-#' recursive.count(5)
-#' 
+## DO NOT USE ROXYGENIZE, IT IS NOT A PUBLIC FUNCTION!
+# @title Maximum number of true hypothesis
+#
+# @description This function gets the S(k) set as described in Shaffer (1985)
+# @param k Number of algorithms
+# @return List of maximum number of true hypothesis in a pair-wise comparsion of \code{k} classifiers
+# @examples
+# recursive.count(5)
+# 
 recursive.count <- function (k){
   res <- c(0)
   if (k>1){
@@ -132,6 +144,12 @@ recursive.count <- function (k){
 #' @return A symetric matrix with the corrected p-values.
 #' @details The test has been implemented according to the version in Garcia and Herrera (2008), page 2680.
 #' @references Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+#' 
+#' @examples
+#' data(data.garcia.herrera)
+#' raw.pvalues <- friedman.post(data.garcia.herrera)
+#' shaffer.static (raw.pvalues)
+
 shaffer.static <- function (raw.matrix){
   k <- dim(raw.matrix)[1]
   pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
@@ -155,11 +173,13 @@ shaffer.static <- function (raw.matrix){
   adj.matrix
 }
 
-#' @title All the ordered subdivisions of a set
-#'
-#' @description This function is the base to crate all the partitions needed in the algorithm to create all the exhaustive sets in Figure 1, Garcia and Herrera (2008).
-#' @param set Set to be subdivided
-#' @return All the possible subdbisions of the set, including those where there are empty sets, but without repetitions. The format is a list of lists. Each element in the main list is a list containing two vectors, \code{s1} and \code{s2}, the two subsets of the set passed in the argument
+## DO NOT USE ROXYGENIZE, IT IS NOT A PUBLIC FUNCTION!
+# @title All the ordered subdivisions of a set
+#
+# @description This function is the base to crate all the partitions needed in the algorithm to create all the exhaustive sets in Figure 1, Garcia and Herrera (2008).
+# @param set Set to be subdivided
+# @return All the possible subdbisions of the set, including those where there are empty sets, but without repetitions. The format is a list of lists. Each element in the main list is a list containing two vectors, \code{s1} and \code{s2}, the two subsets of the set passed in the argument
+ 
 subdivisions <- function (set){
   if (length(set)==1){ ## trivial case, only one posibility
     res <- list(list(s1=set, s2 = vector()))
@@ -177,12 +197,13 @@ subdivisions <- function (set){
   res
 }
 
+## DO NOT USE ROXYGENIZE, IT IS NOT A PUBLIC FUNCTION!
+# @title Complete set of (non-empty) partitions of a set
+#
+# @description This function creates all the possible partitions indicated in the 6th step of the algorithm shown in Figure 1, Garcia and Herrera (2008).
+# @param set Set to be partitioned
+# @return All the possible partitions of the set where the last element is in the second subset and the first subset is not empty.
 
-#' @title Complete set of (non-empty) partitions of a set
-#'
-#' @description This function creates all the possible partitions indicated in the 6th step of the algorithm shown in Figure 1, Garcia and Herrera (2008).
-#' @param set Set to be partitioned
-#' @return All the possible partitions of the set where the last element is in the second subset and the first subset is not empty.
 partition <- function (set){
   n <- length(set)
   if (n == 1){ ##In the trivial case it returns the only possible subdivision. This case violates the idea of having the last element in the last set, but it is the only exception and it does not pose a problema as the repetition of the set is under control.
@@ -196,12 +217,13 @@ partition <- function (set){
   res
 }
 
+## DO NOT USE ROXYGENIZE, IT IS NOT A PUBLIC FUNCTION!
+# @title Remove repetitions in a list of subsets
+#
+# @description This function removes the repetitions in the result returned by the function \code{\link{exhaustive.sets}}
+# @param E list of exhaustive sets
+# @return The list without repetitions
 
-#' @title Remove repetitions in a list of subsets
-#'
-#' @description This function removes the repetitions in the result returned by the function \code{\link{exhaustive.sets}}
-#' @param E list of exhaustive sets
-#' @return The list without repetitions
 unique.exhaustive.sets <- function (E){
   E.new <- list(E[[1]])
   
@@ -227,6 +249,8 @@ unique.exhaustive.sets <- function (E){
 #' @description This function implements the algorithm in Figure 1, Garcia and Herrera (2008) to create, given a set, the complete set of exhaustive sets E
 #' @param set Set to create the exhaustive sets. The complexity of this algorithm is huge, so use with caution for sets of more than 7-8 elements.
 #' @return A list with all the possible exhaustive sets, without repetitions
+#' @examples
+#' exhaustive.sets(c("A","B","C","D"))
 exhaustive.sets <- function (set){
   k <- length(set)
   ## All possible pairwise comparisons, Garcia and Herrera, Table 1 steps 1-5
@@ -266,6 +290,10 @@ exhaustive.sets <- function (set){
 #' @return A matrix with the corrected p-values
 #' @details The test has been implemented according to the version in Garcia and Herrera (2008), page 2680-2682.
 #' @references Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+#' @examples
+#' data(data.garcia.herrera)
+#' raw.pvalues <- friedman.post(data.garcia.herrera)
+#' bergmann.hommel.dynamic (raw.pvalues)
 bergmann.hommel.dynamic <- function (raw.matrix){
   ## Load the exhaustive sets
   data("exhaustive.sets")

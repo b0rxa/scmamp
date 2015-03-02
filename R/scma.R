@@ -35,6 +35,10 @@ NULL
 #' }
 #' @details The most powerfull method is the dynamic procedure by Bergmann and Hommel, but its computational requirements render this method only applicable for few algorithms. In the current version of the package it accepts up to 8 classifiers. If selected in a dataset with more than 8 columns the correction is automatically changed to \code{'Shaffer'} and a warning is displayed. Shaffer's static approach increases the power without much less cost. Regarding the Nemenyi test, when used with \code{'Friedman post'} test it is equivalent to using Bonferroni's correction implemented in the \code{'mt.adj'} function. Note that Tukey post hoc test is designed for ANOVA and, thus, if selected the \code{test} parameter has to be \code{'t-test'}; otherwise a warning is shown and the \code{test} parameter is changed. Simalrly, the Nemenyi test has to be coupled with Friedman test's post, and if not it is modified an a warning is displayed.
 #' @seealso \code{plot.pvalues}, \code{plot.hypothesis}, \code{algorithm.graph}.
+#' @examples
+#' data(data.garcia.herrera)
+#' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
+#' plot.pvalues(pwcomp.bh$corrected.pvalues)
 
 pairwise.test <- function(results.matrix ,  test="Friedman post" , correction="Shaffer" , ...){
   k <- dim(results.matrix)[2]

@@ -18,6 +18,11 @@ This function takes the particular list of possible hypthesis to correct for mul
 \details{
 The test has been implemented according to the version in Garcia and Herrera (2008), page 2680-2682.
 }
+\examples{
+data(data.garcia.herrera)
+raw.pvalues <- friedman.post(data.garcia.herrera)
+bergmann.hommel.dynamic (raw.pvalues)
+}
 \references{
 Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
 }

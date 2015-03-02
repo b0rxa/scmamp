@@ -23,6 +23,7 @@ library("scma")
 data(data.garcia.herrera)
 head(data.garcia.herrera)
 ```
+
 The results are the estimated accuracy of five classifiers in 30 datasets. Any other dataset (a **named** `matrix` or a `data.frame`) where each row represents a problem (or a dataset) and each column an algorithm can be used in the following code a substitue of this dataset.
 
 ## Parametric vs. non-parametric

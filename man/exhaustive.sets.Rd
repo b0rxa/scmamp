@@ -15,4 +15,7 @@ A list with all the possible exhaustive sets, without repetitions
 \description{
 This function implements the algorithm in Figure 1, Garcia and Herrera (2008) to create, given a set, the complete set of exhaustive sets E
 }
+\examples{
+exhaustive.sets(c("A","B","C","D"))
+}
 

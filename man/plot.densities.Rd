@@ -17,7 +17,11 @@ A \code{\link{ggplot}} object.
 \description{
 This function estimates and plots the densities of the results of each algorithm
 }
+\examples{
+data(data.garcia.herrera)
+plot.densities(data.garcia.herrera)
+}
 \seealso{
-\code{scma} \code{gaussian.qqplot}
+\code{\link{gaussian.qqplot}}
 }
 

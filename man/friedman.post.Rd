@@ -18,6 +18,10 @@ This function computes the raw p-values for the post hoc based on Friedman's tes
 \details{
 The test has been implemented according to the version in Demsar (2006), page 12
 }
+\examples{
+data(data.garcia.herrera)
+friedman.post(data.garcia.herrera)
+}
 \references{
 Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 }
