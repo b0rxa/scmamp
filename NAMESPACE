@@ -1,4 +1,5 @@
 export(
+  wilcoxon.signed.test,
   friedman.test,
   iman.daveport.test,
   anova.test,
@@ -6,6 +7,9 @@ export(
   tukey.test,
   shaffer.static,
   bergmann.hommel.dynamic,
+  custom.post,
+  friedman.post,
+  anova.post,
   exhaustive.sets,
   rank.matrix,
   plot.pvalues,

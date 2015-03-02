@@ -1,7 +1,7 @@
 Package: scma
 Type: Package
 Title: Statistical comparison of multiple algorithms
-Version: 0.1
+Version: 0.11
 Date: 2015-02-25
 Author: Borja Calvo
 Maintainer: Borja Calvo <borja.calvo@ehu.eus>
@@ -12,6 +12,6 @@ Description: Given a matrix with results of different algorithms for different p
 License: GPL-2
 Collate: 
   tests.R
-  pvalue_corrections.R
+  post_hoc.R
   plotting.R
   scma.R

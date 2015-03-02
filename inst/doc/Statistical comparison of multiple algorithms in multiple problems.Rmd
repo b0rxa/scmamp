@@ -21,7 +21,7 @@ library("scma")
 data(data.garcia.herrera)
 head(data.garcia.herrera)
 ```
-The results are the estimated accuracy of five classifiers in 30 datasets. Any other dataset (a `matrix` or a `data.frame`) where each row represents a problem (or a dataset) and each column an algorithm can be used in the following code a substitue of this dataset.
+The results are the estimated accuracy of five classifiers in 30 datasets. Any other dataset (a **named** `matrix` or a `data.frame`) where each row represents a problem (or a dataset) and each column an algorithm can be used in the following code a substitue of this dataset.
 
 ## Parametric vs. non-parametric
 
@@ -64,7 +64,7 @@ As a conclusion, in _Demšar (2006)_ the author arguments against the use of par
 
 Once the question parametric / non parametric is clear, the next step should be the use of a statistical test to check whether there are differences among the algorithms or not. In other words, determine if there is one or more algorithms whose performance can be regarded as significantly different.
 
-In case the required assumptions are reasonably true, _repeated-measures ANOVA_ test can be used to assess the differences between the algorithms (the package include the function `anova.test` to do this). However, as we have seen, in our running example it is clear that we cannot assume normality in the data. Therefore, in this example we will restrict the use of the package to non parametric methods.
+In case the required assumptions are reasonably true, _F-test for K population means (ANOVA)_ test can be used to assess the differences between the algorithms (the package include the function `anova.test` to do this). However, as we have seen, in our running example it is clear that we cannot assume normality in the data. Therefore, in this example we will restrict the use of the package to non parametric methods.
 
 This package includes two non parametric methods to compare multiple algorithms, the classical Friedman test (_Friedman, 1937_) and a modification by Iman and Davenport (_Iman and Davenport, 1980_). Although R's base installation includes the former, we have reimplemented it in this as explained in  _Demšar (2006)_, page 11. This tests are available through functions `friedman.test` and `iman.davenport.test`.
 
@@ -75,16 +75,16 @@ iman.daveport.test(data.garcia.herrera)
 
 The obtained p-values indicate that we can safely reject the null hypothesis that all the algorithms perform the same. We can also see that the Iman Davenport test is less conservative than the classical Friedman test, as it outputs a lower p-value.
 
-## _post-hoc_ tests
+## Pairwise differences
 
 Once we have verified that not all the performances of the algorithms are the same, the next step is analyzing which are different. For that, we have different possibilities. 
 
-#### Nemenyi test
+#### Nemenyi _post hoc_ test
 
-In _Demšar (2006)_ the author proposes the use of the Nemenyi test that compares all the algorithms pairwise. It is the non parametric equivalent to the Tukey _post-hoc_ test for ANOVA, and is based on the absolute difference of the average rankings of the classifiers. For a significance level $\alpha$ the test determines the critical difference (CD); if the difference between the average ranking of two algorithms is grater than CD, then the null hypothesis that the algorithms have the same performance is rejected. The computation of the critical differences is implemented in the package (`nemenyi.test.cd` function), and the function `nemenyi.test` applies the test to all the comparisions.
+In _Demšar (2006)_ the author proposes the use of the Nemenyi test that compares all the algorithms pairwise. It is the non parametric equivalent to the Tukey _post-hoc_ test for ANOVA (which is also available through the `tukey.test` function), and is based on the absolute difference of the average rankings of the classifiers. For a significance level $\alpha$ the test determines the critical difference (CD); if the difference between the average ranking of two algorithms is grater than CD, then the null hypothesis that the algorithms have the same performance is rejected. The function `nemenyi.test` computes the critical difference and all the pairwise differences.
 
 ```{r,prompt=TRUE}
-test <- nemenyi.test (data.garcia.herrera)
+test <- nemenyi.test (data.garcia.herrera , alpha = 0.05)
 test
 test$diff.matrix
 abs(test$diff.matrix) > test$statistic
@@ -95,43 +95,50 @@ As the code above shows, with a significance of $\alpha = 0.05$ any two algorith
 In _Demšar (2006)_ the author proposes a plot to visually check the differences, the _critical differece plot_. This kind of plot can be created using the `critical.difference.plot` function, which has two parameters, the data. matrix and the significance level. In the plot, those algorithms that are not joined by a line can be regarded as different.
 
 ```{r,prompt=TRUE,fig.width=12 , fig.height=4}
-critical.difference.plot (data.garcia.herrera , alpha = 0.1 , cex=1.25)
+critical.difference.plot (data.garcia.herrera , alpha = 0.05 , cex=1.25)
 critical.difference.plot (data.garcia.herrera , alpha = 0.01 , cex=1.25)
 ```
 
 Note that the text in the plot is defined in absolute size, while the rest is relative to the size of the plot. The default size (0.75) is tuned for a plot width of, roughly, 7 inches. In case the dimensions of the plot need to be bigger, the default size can be changed with the `cex` option, as in the example above (the dimension of these plots is 12x4 inches).
 
-#### Corrected pair-wise Wilcoxon test
+#### Corrected pairwise tests
 
-The second approach consists in using a classical test to assess all the pair-wise differences between algorithms and then correct the p-values for multiple testing. In a parametric context the typicall election would be a paired t-test but, given that we cannot assume normality, we should use a non parametric test, such as Wilcoxon signed rank test.
+The second approach consists in using a classical test to assess all the pairwise differences between algorithms and then correct the p-values for multiple testing. In a parametric context the typicall election would be a paired t-test but, given that we cannot assume normality, we should use a non parametric test, such as Wilcoxon signed-rank test or the base test in the Friedman test (see _García and Herrera, 2008_, Section 2.1).
 
-The chosen test has to be applied to the $\frac{k(k-1)}{2}$ pair-wise comparisons, where $k$ is the number of algorithms. Due to the multiple application of the test, some p-value correction method has to be used in order to control the _familywise error rate_. 
+The chosen test has to be applied to the $\frac{k(k-1)}{2}$ pairwise comparisons, where $k$ is the number of algorithms. Due to the multiple application of the test, some p-value correction method has to be used in order to control the _familywise error rate_. 
 
-There are many general methods to correct this p-values, such as the well known Bonferroni procedure or Holm's step-down method. However, these methods do not take into account the particular situation of pair-wise comparisons, where not any combination of null hypothesis can be true at the same time. As an example, suppose that we know that algorithms A and B are equal and, simultneously, A and C are also equal. Then, we cannot reject the hypothesis that A and C are equal.
+There are many general methods to correct this p-values, such as the well known Bonferroni procedure or Holm's step-down method (_Holm, 1979_). However, these methods do not take into account the particular situation of pair-wise comparisons, where not any combination of null hypothesis can be true at the same time. As an example, suppose that we know that algorithms A and B are equal and, simultneously, A and C are also equal. Then, we cannot reject the hypothesis that A and C are equal.
 
 This problem was tackled by Shaffer (_Shaffer, 1986_). There are two procedures to correct the p-values, accoding to this paper. In the first one (sometimes called Shaffer static) the particular ordering of the null hypothesis is not taken into account and only the maximum number of simultaneous hypothesis is considered. The second one further limits the number of possible hypothesis by considering which particular hypothesis have been rejected. This increases the power of the method, but it is computationally very expensive (see _Garcia and Herrera, 2008_, page 2681).
 
-The `pairwise.test` function performs these two steps. First, it uses a statistical test to assess the differences between every pair and then it applies a correction to the obtained p-values. The function has three parameters, `results.matrix`, which is a `matrix` or `data.frame` like the one we have been using so far, `test`, that can be either a character string or a function and `correction`, which is a character string indicating what kind of correction has to be performed. For the `test` parameter, valid options are `Wilcoxon`, `t-test` or a function that has, at least, 2 parameters, `x` and `y` (the samples to compare) and that returns the p-value obtained in the test. The `pairwise.test` function also accepts additional parameters that are directly passed to the `test` function. 
+The `pairwise.test` function performs these two steps. First, it uses a statistical test to assess the differences between every pair and then it applies a correction to the obtained p-values. The function has three parameters, `results.matrix`, which is a `matrix` or `data.frame` like the one we have been using so far, `test`, that can be either a character string or a function and `correction`, which is a character string indicating what kind of correction has to be performed. 
 
-As regards the `correction` parameter, valid options are: 
-* `'Nemenyi'`, for Nemenyi's test.
-* `'Shaffer'`, for Shaffer's static approach (_Shaffer, 1986_).
-* `'Bergmann Hommel'`, for Bergmann Hommel dynamic approach (_Bergmann and Hommel, 1988_)
+For the `test` parameter, valid options are:
+* `Friedman post` for the procedure indicated in _Garcia and Herrera, 2008_, page 2679.
+* `Wilcoxon` for the Wilcoxon signe-rank test as explained in _Demšar (2006)_, page 7.
+* `t-test` for a paired t-test
+* A general function that has, at least, 2 parameters, `x` and `y` (the samples to compare) and that returns the p-value obtained in the test.
+
+The `pairwise.test` function also accepts additional parameters that are directly passed to the `test` function. As regards the `correction` parameter, valid options are: 
+* `'Shaffer'`, for Shaffer's static approach (_Shaffer, 1986_), as explained in _Garcia and Herrera, 2008_, page 2680.
+* `'Bergmann Hommel'`, for Bergmann Hommel dynamic approach (_Bergmann and Hommel, 1988_), as explained in _Garcia and Herrera, 2008_, page 2680-2682. For computational reasons this option is only available when comparing 8 or less algorithms. In other case, the methdo is changed to `'Shaffer'` and a warning is displayed.
+* `'Nemenyi'`, for Nemenyi post hoct test. Note that the raw equivalent is the Friedman test, so it has to be coupled with that option in the `test` parameter. If not, it is changed and a warning is displayed.
+* `'Tukey'`, for Tukey post hoc test. Note that the raw equivalent is the t-test, so it has to be coupled with that option in the `test` parameter. If not, it is changed and a warning is displayed.
 * Any of the valid methods in the `p.adjust` function. The complete list can be checked typing `p.adjust.methods`
 
 Two examples of use of the `pairwise.test` function.
 
 ```{r,prompt=TRUE , warning=FALSE}
-pwcomp.holm <- pairwise.test(results.matrix = data.garcia.herrera , 
-                             test = "Wilcoxon" , 
-                             correction = "holm")
-adhoc.test <- function(x,y,...) wilcox.test(x , y , paired=TRUE)$p.value
 pwcomp.shaffer <- pairwise.test(results.matrix = data.garcia.herrera , 
+                             test = "Friedman post" , 
+                             correction = "Shaffer")
+adhoc.test <- function(x,y,...) wilcox.test(x , y , paired=TRUE)$p.value
+pwcomp.holm <- pairwise.test(results.matrix = data.garcia.herrera , 
                                 test = adhoc.test ,  
-                                correction = "Shaffer")
+                                correction = "holm")
 ```
 
-Both runs use the same test, a Wilcoxon signed rank test. In the first example it is specified as one of the two built-in options and, in the second case, it is passed as a function. When defining the function, it is necessary to include the `...` parameter to avoid problem, eventhough it is ignored by the function.
+The first call runs the Friedman test and the p-values are corrected using Shaffer's static procedure. Conversely, the second call uses a customed function to run R's base Wilcoxon test (a version different from the one implemented in this package); Then, the raw p-values are corrected using Holm's procedure (_Holm (1979)_). Note that, when defining the function, it is necessary to include the `...` parameter to avoid problem, eventhough it is ignored by the function.
 
 The `pairwise.test` function returns a list with four elements: `raw.pvalues`, a matrix with the raw p-values; `corrected.pvalues`, a matrix with the corrected p-values; `test`, a string character indicating the test used and `correction`, a string character indicating the correction used.
 
@@ -143,13 +150,11 @@ As we have said, the most powerful approach is the dynamic method by Bergmann an
 
 ```{r,prompt=TRUE , warning=FALSE}
 pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , 
-                             test = "Wilcoxon" , 
+                             test = "Friedman post" , 
                              correction = "Bergmann Hommel")
 ```
 
-
 If we compare the p-values obtained by the static (Shaffer) and dynamic (Bergmann Hommel) approaches, we ca see that the p-values in the former are always greater or equal to the ones in the latter, rendering the dynamic a more powerful approach.
-
 
 ```{r,prompt=TRUE , warning=FALSE}
 pwcomp.bh$corrected.pvalues - pwcomp.shaffer$corrected.pvalues
@@ -159,24 +164,23 @@ pwcomp.bh$corrected.pvalues - pwcomp.shaffer$corrected.pvalues
 Given a significance level, say 0.05, we can determine which hypothesis can be rejected.
 
 ```{r,prompt=TRUE}
-h <- pwcomp.shaffer$corrected.pvalues < 0.05
-h
-id <- which(h , arr.ind = TRUE)
+rej.h.shaffer <- pwcomp.shaffer$corrected.pvalues < 0.05
+rej.h.shaffer
 ```
 
 We can use this code to extract the pairs of algorithms that are different
 
 ```{r,prompt=TRUE}
-id <- which(h , arr.ind = TRUE)
+id <- which(rej.h.shaffer , arr.ind = TRUE)
 id <- subset(id , id[,1]<id[,2])    ## Remove the repetitions
-names <- colnames(h)
+names <- colnames(rej.h.shaffer)
 differences <- apply(id , MARGIN = 1 , 
                      FUN = function(x) paste(names[x[1]] , "-" ,  names[x[2]]))
 names(differences) <- NULL
 differences
 ```
 
-As can be seen, with Shaffer's static method applied to p-values obtained with Wilcoxon paired test, C4.5 and 1NN algorithms are regarded as different, but if we look at the critical difference plot generated above, these two algorithms are joined by a line, indicating that the null hypothesis cannot be rejected. This is because Shaffer's static procedure has more power in detecting differences than the Nemenyi test.
+As can be seen, with Shaffer's static method applied to p-values obtained with the Friedman test, 1NN is regarded as different when compared with Naive Bayes and Kernel, but if we look at the critical difference plot generated above, these algorithms are joined by a line, indicating that the null hypothesis cannot be rejected. This is because Shaffer's static procedure has more power in detecting differences than the Nemenyi test.
 
 As a way of visualizing the results graphically, the package includes a function called `algorithm.graph`, which plots a graph where the algorithms are the nodes and two nodes are linked in the null hypothesis of being equal cannot be rejected. This function makes use of the `Rgraphviz` package, so it has to be installed in order to use this function. The package is currently in [Bioconductor](www.bioconductor.org), so it can be installed as follows.
 
@@ -189,7 +193,7 @@ The plot can incorporate information about each algorithm. In this case we will 
 
 ```{r,prompt=TRUE,fig.width=10 , fig.height=5}
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
-algorithm.graph (hypothesis.matrix = !h , mean.value = rmeans , 
+algorithm.graph (hypothesis.matrix = !rej.h.shaffer , mean.value = rmeans , 
                  font.size = 10 , node.width = 3 , node.height = 1)
 ```
 
@@ -209,18 +213,24 @@ The `Rgraphviz` package has a number of layouts that can be used to plot graphs 
 ```{r,prompt=TRUE,fig.width=10 , fig.height=5}
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
-algorithm.graph (hypothesis.matrix = !h , mean.value = rmeans , 'fdp' , 
+h.bh <- pwcomp.bh$corrected.pvalues > 0.05
+algorithm.graph (hypothesis.matrix = h.bh , mean.value = rmeans , 'fdp' , 
                  highlight.color = "red" , node.color = "white" , font.color = "black" ,
                  font.size = 10 , node.width = 2 , node.height = 1)
 ```
 
+This graph is the one corresponding to Bergmann and Hommel dynamic procedure. From its comparision with the previous one, we can check its increased power, as with the same $\alpha$ it rejects two more hypothesis, namely, that CN2 is equal to Naive Bayes and C4.5.
+
 To finish with this review of the main functionalities of the package, the p-value matrix generated when doing all the pairwise comparisons can be plotted using the `plot.pvalues` function.
 
 ```{r,prompt=TRUE,fig.width=10 , fig.height=6, warning=FALSE}
-plot.pvalues(pvalue.matrix = pwcomp.bh$corrected.pvalues , alg.order = order (rmeans,decreasing = FALSE))
+plt <- plot.pvalues(pvalue.matrix = pwcomp.bh$corrected.pvalues , alg.order = order (rmeans,decreasing = FALSE))
+plt + 
+  labs(title="Corrected p-values using Bergmann and Hommel procedure") + 
+  scale_fill_gradientn("Corrected p-values" , colours = c("darkred","red","orange","yellow","green","cyan","darkblue"))
 ```
 
-The columns of the matrix can be reordered to make the analysis easier. In this case we have order them based on their average ranking. With such a ranking we would expect the p-value also to be ordered. Although in most cases this is true,  in the plot above there some exceptions: The comparison between C4.5 and Naive Bayes, 1NN and CN2, where CN2 and 1NN are not correctly ordered. This has to do with the use of a paired test and an ordering that does not take the pairing into account.
+The code above also shows how to modify some aesthetic aspects using `ggplot2`.
 
 ## References
 
@@ -233,6 +243,8 @@ Friedman, M. (1937) The Use of Ranks to Avoid the Assumption of Normality Implic
 Friedman, M. (1940) A Comparison of Alternative Tests of Significance for the Problem of m Rankings. _Annals of Mathematical Statistics_, 11, 86-92.
 
 García S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for all Pairwise Comparisons. _Journal of Machine Learning Research_, 9, 2677-2694.
+
+Holm, S. (1979) A Simple Sequentially Rejective Multiple Test Procedure. _Scandinavian Journal of Statistics_, 6, 65-70.
 
 Iman, R. L. and Davenport J. M. (1980) Approximations of the Critical Region of the Friedman Statistic. _Communications in Statistics_, 571-595.
 

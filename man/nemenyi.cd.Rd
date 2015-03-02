@@ -19,4 +19,13 @@ Critical difference of averge rankings. When the difference is, in absolute valu
 \description{
 This function computes the critical difference for the Nemenyi test
 }
+\details{
+The test has been implemented according to the version in Demsar (2006), page 11
+}
+\references{
+Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+}
+\seealso{
+\code{\link{nemenyi.test}}
+}
 

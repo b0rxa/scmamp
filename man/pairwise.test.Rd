@@ -4,15 +4,15 @@
 \alias{pairwise.test}
 \title{Statistical pairwise comparisons of algorithms}
 \usage{
-pairwise.test(results.matrix, test = "Wilcoxon", correction = "Shaffer",
-  ...)
+pairwise.test(results.matrix, test = "Friedman post",
+  correction = "Shaffer", ...)
 }
 \arguments{
 \item{results.matrix}{A matrix or data.frame containing the results obtained by the algorithms (columns) in each problem (rows).}
 
-\item{test}{Parameter that indicates the statistical test to be used. It can be either a string indicating one of the available test (\code{t-test} and \code{Wilcoxon}) or a function that, given two parameters, \code{x} and \code{y}, return the p-value associated with the comparison. For compatibility, this function has to have the ... special argument.}
+\item{test}{Parameter that indicates the statistical test to be used. It can be either a string indicating one of the available test (\code{'t-test'} for paired t-test,  \code{'Wilcoxon'}) for Wilcoxon Signed rank test, \code{'Friedman post'}, for raw p-values in Friedman test's Nemenyi post hoc or a function that, given two parameters, \code{x} and \code{y}, return the p-value associated with the comparison. For compatibility, this function has to have the ... special argument.}
 
-\item{correction}{A string indicating the type of correction that has to be applied to the p-values. Valid names are \code{Shaffer}, \code{Bergmann-Hommel}, \code{Nemenyi}, \code{Tukey} or any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}}
+\item{correction}{A string indicating the type of correction that has to be applied to the p-values. Valid names are \code{Shaffer}, \code{Bergmann-Hommel}, \code{Nemenyi}, \code{Tukey} or any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}.}
 
 \item{...}{Special argument used to pass additional parameters to the statistical test or the correction method.}
 }
@@ -29,9 +29,9 @@ The function returns a list that contains:
 This function gives access to different alternatives to test the algorithms pair-wise
 }
 \details{
-The most powerfull method is the dynamic procedure by Bergmann and Hommel, but its computational requirements render this method only applicable for few algorithms. In the current version of the package it accepts up to 8 classifiers. Shaffer's static approach increases the power without much less cost. Regarding the Nemenyi test, it is equivalent to using Bonferroni's correction implemented in the \code{'mt.raw2adjp'} function. Note that Tukey post hoc test is designed for ANOVA and, thus, if selected the \code{test} parameter is ignores. Simalrly, the Nemenyi test is the non parametric version and thus, it also ignores the \code{test} parameter.
+The most powerfull method is the dynamic procedure by Bergmann and Hommel, but its computational requirements render this method only applicable for few algorithms. In the current version of the package it accepts up to 8 classifiers. If selected in a dataset with more than 8 columns the correction is automatically changed to \code{'Shaffer'} and a warning is displayed. Shaffer's static approach increases the power without much less cost. Regarding the Nemenyi test, when used with \code{'Friedman post'} test it is equivalent to using Bonferroni's correction implemented in the \code{'mt.adj'} function. Note that Tukey post hoc test is designed for ANOVA and, thus, if selected the \code{test} parameter has to be \code{'t-test'}; otherwise a warning is shown and the \code{test} parameter is changed. Simalrly, the Nemenyi test has to be coupled with Friedman test's post, and if not it is modified an a warning is displayed.
 }
 \seealso{
-\code{plot.pvalues}, \code{plot.hypothesis}, \code{algorithm.graph} , \code{scma}
+\code{plot.pvalues}, \code{plot.hypothesis}, \code{algorithm.graph}.
 }
 

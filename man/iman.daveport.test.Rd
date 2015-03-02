@@ -17,8 +17,14 @@ A list with class "htest" containing the following components: \code{statistic},
 \description{
 This function performs Iman-Davenport modification of Friedman's test
 }
+\details{
+The test has been implemented according to the version in Demsar (2006), page 11
+}
 \examples{
 data("garcia.herrera")
 iman.davenport.test(data.garcia.herrera)
+}
+\references{
+Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 }
 

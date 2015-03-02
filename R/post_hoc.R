@@ -1,36 +1,95 @@
+#' @title Friedman's post hoc raw p-values
+#'
+#' @description This function computes the raw p-values for the post hoc based on Friedman's test
+#' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
+#' @return A matrix with all the pairwise raw p-values.
+#' @details The test has been implemented according to the version in Demsar (2006), page 12
+#' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+
+friedman.post <- function (data , ...){
+  k <- dim(data)[2]
+  N <- dim(data)[1]
+  
+  meanrank <- colMeans(rank.matrix(data))
+  
+  ## Generate all the pairs to test
+  pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+  
+  ## Compute the p-value
+  sd <- sqrt((k*(k+1))/(6*N))
+  f<-function(x) (1 - pnorm(abs(meanrank[x[1]] - meanrank[x[2]])/sd))*2 ## Two tailed ...
+  pvalues <- apply(pairs , MARGIN = 1 , FUN = f)
+  matrix.raw <- matrix(rep(NA , k^2) , k)
+  matrix.raw[pairs] <- pvalues
+  matrix.raw[pairs[,c(2,1)]] <- pvalues
+  colnames(matrix.raw) <- rownames(matrix.raw) <- colnames(data)
+  matrix.raw
+}
+
+#' @title Function to use custom test to get the pairwise raw p-values
+#'
+#' @description This function computes the raw p-values using a custom function
+#' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
+#' @param test Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return the associeted p-value.
+#' @return A matrix with all the pairwise raw p-values.
+
+custom.post <- function(data , test , ...){
+  k <- dim(data)[2]
+  N <- dim(data)[1]
+  
+  meanrank <- colMeans(rank.matrix(data))
+  
+  ## Generate all the pairs to test
+  pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+  
+  ## Compute the p-value
+  sd <- sqrt((k*(k+1))/(6*N))
+  f<-function(x) test(x = data[ , x[1]] , y = data[ , x[2]])
+  pvalues <- apply(pairs , MARGIN = 1 , FUN = f)
+  matrix.raw <- matrix(rep(NA , k^2) , k)
+  matrix.raw[pairs] <- pvalues
+  matrix.raw[pairs[,c(2,1)]] <- pvalues
+  colnames(matrix.raw) <- rownames(matrix.raw) <- colnames(data)
+  matrix.raw
+}
+
 #' @title Tukey post hoc test for ANOVA
 #'
 #' @description This function computes all the pairwise p-values corrected using Tukey post hoc test
 #' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
 #' @return A matrix with all the pairwise corrected p-values.
+#' @details The test has been implemented according to Test 22 in Kanji (2006).
+#' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 
-tukey.test <- function (data , ...){
+anova.post <- function (data , ...){
+  
+  ## Implemented as Test 28 in 100 statistical tests
   k <- dim(data)[2]
   N <- dim(data)[1]
-  ## Prepare the data
-  algs <- paste("A" , 1:k , sep="")
-  values <- vector()
-  groups <- vector()
-  rmv <- sapply(1:k , FUN = function(x){
-    values <<- c(values , data[,x])
-    groups <<- c(groups , rep(algs[x],N))
-  })
-  model <- lm(values ~ groups)
-  aov <- aov(model)
-  post.res <- TukeyHSD(aov , "groups")
+  nu <- k*(N-1)
   
-  adj.matrix <- matrix(rep(NA , k^2) , k)
-  adj.pvalues <- post.res$groups[,"p adj"]
+  ## Sample variances
+  var.vector <- apply(data , MARGIN = 2 , FUN = var)
+  m.vector <- colMeans(data)
   
-  for (i in 1:length(adj.pvalues)){
-    comp <- unlist(strsplit(names(adj.pvalues)[i],"-"))
-    mat.ids <- which(algs %in% comp)
-    adj.matrix[mat.ids[2],mat.ids[1]] <- adj.pvalues[i]
-    adj.matrix[mat.ids[1],mat.ids[2]] <- adj.pvalues[i]
+  ## Total variance. Given that all the samples have the same size, it is the average variance
+  var <- mean(var.vector)
+    
+  ## Generate all the pairs to test
+  pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+  
+  ## Compute the p-value
+  f<-function(x) {
+    d <- abs(m.vector[x[1]] - m.vector[x[2]])
+    q <- d*sqrt(N/var)
+    1 - ptukey(q,k,nu)
   }
-  
-  colnames(adj.matrix) <- rownames(adj.matrix) <- colnames(data)
-  adj.matrix
+  pvalues <- apply(pairs , MARGIN = 1 , FUN = f)
+  matrix.raw <- matrix(rep(NA , k^2) , k)
+  matrix.raw[pairs] <- pvalues
+  matrix.raw[pairs[,c(2,1)]] <- pvalues
+  colnames(matrix.raw) <- rownames(matrix.raw) <- colnames(data)
+  matrix.raw
 }
 
 #' @title Enforce the monotocity of a sequence
@@ -71,6 +130,8 @@ recursive.count <- function (k){
 #' @description This function implements the Shaffer's multiple testing correction when the p-values correspond with pair-wise comparisons
 #' @param raw.matrix A matrix with the pair-wise p-values. The p-values have to be, at least, in the upper part of the matrix.
 #' @return A symetric matrix with the corrected p-values.
+#' @details The test has been implemented according to the version in Garcia and Herrera (2008), page 2680.
+#' @references Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
 shaffer.static <- function (raw.matrix){
   k <- dim(raw.matrix)[1]
   pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
@@ -164,7 +225,7 @@ unique.exhaustive.sets <- function (E){
 #' @title Create the complet set of exhaustive sets
 #'
 #' @description This function implements the algorithm in Figure 1, Garcia and Herrera (2008) to create, given a set, the complete set of exhaustive sets E
-#' @param set Set to create the exhaustive sets
+#' @param set Set to create the exhaustive sets. The complexity of this algorithm is huge, so use with caution for sets of more than 7-8 elements.
 #' @return A list with all the possible exhaustive sets, without repetitions
 exhaustive.sets <- function (set){
   k <- length(set)
@@ -203,6 +264,8 @@ exhaustive.sets <- function (set){
 #' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Bergmann and Hommel (1994)
 #' @param raw.matrix Raw p-values in a matrix
 #' @return A matrix with the corrected p-values
+#' @details The test has been implemented according to the version in Garcia and Herrera (2008), page 2680-2682.
+#' @references Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
 bergmann.hommel.dynamic <- function (raw.matrix){
   ## Load the exhaustive sets
   data("exhaustive.sets")
