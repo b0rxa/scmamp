@@ -14,6 +14,8 @@ This vignette shows the use of the package `scma` to assess the statistical diff
 
 The package and this vignette is based mainly on the paper _García and Herrera (2008)_, which is an extenstion of Demšar's paper (_Demšar, 2006_).
 
+If you are familiar with these papers and want a quick guide, jump to the last section of this document (_Summary_). Then, you can review the rest of the vignette for more details.
+
 A a guiding example, we will use the results included in ther first paper (_García and Herrera ,2008_, Table 2). These data is available in the package under the name `garcia.herrera`. We can load the data by typing:
 
 ```{r , prompt=TRUE}
@@ -227,10 +229,37 @@ To finish with this review of the main functionalities of the package, the p-val
 plt <- plot.pvalues(pvalue.matrix = pwcomp.bh$corrected.pvalues , alg.order = order (rmeans,decreasing = FALSE))
 plt + 
   labs(title="Corrected p-values using Bergmann and Hommel procedure") + 
-  scale_fill_gradientn("Corrected p-values" , colours = c("darkred","red","orange","yellow","green","cyan","darkblue"))
+  scale_fill_gradientn("Corrected p-values" , colours = c("skyblue4" , "orange"))
 ```
 
 The code above also shows how to modify some aesthetic aspects using `ggplot2`.
+
+
+## Summary
+
+The typical (non parametric) comparision can be done with the following code. First, verify that we can reject the null hypothesis of all the algorithms being equal.
+
+```{r,full_process_1, prompt=TRUE}
+alpha <- 0.05
+data <- data.garcia.herrera
+
+friedman.test(data)
+```
+
+Provided that the p-value obtained is below $\alpha$, check the pairwise comparisons.
+
+```{r,full_process_2, prompt=TRUE , fig.width=10 , fig.height=5}
+correction <- ifelse(dim(data)[2]<=8 , "Bergmann Hommel" , "Shaffer") 
+pwcomp <- pairwise.test(data , correction = correction)
+
+mean.rank <- colMeans(rank.matrix(data))
+alg.order <- order(mean.rank)
+plot.pvalues(pwcomp$corrected.pvalues , alg.order = alg.order) + labs(title=paste("Corrected p-values using ", correction , " procedure",sep=""))
+algorithm.graph(pwcomp$corrected.pvalues > alpha , mean.rank)
+title(paste("Algorithms with no significant differences (alpha = ", alpha , ")" , sep = ""))
+```
+
+
 
 ## References
 

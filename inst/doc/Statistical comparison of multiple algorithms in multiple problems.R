@@ -81,5 +81,21 @@ algorithm.graph (hypothesis.matrix = h.bh , mean.value = rmeans , 'fdp' ,
 plt <- plot.pvalues(pvalue.matrix = pwcomp.bh$corrected.pvalues , alg.order = order (rmeans,decreasing = FALSE))
 plt + 
   labs(title="Corrected p-values using Bergmann and Hommel procedure") + 
-  scale_fill_gradientn("Corrected p-values" , colours = c("darkred","red","orange","yellow","green","cyan","darkblue"))
+  scale_fill_gradientn("Corrected p-values" , colours = c("skyblue4" , "orange"))
+
+## ----,full_process_1, prompt=TRUE----------------------------------------
+alpha <- 0.05
+data <- data.garcia.herrera
+
+friedman.test(data)
+
+## ----,full_process_2, prompt=TRUE , fig.width=10 , fig.height=5----------
+correction <- ifelse(dim(data)[2]<=8 , "Bergmann Hommel" , "Shaffer") 
+pwcomp <- pairwise.test(data , correction = correction)
+
+mean.rank <- colMeans(rank.matrix(data))
+alg.order <- order(mean.rank)
+plot.pvalues(pwcomp$corrected.pvalues , alg.order = alg.order) + labs(title=paste("Corrected p-values using ", correction , " procedure",sep=""))
+algorithm.graph(pwcomp$corrected.pvalues > alpha , mean.rank)
+title(paste("Algorithms with no significant differences (alpha = ", alpha , ")" , sep = ""))
 
