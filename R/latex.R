@@ -53,6 +53,7 @@ process.table.row <- function (row , bold , italic , mark , mark.char , format ,
 #' @param align Character indicating the alignment of the colums (\code{'l'},\code{'r'} or \code{'c'})
 #' @param hrule A vector of positions for the horizontal lines in the tabular. All the lines are drawn after the indicated line. When the column names are plotted, 0 means drawing a line after the column names. The maximum value is the number of rows - 1 (for a line after the last line see parametr \code{bty})
 #' @param vrule Similar to \code{'hrule'} but for vertical lines. . The maximum value is the number of columns - 1 (for a line after the last columns see parametr \code{bty})
+#' @param bty Vector indicating which borders should be printed. The vector can contain any of subset of \code{c('l','r','t','b')}, which represent, respectively, left, right, top and bottom border. If the parameter is set to \code{NULL} no border is printed.
 #' @param print.col.names Local value indicating whether the column names have to be printed or not
 #' @param print.row.names Local value indicating whether the row names have to be printed or not
 #' @param digits A vector with the number of digits in each column. Its size has to match the number of the final table, i.e., the colums in \code{'table'} if the row names are not included or the number of columns + 1 if the row names are printed in the final table

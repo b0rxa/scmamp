@@ -16,3 +16,4 @@ Collate:
   plotting.R
   scma.R
   latex.R
+  loading_functions.R

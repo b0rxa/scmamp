@@ -18,5 +18,9 @@ export(
   critical.difference.plot,
   algorithm.graph,
   pairwise.test,
-  write.tabular
+  write.tabular,
+  read.experiment.file,
+  read.comparison.file,
+  read.experiment.dir,
+  read.comparison.dir
 )
