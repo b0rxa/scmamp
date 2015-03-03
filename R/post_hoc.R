@@ -253,34 +253,39 @@ unique.exhaustive.sets <- function (E){
 #' exhaustive.sets(c("A","B","C","D"))
 exhaustive.sets <- function (set){
   k <- length(set)
-  ## All possible pairwise comparisons, Garcia and Herrera, Table 1 steps 1-5
-  if (k==1) return(NULL) ## No sense the set with one classifier
-  if (k==2){ ## Base case, no lists
-    E <- list(matrix(c(set[1],set[2]),ncol=1))
+  if (k<=length(E)){ ## Reuse the computed sets stored in the variable E
+    E_l <- lapply(E[[k]] , FUN=function(x) matrix(set[x],nrow=2))
   }else{
-    pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
-    E <- list(apply (pairs , MARGIN = 1 , FUN = function(x) c(set[x[1]] , set[x[2]])))
-  }
-  ## Main loop
-  if (length(set)>2){
-    partitions <- partition(set)  ## Sets in step 6
-    process.partition <- function (x){ ## Function to perform the main loop
-      E1 <- exhaustive.sets (x$s1)
-      E2 <- exhaustive.sets (x$s2)
-      if (!is.null(E1)){
-        E <<- c(E , E1)
-        if (!is.null(E2)){
-          lapply (E1 , FUN = function(e1){
-              E <<- c(E , lapply(E2 , FUN = function(e2) cbind(e1,e2)))
-          })
-        }
-      }      
-      if (!is.null(E2)) E <<- c(E , E2)
+    ## All possible pairwise comparisons, Garcia and Herrera, Table 1 steps 1-5
+    if (k==1) return(NULL) ## No sense the set with one classifier
+    if (k==2){ ## Base case, no lists
+      E_l <- list(matrix(c(set[1],set[2]),ncol=1))
+    }else{
+      pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+      E_l <- list(apply (pairs , MARGIN = 1 , FUN = function(x) c(set[x[1]] , set[x[2]])))
     }
-    ## Do the loop (bk is just to avoid printing trash in the screen ...)
-    bk <- lapply(partitions , FUN = process.partition)
+    ## Main loop
+    if (length(set)>2){
+      partitions <- partition(set)  ## Sets in step 6
+      process.partition <- function (x){ ## Function to perform the main loop
+        E1 <- exhaustive.sets (x$s1)
+        E2 <- exhaustive.sets (x$s2)
+        if (!is.null(E1)){
+          E_l <<- c(E_l , E1)
+          if (!is.null(E2)){
+            lapply (E1 , FUN = function(e1){
+              E_l <<- c(E_l , lapply(E2 , FUN = function(e2) cbind(e1,e2)))
+            })
+          }
+        }      
+        if (!is.null(E2)) E_l <<- c(E_l , E2)
+      }
+      ## Do the loop (bk is just to avoid printing trash in the screen ...)
+      bk <- lapply(partitions , FUN = process.partition)
+    }
+    E_l <- unique.exhaustive.sets(E_l)
   }
-  unique.exhaustive.sets(E)
+  gc()
 }
 
 #' @title Bergmann and Hommel dynamic correction of p-values

@@ -15,7 +15,7 @@ shapiro.test(data.garcia.herrera[,"k-NN(k=1)"])
 
 ## ----,prompt=TRUE--------------------------------------------------------
 friedman.test(data.garcia.herrera)
-iman.daveport.test(data.garcia.herrera)
+iman.davenport.test(data.garcia.herrera)
 
 ## ----,prompt=TRUE--------------------------------------------------------
 test <- nemenyi.test (data.garcia.herrera , alpha = 0.05)
@@ -66,14 +66,13 @@ differences
 
 ## ----,prompt=TRUE,fig.width=10 , fig.height=5----------------------------
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
-algorithm.graph (hypothesis.matrix = !rej.h.shaffer , mean.value = rmeans , 
+algorithm.graph (pvalue.matrix = pwcomp.shaffer$corrected.pvalues , alpha = 0.05 , mean.value = rmeans , 
                  font.size = 10 , node.width = 3 , node.height = 1)
 
 ## ----,prompt=TRUE,fig.width=10 , fig.height=5----------------------------
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
-h.bh <- pwcomp.bh$corrected.pvalues > 0.05
-algorithm.graph (hypothesis.matrix = h.bh , mean.value = rmeans , 'fdp' , 
+algorithm.graph (pvalue.matrix = pwcomp.bh$corrected.pvalues , alpha = 0.05 , mean.value = rmeans , 'fdp' , 
                  highlight.color = "red" , node.color = "white" , font.color = "black" ,
                  font.size = 10 , node.width = 2 , node.height = 1)
 
@@ -96,5 +95,5 @@ pwcomp <- pairwise.test(data , correction = correction)
 mean.rank <- colMeans(rank.matrix(data))
 alg.order <- order(mean.rank)
 plot.pvalues(pwcomp$corrected.pvalues , alg.order = alg.order) + labs(title=paste("Corrected p-values using ", correction , " procedure",sep=""))
-algorithm.graph(pwcomp$corrected.pvalues > alpha , mean.rank , font.size = 10)
+algorithm.graph(pwcomp$corrected.pvalues, mean.rank, alpha = alpha,  font.size = 10)
 

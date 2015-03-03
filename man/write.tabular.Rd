@@ -6,8 +6,9 @@
 \usage{
 write.tabular(table, file = NULL, format = "g", bold = NULL,
   italic = NULL, mark = NULL, mark.char = "*", align = "l",
-  hrule = NULL, vrule = NULL, print.col.names = TRUE,
-  print.row.names = TRUE, digits = rep(3, dim(table)[2] + print.row.names))
+  hrule = NULL, vrule = NULL, bty = c("t", "b", "l", "r"),
+  print.col.names = TRUE, print.row.names = TRUE, digits = rep(3,
+  dim(table)[2] + print.row.names))
 }
 \arguments{
 \item{table}{A data frame with the information to plot}
@@ -26,9 +27,9 @@ write.tabular(table, file = NULL, format = "g", bold = NULL,
 
 \item{align}{Character indicating the alignment of the colums (\code{'l'},\code{'r'} or \code{'c'})}
 
-\item{hrule}{A vector of positions for the horizontal lines in the tabular. All the lines are drawn after the indicated line. When the column names are plotted, 0 means drawing a line after the column names.}
+\item{hrule}{A vector of positions for the horizontal lines in the tabular. All the lines are drawn after the indicated line. When the column names are plotted, 0 means drawing a line after the column names. The maximum value is the number of rows - 1 (for a line after the last line see parametr \code{bty})}
 
-\item{vrule}{Similar to \code{'hrule'} but for vertical lines.}
+\item{vrule}{Similar to \code{'hrule'} but for vertical lines. . The maximum value is the number of columns - 1 (for a line after the last columns see parametr \code{bty})}
 
 \item{print.col.names}{Local value indicating whether the column names have to be printed or not}
 

@@ -51,8 +51,8 @@ process.table.row <- function (row , bold , italic , mark , mark.char , format ,
 #' @param mark A matrix that matches \code{'table'} in size indicating with true those cells that have to be marked with a superscipt symbol
 #' @param mark.char Character to be used to mark cells. Note that the superscript is included in a math environment, so this has to be either a character or a valid math command in LaTeX
 #' @param align Character indicating the alignment of the colums (\code{'l'},\code{'r'} or \code{'c'})
-#' @param hrule A vector of positions for the horizontal lines in the tabular. All the lines are drawn after the indicated line. When the column names are plotted, 0 means drawing a line after the column names.
-#' @param vrule Similar to \code{'hrule'} but for vertical lines.
+#' @param hrule A vector of positions for the horizontal lines in the tabular. All the lines are drawn after the indicated line. When the column names are plotted, 0 means drawing a line after the column names. The maximum value is the number of rows - 1 (for a line after the last line see parametr \code{bty})
+#' @param vrule Similar to \code{'hrule'} but for vertical lines. . The maximum value is the number of columns - 1 (for a line after the last columns see parametr \code{bty})
 #' @param print.col.names Local value indicating whether the column names have to be printed or not
 #' @param print.row.names Local value indicating whether the row names have to be printed or not
 #' @param digits A vector with the number of digits in each column. Its size has to match the number of the final table, i.e., the colums in \code{'table'} if the row names are not included or the number of columns + 1 if the row names are printed in the final table
@@ -67,15 +67,15 @@ process.table.row <- function (row , bold , italic , mark , mark.char , format ,
 #' max.matrix <- t(apply(data.garcia.herrera , MARGIN = 1 , FUN = function(x) x==max(x)))
 #' write.tabular(data.garcia.herrera , format = 'E' , bold = max.matrix)
 
-write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic=NULL , mark=NULL, mark.char = '*' , align = 'l' , hrule = NULL , vrule = NULL , print.col.names = TRUE , print.row.names = TRUE  , digits = rep(3,dim(table)[2] + print.row.names)){
+write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic=NULL , mark=NULL, mark.char = '*' , align = 'l' , hrule = NULL , vrule = NULL , bty = c('t','b','l','r') , print.col.names = TRUE , print.row.names = TRUE  , digits = rep(3,dim(table)[2] + print.row.names)){
   rows <- dim(table)[1]
   cols <- dim(table)[2]
   
   ## Remove any vrule and hrule beyond the limits
   if (!is.null(hrule))
-    hrule <- subset(hrule , hrule >=0 & hrule <= rows)
+    hrule <- subset(hrule , hrule >=0 & hrule < rows)
   if (!is.null(vrule))
-    vrule <- subset(vrule , vrule >=0 & vrule <= cols)
+    vrule <- subset(vrule , vrule >=0 & vrule < cols)
   
   ## Control of the digits
   if (length(digits) - print.row.names != cols) stop("The number of elements in the digits vector is incorrect. The vector should have length equal to the number of columns in 'table' if 'print.row.names' is false and the number of columns + 1 if 'print.row.names' is true.")
@@ -112,16 +112,20 @@ write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic
   output <- ifelse(is.null(file) , stdout() , file(file , "w"))
   
   ## Begin the tabular
+  algn <- ifelse('l' %in% bty, "|" , "")
   if (is.null(vrule)){
-    algn <- paste(rep(align , cols) , collapse="")
+    algn <- paste(algn , paste(rep(align , cols) , collapse="") , sep="")
   }else{
     aux <- c(vrule[1] , diff(c(vrule,cols)))
-    algn <- paste(c(rep(align,aux[1]) , 
+    algn <- paste(algn , paste(c(rep(align,aux[1]) , 
                     unlist(sapply (aux[-1] , FUN = function(x) c("|" , rep(align , x)))))
-                  ,collapse = "") 
+                  ,collapse = "") , sep = "")
   }
+  algn <- paste(algn ,  ifelse('r' %in% bty, "|" , "") , sep = "")
   l <- paste("\\begin{tabular}{" , algn , "}",sep="")
   cat(l, file = output , sep="\n")
+  
+  if ('t' %in% bty)  cat("\\hline" , file = output , sep="\n")
   
   ## Rows of the table
   current.row<-1
@@ -132,6 +136,8 @@ write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic
     current.row <- current.row+1
   }
     
+  if ('b' %in% bty) cat("\\hline", file = output , sep="\n")
+  
   ## End of tabular
   cat("\\end{tabular}", file = output , sep="\n")
   ## Bye bye

@@ -73,7 +73,7 @@ This package includes two non parametric methods to compare multiple algorithms,
 
 ```{r,prompt=TRUE}
 friedman.test(data.garcia.herrera)
-iman.daveport.test(data.garcia.herrera)
+iman.davenport.test(data.garcia.herrera)
 ```
 
 The obtained p-values indicate that we can safely reject the null hypothesis that all the algorithms perform the same. We can also see that the Iman Davenport test is less conservative than the classical Friedman test, as it outputs a lower p-value.
@@ -196,7 +196,7 @@ The plot can incorporate information about each algorithm. In this case we will 
 
 ```{r,prompt=TRUE,fig.width=10 , fig.height=5}
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
-algorithm.graph (hypothesis.matrix = !rej.h.shaffer , mean.value = rmeans , 
+algorithm.graph (pvalue.matrix = pwcomp.shaffer$corrected.pvalues , alpha = 0.05 , mean.value = rmeans , 
                  font.size = 10 , node.width = 3 , node.height = 1)
 ```
 
@@ -216,8 +216,7 @@ The `Rgraphviz` package has a number of layouts that can be used to plot graphs 
 ```{r,prompt=TRUE,fig.width=10 , fig.height=5}
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
 rmeans <- colMeans (rank.matrix(data.garcia.herrera))
-h.bh <- pwcomp.bh$corrected.pvalues > 0.05
-algorithm.graph (hypothesis.matrix = h.bh , mean.value = rmeans , 'fdp' , 
+algorithm.graph (pvalue.matrix = pwcomp.bh$corrected.pvalues , alpha = 0.05 , mean.value = rmeans , 'fdp' , 
                  highlight.color = "red" , node.color = "white" , font.color = "black" ,
                  font.size = 10 , node.width = 2 , node.height = 1)
 ```
@@ -256,7 +255,7 @@ pwcomp <- pairwise.test(data , correction = correction)
 mean.rank <- colMeans(rank.matrix(data))
 alg.order <- order(mean.rank)
 plot.pvalues(pwcomp$corrected.pvalues , alg.order = alg.order) + labs(title=paste("Corrected p-values using ", correction , " procedure",sep=""))
-algorithm.graph(pwcomp$corrected.pvalues > alpha , mean.rank , font.size = 10)
+algorithm.graph(pwcomp$corrected.pvalues, mean.rank, alpha = alpha,  font.size = 10)
 ```
 
 
