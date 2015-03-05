@@ -33,11 +33,12 @@ friedman.post <- function (data , ...){
 #'
 #' @description This function computes the raw p-values using a custom function
 #' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
-#' @param test Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return the associeted p-value.
+#' @param test Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return a list that contains, at least, one element called p.value (as the \code{htest} objects that are usually returned by R's test implementations)
+#' @param ... additional parameters for the test function.
 #' @return A matrix with all the pairwise raw p-values.
 #' @examples
 #' data(data.garcia.herrera)
-#' test <- function(x , y , ...) t.test(x,y,paired=T)$p.value
+#' test <- function(x , y , ...) t.test(x,y,paired=T)
 #' custom.post(data.garcia.herrera , test)
 
 custom.post <- function(data , test , ...){
@@ -51,7 +52,7 @@ custom.post <- function(data , test , ...){
   
   ## Compute the p-value
   sd <- sqrt((k*(k+1))/(6*N))
-  f<-function(x) test(x = data[ , x[1]] , y = data[ , x[2]])
+  f<-function(x) test(x = data[ , x[1]] , y = data[ , x[2]] , ...)$p.value
   pvalues <- apply(pairs , MARGIN = 1 , FUN = f)
   matrix.raw <- matrix(rep(NA , k^2) , k)
   matrix.raw[pairs] <- pvalues

@@ -22,5 +22,7 @@ export(
   read.experiment.file,
   read.comparison.file,
   read.experiment.dir,
-  read.comparison.dir
+  read.comparison.dir,
+  summarize.data,
+  filter.data
 )

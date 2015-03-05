@@ -75,6 +75,7 @@ process.experiment.matrix <- function (data , alg.col , value.col){
 
 #' @title Read data from an experiment-like file
 #'
+#' @export
 #' @description This function reads the data from a file where each row is an experiment characterized by some variables (one of which should be the algorithm used) and with one and only one numeric result. for files where there is more than one result per line see \code{\link{read.comparison.file}}.
 #' @param file Path to the file to read.
 #' @param alg.col Name or index of the column corresponding to the algorithm used in the experiment.
@@ -129,6 +130,7 @@ process.exp.file.in.dir <- function(file , names , alg.var.name , fname.pattern 
 
 #' @title Read data from an experiment-like files in a directory
 #'
+#' @export
 #' @description This function reads the data from all the files in a directory. Only one column is expected in each file, correspondig to the results obtained by a single algorithm. If the files contain the results of two or more algorithms, see function \code{\link{read.comparison.file}}. The function can extract information from the file name.
 #' @param directory Directory with the files to load. It should only contain files to load, no other kind of file.
 #' @param names List of names for the variables to be extracted from the file name
@@ -178,6 +180,7 @@ read.experiment.dir <- function(directory , names , alg.var.name , fname.pattern
 
 #' @title Read data from a comparison file
 #'
+#' @export
 #' @description This function reads the data from a files where two or more algorithms are compared in different problems. The file can have some columns that characterize the problem and one column per algorithm. If each row contain only the result obtained by one algorithm, use the \code{\link{read.experiment.file}} function.
 #' @param file Path of the file to load
 #' @param alg.names List of the column names that include the results. The rest are assumed as descriptors of the problems
@@ -187,7 +190,7 @@ read.experiment.dir <- function(directory , names , alg.var.name , fname.pattern
 #' @seealso \code{\link{read.experiment.file}}, \code{\link{read.experiment.dir}}, \code{\link{read.comparison.dir}}
 #' @examples
 #' dir <- system.file("loading_tests",package="scma")
-#' file <- paste(dir , "beta_complete_comparision.out" , sep="/")
+#' file <- paste(dir , "beta_complete_comparison.out" , sep="/")
 #' data <- read.comparison.file (file = file , alg.names = c('kakizawa','vitale','boundarykernel','betakernel'))
 #' dim(data)
 #' head(data)
@@ -231,6 +234,7 @@ process.comp.file.in.dir <- function(file , col.names , alg.names , names , fnam
 
 #' @title Read data from a directory of comparison-like files
 #'
+#' @export
 #' @description This function reads the data from all files in a directory. Each file is expected to to be formated as a comparison file, i.e., the file can have some columns that characterize the problem and one column per algorithm. If each row contain only the result obtained by one algorithm, use the \code{\link{read.experiment.dir}} function.
 #' @param directory Directory where the files are located.
 #' @param alg.names List of the column names that include the results. The rest are assumed as descriptors of the problems.

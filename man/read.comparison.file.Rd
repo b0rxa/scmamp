@@ -23,7 +23,7 @@ This function reads the data from a files where two or more algorithms are compa
 }
 \examples{
 dir <- system.file("loading_tests",package="scma")
-file <- paste(dir , "beta_complete_comparision.out" , sep="/")
+file <- paste(dir , "beta_complete_comparison.out" , sep="/")
 data <- read.comparison.file (file = file , alg.names = c('kakizawa','vitale','boundarykernel','betakernel'))
 dim(data)
 head(data)

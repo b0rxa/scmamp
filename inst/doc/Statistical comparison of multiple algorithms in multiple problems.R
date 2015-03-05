@@ -31,9 +31,8 @@ critical.difference.plot (data.garcia.herrera , alpha = 0.01 , cex=1.25)
 pwcomp.shaffer <- pairwise.test(results.matrix = data.garcia.herrera , 
                              test = "Friedman post" , 
                              correction = "Shaffer")
-adhoc.test <- function(x,y,...) wilcox.test(x , y , paired=TRUE)$p.value
 pwcomp.holm <- pairwise.test(results.matrix = data.garcia.herrera , 
-                                test = adhoc.test ,  
+                                test = wilcox.test ,  
                                 correction = "holm")
 
 ## ----,prompt=TRUE--------------------------------------------------------

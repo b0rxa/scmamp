@@ -10,7 +10,7 @@ pairwise.test(results.matrix, test = "Friedman post",
 \arguments{
 \item{results.matrix}{A matrix or data.frame containing the results obtained by the algorithms (columns) in each problem (rows).}
 
-\item{test}{Parameter that indicates the statistical test to be used. It can be either a string indicating one of the available test (\code{'t-test'} for paired t-test,  \code{'Wilcoxon'}) for Wilcoxon Signed rank test, \code{'Friedman post'}, for raw p-values in Friedman test's Nemenyi post hoc or a function that, given two parameters, \code{x} and \code{y}, return the p-value associated with the comparison. For compatibility, this function has to have the ... special argument.}
+\item{test}{Parameter that indicates the statistical test to be used. It can be either a string indicating one of the available test (\code{'t-test'} for paired t-test,  \code{'Wilcoxon'}) for Wilcoxon Signed rank test, \code{'Friedman post'}, for raw p-values in Friedman test's Nemenyi post hoc or a test or a function with, at least, two parameters, \code{x} and \code{y}, which are the two samples to be compared. The function has to return a list that contains, at least, one element called p.value (as the \code{htest} objects that are usually returned by R's test implementations).}
 
 \item{correction}{A string indicating the type of correction that has to be applied to the p-values. Valid names are \code{Shaffer}, \code{Bergmann-Hommel}, \code{Nemenyi}, \code{Tukey} or any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}.}
 

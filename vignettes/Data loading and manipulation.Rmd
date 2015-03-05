@@ -1,0 +1,44 @@
+---
+title: "Data loading and manipulation with scma"
+author: "Borja Calvo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data loading and manipulation with scma}
+  %\VignetteEngine{knitr::docco_linear}
+  \usepackage[utf8]{inputenc}
+---
+# Data loading and manipulation with scma
+
+The goal of this package is to make the statistical analysis of the empirical comparison of algorithms easy and fast. One of the steps that can take quite a few time is the data preparation, that is, going from the file(s) where the results are stored to something that allows us to make the comparisons.
+
+In most cases these comparisons are conducted as part of a work that will be published, so the results need to be formated either as plots and/or tables. 
+
+The package includes some function to make these tasks easier, and this vignette shows how they can be used.
+
+## Loading the data
+
+Every researcher has its own way to organize the computational exmperiments and its results, so it is very difficult to have a function able to cope with this heterogeneity. This package considers two types of files, what we will call _experiment results file_ and _comparison results file_ (we will assume that all the files are csv files, althought the character used as separator may change).
+
+In an experiment results file each row will represent the execution of **one** algorithm to one problem. The row can contain columns that decribe the problem (such as the size, name of the problem, etc.), but it has to have, at least, two columns, one indicating the algorithm used and the other the value obtained in the experiment (accuracy, error, etc.). 
+
+As an example, the package includes some files that contains the results of an experimentation consisting in the error when estimating densities using different kernel methods. Each experiment consists in getting a sample (of a given size) from a Beta distribution (that has two parameters, $\alpha$ and $\beta$) and then using a given estimator to estimate the density and determine the error when compared with the true density. This is how an experiment results file for this experimentation would look like.
+
+```{r , echo=-1}
+data <- read.csv(paste(system.file("loading_tests",package="scma") , "beta_complete_experiment.out" , sep="/"))
+head(data , n = 3)
+```
+
+This shows 3 experiments where Vitale's estimator was applied to samples of size 10 drawn from a Beta(x;1,5) distribution; these results correspond to three repetitions of the same experiment. 
+
+In the case of the comparison results files, instead of having one experiment per row, we have the results obtained by all the algorithms in a particular problem; in this files each algorithm has its own column. The previous example in this format would look like this.
+
+```{r , echo=-1}
+data <- read.csv(paste(system.file("loading_tests",package="scma") , "beta_complete_comparison.out" , sep="/"))
+head(data , n = 3)
+```
+
+This kind of file can have some columns describing the problem, but it has to have one column per algorithm. In this case the last four columns are the ones containing the results.
+
+
+

@@ -9,7 +9,9 @@ custom.post(data, test, ...)
 \arguments{
 \item{data}{Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples}
 
-\item{test}{Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return the associeted p-value.}
+\item{test}{Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return a list that contains, at least, one element called p.value (as the \code{htest} objects that are usually returned by R's test implementations)}
+
+\item{...}{additional parameters for the test function.}
 }
 \value{
 A matrix with all the pairwise raw p-values.
@@ -19,7 +21,7 @@ This function computes the raw p-values using a custom function
 }
 \examples{
 data(data.garcia.herrera)
-test <- function(x , y , ...) t.test(x,y,paired=T)$p.value
+test <- function(x , y , ...) t.test(x,y,paired=T)
 custom.post(data.garcia.herrera , test)
 }
 

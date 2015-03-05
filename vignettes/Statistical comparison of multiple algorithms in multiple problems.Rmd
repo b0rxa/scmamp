@@ -135,9 +135,8 @@ Two examples of use of the `pairwise.test` function.
 pwcomp.shaffer <- pairwise.test(results.matrix = data.garcia.herrera , 
                              test = "Friedman post" , 
                              correction = "Shaffer")
-adhoc.test <- function(x,y,...) wilcox.test(x , y , paired=TRUE)$p.value
 pwcomp.holm <- pairwise.test(results.matrix = data.garcia.herrera , 
-                                test = adhoc.test ,  
+                                test = wilcox.test ,  
                                 correction = "holm")
 ```
 
