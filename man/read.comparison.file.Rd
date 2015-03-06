@@ -4,12 +4,12 @@
 \alias{read.comparison.file}
 \title{Read data from a comparison file}
 \usage{
-read.comparison.file(file, alg.names, col.names = NULL, ...)
+read.comparison.file(file, alg.cols, col.names = NULL, ...)
 }
 \arguments{
 \item{file}{Path of the file to load}
 
-\item{alg.names}{List of the column names that include the results. The rest are assumed as descriptors of the problems}
+\item{alg.cols}{A vector column names or indices inicating which columns contain the results. The rest are assumed as descriptors of the problems}
 
 \item{col.names}{Vector of names of the columns. If not NULL, the files are assumed not to have a header and the columns are named using this vector}
 
@@ -24,7 +24,7 @@ This function reads the data from a files where two or more algorithms are compa
 \examples{
 dir <- system.file("loading_tests",package="scma")
 file <- paste(dir , "beta_complete_comparison.out" , sep="/")
-data <- read.comparison.file (file = file , alg.names = c('kakizawa','vitale','boundarykernel','betakernel'))
+data <- read.comparison.file (file = file , alg.cols = c('kakizawa','vitale','boundarykernel','betakernel'))
 dim(data)
 head(data)
 }

@@ -103,11 +103,11 @@ plot.pvalues <- function(pvalue.matrix , alg.order = NULL , show.pvalue = TRUE ,
 #' critical.difference.plot(data.garcia.herrera)
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 
-critical.difference.plot <- function (results.matrix , alpha = 0.05 , cex=0.75 , parametric = FALSE){
+critical.difference.plot <- function (results.matrix , alpha = 0.05 , cex=0.75){
   k <- dim(results.matrix)[2]
   N <- dim(results.matrix)[1]
-  nem <- nemenyi.test (data = results.matrix , alpha = alpha)
-  cd <- nem$statistic
+  cd <- nemenyi.test (data = results.matrix , alpha = alpha)$statistic
+  
   mean.rank <- sort(colMeans(rank.matrix(results.matrix)))
   
   ## Separate the algorithms in left and right parts

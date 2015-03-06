@@ -4,7 +4,8 @@
 \alias{read.experiment.dir}
 \title{Read data from an experiment-like files in a directory}
 \usage{
-read.experiment.dir(directory, names, alg.var.name, fname.pattern, ...)
+read.experiment.dir(directory, names, alg.var.name, value.col, fname.pattern,
+  ...)
 }
 \arguments{
 \item{directory}{Directory with the files to load. It should only contain files to load, no other kind of file.}
@@ -12,6 +13,8 @@ read.experiment.dir(directory, names, alg.var.name, fname.pattern, ...)
 \item{names}{List of names for the variables to be extracted from the file name}
 
 \item{alg.var.name}{Name of the variable that defines the algorithm used in the experiment. It can be either one of the variables extracted from the file name or the header of the data in the file.}
+
+\item{value.col}{Name or index (referred to the column in the file) of the column indicating the value for the algorithm}
 
 \item{fname.pattern}{Regular expression to extract information from the file names. It has to be a regular expression that matches the name of the files and where the information to be extrcted has to be between brakets. As an example, if the whole file name wants to be used, the expression \code{'([.]*)'} can be used. For more example see the examples below or the vignette covering the data loading.}
 

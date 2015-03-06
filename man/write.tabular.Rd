@@ -8,7 +8,7 @@ write.tabular(table, file = NULL, format = "g", bold = NULL,
   italic = NULL, mark = NULL, mark.char = "*", align = "l",
   hrule = NULL, vrule = NULL, bty = c("t", "b", "l", "r"),
   print.col.names = TRUE, print.row.names = TRUE, digits = rep(3,
-  dim(table)[2] + print.row.names))
+  ncol(table) + print.row.names))
 }
 \arguments{
 \item{table}{A data frame with the information to plot}

@@ -90,41 +90,43 @@ process.experiment.matrix <- function (data , alg.col , value.col){
 #' dim(data)
 #' head(data)
 
-read.experiment.file <- function (file , alg.col , value.col , ...){
-  data <- read.csv (file , ...)
+read.experiment.file <- function (file , alg.col , value.col , col.names = NULL , ...){
+  rcsv.args <- list(...)
+  if (!is.null(rcsv.args$header)) stop("The argument header cannot be set by hand. It depends on whether a col.names argument is passed or not")
+  if (!is.null(col.names)){
+    if (length(col.names)!=ncol(data)) stop(paste("The number of columns (", ncol(data) ,") in the file does not match the length of 'col.names' (",length(col.names) , ")"))
+    data <- read.csv (file , header = FALSE , ...)
+    colnames(data) <- col.names
+  }else{
+    data <- read.csv (file , header = TRUE , ...)
+  }
   process.experiment.matrix(data , alg.col , value.col)
 }
 
-process.exp.file.in.dir <- function(file , names , alg.var.name , fname.pattern , first=2 , ...){
+
+
+process.exp.file.in.dir <- function(file , names , alg.var.name , value.col , fname.pattern , first=2 , col.names = NULL , ...){
+  
+  fname <- basename(file)
   
   symbs <- c('_',':',',',';','-','+','*','&','%','#')
   splt.id <- which(sapply(1:length(symbs) , function(i) length(grep(symbs[i] , fname))==0))[1]
   splt <- symbs[splt.id]
   
-  fname <- basename(file)
   ## Transform the name into something easy to split and the separate it into the elements
   replacement <- paste(paste("\\",1:length(names),sep=""),collapse=splt)
   params <- strsplit(gsub(fname.pattern , replacement , fname),splt)[[1]]
   names(params)<-names
-  data <- read.csv(file)
-  if (ncol(data)!=1) stop("Only one column expected. For more than one column, trye 'read.comparison.dir' function") 
-  if (!alg.var.name %in% names){
-    if (alg.var.name != colnames(data)){
-      stop(paste("The name " , alg.var.name , " not found neither in the file name nor in the header." , sep=""))
-    } else{
-      value.col <- 'value'
-      alg.col <- 'Algorithm'
-      alg <- colnames(data)
-      colnames(data) <- value.col
-      output <- cbind(matrix(rep(params,nrow(data)),ncol=length(params),byrow=T) , rep(alg , nrow(data)) , data)
-      colnames(output) <- c(names , 'Algorithm' , value.col)
-    }
+  
+  if (!is.null(col.names)){
+    data <- read.csv(file , header = FALSE , ...)
+    if (length(col.names)!=ncol(data)) stop(paste("The number of columns (", ncol(data) ,") in the file does not match the length of 'col.names' (",length(col.names) , ")"))
   }else{
-    value.col <- colnames(data)
-    alg.col <- alg.var.name
-    output <- cbind(matrix(rep(params,nrow(data)),ncol=length(params),byrow=T),data)
-    colnames(output) <- c(names , value.col)
+    data <- read.csv(file , header = TRUE , ...)
   }
+  
+  output <- cbind(matrix(rep(params,nrow(data)),ncol=length(params),byrow=T),data)
+  colnames(output) <- c(names , colnames(data))
   output
 }
 
@@ -135,6 +137,7 @@ process.exp.file.in.dir <- function(file , names , alg.var.name , fname.pattern 
 #' @param directory Directory with the files to load. It should only contain files to load, no other kind of file.
 #' @param names List of names for the variables to be extracted from the file name
 #' @param alg.var.name Name of the variable that defines the algorithm used in the experiment. It can be either one of the variables extracted from the file name or the header of the data in the file.
+#' @param value.col Name or index (referred to the column in the file) of the column indicating the value for the algorithm
 #' @param fname.pattern Regular expression to extract information from the file names. It has to be a regular expression that matches the name of the files and where the information to be extrcted has to be between brakets. As an example, if the whole file name wants to be used, the expression \code{'([.]*)'} can be used. For more example see the examples below or the vignette covering the data loading.
 #' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}).
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
@@ -151,30 +154,37 @@ process.exp.file.in.dir <- function(file , names , alg.var.name , fname.pattern 
 #' dim(data)
 #' head(data)
 
-read.experiment.dir <- function(directory , names , alg.var.name , fname.pattern , ...){
+read.experiment.dir <- function(directory , names , alg.var.name , value.col , fname.pattern , ...){
+  rcsv.args <- list(...)
+  if (!is.null(rcsv.args$header)) stop("The argument header cannot be set by hand. It depends on whether a col.names argument is passed or not")
+  
+  if(!is.character(alg.var.name)) stop("This function only accepts a name as the column indicating the algorithm ('alg.var.name' argument)")
+  
+  if (length(alg.var.name)!=1 | length(value.col) != 1) stop ("The 'alg.var.name' and 'value.col' have to be of dimension 1")
   
   first <- ifelse(substring(fname.pattern , 1 , 1)=="(" , 1 , 2)
   ## Load the first file to check the header name
   f <- list.files(directory)[1]
   data <- read.csv(paste(directory,f,sep="/") , ...)
-  if (!alg.var.name %in% names){
-    if (alg.var.name != colnames(data)){
+  if (!alg.var.name %in% names & !alg.var.name %in% colnames(data))
       stop(paste("The name " , alg.var.name , " not found neither in the file name nor in the header." , sep=""))
-    } else{
-      value.col <- 'value'
-      alg.col <- 'Algorithm'
-    }
+  
+  if (is.character(value.col)){
+    if (!value.col %in% colnames(data)) stop(paste("Column named" , value.col , "not found in the files"))
   }else{
-    value.col <- colnames(data)
-    alg.col <- alg.var.name
+    if (value.col<1 | value.col>ncol(data)){
+      stop(paste("The column index ",value.col,"is out of the range of the file"))
+    }else{
+      value.col <- colnames(data)[value.col]
+    }
   }
   
   data <- data.frame()
   for (file in list.files(directory)){
-    data <- rbind(data , process.exp.file.in.dir(paste(directory,file,sep="/") , names, alg.var.name , fname.pattern , first , ...))
+    data <- rbind(data , process.exp.file.in.dir(paste(directory,file,sep="/") , names, alg.var.name , value.col , fname.pattern , first , ...))
   } 
   
-  process.experiment.matrix(data , alg.col , value.col) 
+  process.experiment.matrix(data , alg.var.name , value.col) 
 }
 
 
@@ -183,7 +193,7 @@ read.experiment.dir <- function(directory , names , alg.var.name , fname.pattern
 #' @export
 #' @description This function reads the data from a files where two or more algorithms are compared in different problems. The file can have some columns that characterize the problem and one column per algorithm. If each row contain only the result obtained by one algorithm, use the \code{\link{read.experiment.file}} function.
 #' @param file Path of the file to load
-#' @param alg.names List of the column names that include the results. The rest are assumed as descriptors of the problems
+#' @param alg.cols A vector column names or indices inicating which columns contain the results. The rest are assumed as descriptors of the problems
 #' @param col.names Vector of names of the columns. If not NULL, the files are assumed not to have a header and the columns are named using this vector
 #' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}).
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
@@ -191,30 +201,41 @@ read.experiment.dir <- function(directory , names , alg.var.name , fname.pattern
 #' @examples
 #' dir <- system.file("loading_tests",package="scma")
 #' file <- paste(dir , "beta_complete_comparison.out" , sep="/")
-#' data <- read.comparison.file (file = file , alg.names = c('kakizawa','vitale','boundarykernel','betakernel'))
+#' data <- read.comparison.file (file = file , alg.cols = c('kakizawa','vitale','boundarykernel','betakernel'))
 #' dim(data)
 #' head(data)
-read.comparison.file <- function(file , alg.names , col.names=NULL , ...){
+read.comparison.file <- function(file , alg.cols , col.names=NULL , ...){
+  rcsv.args <- list(...)
+  if (!is.null(rcsv.args$header)) stop("The argument header cannot be set by hand. It depends on whether a col.names argument is passed or not")
+  
   header <- ifelse (is.null(col.names) , TRUE , FALSE)
   data <- read.csv (file , header = header , ...)
   if (!is.null(col.names)){
     if (ncol(data)!=col.names) stop ("The size of the table and the number of column names do not match")
     names(data)<-col.names
   }
-  if (!all(alg.names %in% names(data))) stop ("Not all the algorithm names provided have been found in the file header")
-  id.alg <- which(names(data) %in% alg.names)
+  
+  if(is.character(alg.cols)){
+    aux <- which(names(data) %in% alg.cols)
+  }else{
+    aux <- alg.cols
+  }
+  id.alg <- subset(aux , subset = aux > 0 & aux <= ncol(data))
+  if (length(id.alg) != length(alg.cols)) stop ("Not all the algorithm names provided have been found in the file header")
+  
   cbind(data[,-id.alg] , data[,id.alg])
 }
 
 
 ## auxiliar function for read.comparison.dir
-process.comp.file.in.dir <- function(file , col.names , alg.names , names , fname.pattern , first=2 , ...){
+process.comp.file.in.dir <- function(file , col.names , alg.cols , names , fname.pattern , first=2 , ...){
+  
+  fname <- basename(file)
   
   symbs <- c('_',':',',',';','-','+','*','&','%','#')
   splt.id <- which(sapply(1:length(symbs) , function(i) length(grep(symbs[i] , fname))==0))[1]
   splt <- symbs[splt.id]
   
-  fname <- basename(file)
   ## Transform the name into something easy to split and the separate it into the elements
   replacement <- paste(paste("\\",1:length(names),sep=""),collapse=splt)
   params <- strsplit(gsub(fname.pattern , replacement , fname),splt)[[1]]
@@ -224,8 +245,13 @@ process.comp.file.in.dir <- function(file , col.names , alg.names , names , fnam
     if (ncol(data)!=col.names) stop ("The size of the table and the number of column names do not match")
     names(data)<-col.names
   }
-  if (!all(alg.names %in% names(data))) stop ("Not all the algorithm names provided have been found in the file header")
-  id.alg <- which(names(data) %in% alg.names)
+  if(is.character(alg.cols)){
+    aux <- which(names(data) %in% alg.cols)
+  }else{
+    aux <- alg.cols
+  }
+  id.alg <- subset(aux , subset = aux > 0 & aux <= ncol(data))
+  if (length(id.alg) != length(alg.cols)) stop ("Not all the algorithm names provided have been found in the file header")
   res <- cbind(matrix(rep(params,nrow(data)),ncol=length(params),byrow=T), data[,-id.alg] , data[,id.alg])
   names(res) <- c(names(params) , names(data)[-id.alg] , names(data)[id.alg])
   res
@@ -237,7 +263,7 @@ process.comp.file.in.dir <- function(file , col.names , alg.names , names , fnam
 #' @export
 #' @description This function reads the data from all files in a directory. Each file is expected to to be formated as a comparison file, i.e., the file can have some columns that characterize the problem and one column per algorithm. If each row contain only the result obtained by one algorithm, use the \code{\link{read.experiment.dir}} function.
 #' @param directory Directory where the files are located.
-#' @param alg.names List of the column names that include the results. The rest are assumed as descriptors of the problems.
+#' @param alg.cols A vector column names or indices inicating which columns contain the results. The rest are assumed as descriptors of the problems
 #' @param col.names Vector of names of the columns. If not NULL, the files are assumed not to have a header and the columns are named using this vector.
 #' @param names List of names for the variables to be extracted from the file name.
 #' @param fname.pattern Regular expression to extract information from the file names. It has to be a regular expression that matches the name of the files and where the information to be extrcted has to be between brakets. As an example, if the whole file name wants to be used, the expression \code{'([.]*)'} can be used. For more example see the examples below or the vignette covering the data loading.
@@ -252,18 +278,21 @@ process.comp.file.in.dir <- function(file , col.names , alg.names , names , fnam
 #' pattern <- "beta_([0-9]*),([0-9]*)_size_([0-9]*).out"
 #' var.names <- c('alpha' , 'beta' , 'size')
 #' alg.names <- c('kakizawa','vitale','boundarykernel','betakernel')
-#' data <- read.comparison.dir (directory = dir , alg.names = alg.names , col.names = NULL , names = names , fname.pattern = pattern)
+#' data <- read.comparison.dir (directory = dir , alg.cols = alg.names , col.names = NULL , names = var.names , fname.pattern = pattern)
 #' dim(data)
 #' head(data)
 
-read.comparison.dir <- function (directory , alg.names , col.names , names , fname.pattern , ...){
+read.comparison.dir <- function (directory , alg.cols , col.names , names , fname.pattern , ...){
+  rcsv.args <- list(...)
+  if (!is.null(rcsv.args$header)) stop("The argument header cannot be set by hand. It depends on whether a col.names argument is passed or not")
+  
   first <- ifelse(substring(fname.pattern , 1 , 1)=="(" , 1 , 2)
   ## Load the first file to check the header name
   f <- list.files(directory)[1]
   
   data <- data.frame()
   for (file in list.files(directory)){
-    data <- rbind(data , process.comp.file.in.dir(paste(directory,file,sep="/") , col.names , alg.names , names,  fname.pattern , first , ...))
+    data <- rbind(data , process.comp.file.in.dir(paste(directory,file,sep="/") , col.names , alg.cols , names,  fname.pattern , first , ...))
   } 
   data
 }

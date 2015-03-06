@@ -4,8 +4,7 @@
 \alias{critical.difference.plot}
 \title{Critical difference plot}
 \usage{
-critical.difference.plot(results.matrix, alpha = 0.05, cex = 0.75,
-  parametric = FALSE)
+critical.difference.plot(results.matrix, alpha = 0.05, cex = 0.75)
 }
 \arguments{
 \item{results.matrix}{Matrix or data frame with the results for each algorithm}

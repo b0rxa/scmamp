@@ -9,6 +9,6 @@
 This package has been develop to simplify the statistical assessment of algorithms when tested in different problems. It includes statistical tests, as well as some plotting functions.
 }
 \author{
-Borja Calvo
+Borja Calvo, Guzman Santafe
 }
 

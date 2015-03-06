@@ -1,6 +1,6 @@
 ---
 title: "Statistical comparison of multiple algorithms in multiple problems"
-author: "Borja Calvo"
+author: "Borja Calvo and Guzmán Santafé"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -136,7 +136,7 @@ pwcomp.shaffer <- pairwise.test(results.matrix = data.garcia.herrera ,
                              test = "Friedman post" , 
                              correction = "Shaffer")
 pwcomp.holm <- pairwise.test(results.matrix = data.garcia.herrera , 
-                                test = wilcox.test ,  paired = TRUE ,
+                                test = wilcox.test ,  
                                 correction = "holm")
 ```
 

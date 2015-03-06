@@ -68,15 +68,22 @@ process.table.row <- function (row , bold , italic , mark , mark.char , format ,
 #' max.matrix <- t(apply(data.garcia.herrera , MARGIN = 1 , FUN = function(x) x==max(x)))
 #' write.tabular(data.garcia.herrera , format = 'E' , bold = max.matrix)
 
-write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic=NULL , mark=NULL, mark.char = '*' , align = 'l' , hrule = NULL , vrule = NULL , bty = c('t','b','l','r') , print.col.names = TRUE , print.row.names = TRUE  , digits = rep(3,dim(table)[2] + print.row.names)){
-  rows <- dim(table)[1]
-  cols <- dim(table)[2]
+write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic=NULL , mark=NULL, mark.char = '*' , align = 'l' , hrule = NULL , vrule = NULL , bty = c('t','b','l','r') , print.col.names = TRUE , print.row.names = TRUE  , digits = rep(3,ncol(table) + print.row.names)){
+  
+  rows <- nrow(table)
+  cols <- ncol(table)
+  
+  print.col.names <- print.col.names & !is.null(colnames(table))
+  print.row.names <- print.row.names & !is.null(rownames(table))
+  
+  hmin <- ifelse(print.col.names , 0 , 1)
+  vmin <- ifelse(print.row.names , 0 , 1) 
   
   ## Remove any vrule and hrule beyond the limits
   if (!is.null(hrule))
-    hrule <- subset(hrule , hrule >=0 & hrule < rows)
+    hrule <- subset(hrule , hrule >= hmin & hrule < rows)
   if (!is.null(vrule))
-    vrule <- subset(vrule , vrule >=0 & vrule < cols)
+    vrule <- subset(vrule , vrule >= vmin & vrule < cols)
   
   ## Control of the digits
   if (length(digits) - print.row.names != cols) stop("The number of elements in the digits vector is incorrect. The vector should have length equal to the number of columns in 'table' if 'print.row.names' is false and the number of columns + 1 if 'print.row.names' is true.")

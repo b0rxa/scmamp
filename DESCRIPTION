@@ -3,13 +3,15 @@ Type: Package
 Title: Statistical comparison of multiple algorithms
 Version: 0.11
 Date: 2015-02-25
-Author: Borja Calvo
-Maintainer: Borja Calvo <borja.calvo@ehu.eus>
+Authors@R:  c(person(given = "Borja", family = "Calvo", role = c("aut", "cre") , email ="borja.calvo@ehu.eus"), 
+   person(given = "Guzman", family = "Santafe", role = c("aut"), email = "guzman.santafe@unavarra.es")) 
 LazyData: yes
 Suggests: ggplot2, reshape2, knitr, Rgraphviz
 VignetteBuilder: knitr 
 Description: Given a matrix with results of different algorithms for different problems, the package uses statistical tests and corrections to assess the diferences between algorithms.
 License: GPL-2
+URL: https://github.com/b0rxa/scma
+BugReports: https://github.com/b0rxa/scma/issues
 Collate: 
   tests.R
   post_hoc.R

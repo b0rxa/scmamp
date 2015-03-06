@@ -70,7 +70,10 @@ summarize.data <- function (data, fun = mean , group.by = NULL , ignore = NULL  
   
   if (is.null(group.by))
   {
-    summ <-  apply(data[,-ignore] , MARGIN = 2 , FUN = function(x) fun(x, ...))
+    if (!is.null(ignore)){
+      data <- data[,-ignore]
+    }
+    summ <-  apply(data , MARGIN = 2 , FUN = function(x) fun(x, ...))    
   }else{  
     groups <- unique(data[,group.by])
     if(length(group.by)) groups <- data.frame(groups)
@@ -93,7 +96,8 @@ summarize.data <- function (data, fun = mean , group.by = NULL , ignore = NULL  
       names(aux) <- nm
       aux   
     }
-    summ <- t(apply(groups , MARGIN = 1 , FUN = summ.group))
+    aux <- lapply(1:nrow(groups) , FUN = function(i) summ.group(groups[i,]))
+    summ <- do.call(rbind,aux)
   }
   summ
 }

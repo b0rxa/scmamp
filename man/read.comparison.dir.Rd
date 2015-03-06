@@ -4,12 +4,12 @@
 \alias{read.comparison.dir}
 \title{Read data from a directory of comparison-like files}
 \usage{
-read.comparison.dir(directory, alg.names, col.names, names, fname.pattern, ...)
+read.comparison.dir(directory, alg.cols, col.names, names, fname.pattern, ...)
 }
 \arguments{
 \item{directory}{Directory where the files are located.}
 
-\item{alg.names}{List of the column names that include the results. The rest are assumed as descriptors of the problems.}
+\item{alg.cols}{A vector column names or indices inicating which columns contain the results. The rest are assumed as descriptors of the problems}
 
 \item{col.names}{Vector of names of the columns. If not NULL, the files are assumed not to have a header and the columns are named using this vector.}
 
@@ -33,7 +33,7 @@ list.files(dir)[1]
 pattern <- "beta_([0-9]*),([0-9]*)_size_([0-9]*).out"
 var.names <- c('alpha' , 'beta' , 'size')
 alg.names <- c('kakizawa','vitale','boundarykernel','betakernel')
-data <- read.comparison.dir (directory = dir , alg.names = alg.names , col.names = NULL , names = names , fname.pattern = pattern)
+data <- read.comparison.dir (directory = dir , alg.cols = alg.names , col.names = NULL , names = var.names , fname.pattern = pattern)
 dim(data)
 head(data)
 }

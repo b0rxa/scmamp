@@ -4,7 +4,7 @@
 \alias{read.experiment.file}
 \title{Read data from an experiment-like file}
 \usage{
-read.experiment.file(file, alg.col, value.col, ...)
+read.experiment.file(file, alg.col, value.col, col.names = NULL, ...)
 }
 \arguments{
 \item{file}{Path to the file to read.}

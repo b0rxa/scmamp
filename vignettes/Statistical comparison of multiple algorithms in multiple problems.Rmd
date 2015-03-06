@@ -1,6 +1,6 @@
 ---
 title: "Statistical comparison of multiple algorithms in multiple problems"
-author: "Borja Calvo"
+author: "Borja Calvo and Guzmán Santafé"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
