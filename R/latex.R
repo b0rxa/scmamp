@@ -93,6 +93,9 @@ write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic
   if (is.null(italic)) italic <- matrix(rep(FALSE , rows*cols) , ncol = cols)
   if (is.null(mark)) mark <- matrix(rep(FALSE , rows*cols) , ncol = cols)
   
+  ## Pass all to character to avoid problems with factors
+  table <- apply(table , MARGIN = 2 , FUN = as.character)
+  
   ## Include row and/or col names as additional info in the table
   if (print.row.names){
     suppressWarnings(table <- cbind(rownames(table) , table))
@@ -101,8 +104,6 @@ write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic
     mark <- cbind(rep(FALSE , rows) , mark)
     if (!is.null(vrule)) vrule <- vrule + 1
     cols <- cols+1
-  }else{
-    if (!is.null(vrule)) vrule <- subset(vrule , vrule>0)
   }
   
   if (print.col.names){
@@ -112,8 +113,6 @@ write.tabular <- function (table , file=NULL , format = 'g' , bold=NULL , italic
     mark <- rbind(rep(FALSE , cols) , mark)
     if (!is.null(hrule)) hrule <- hrule + 1
     rows <- rows + 1 
-  }else{
-    if (!is.null(hrule)) hrule <- subset(hrule ,hrule>0)
   }
   
   ## Open the file
