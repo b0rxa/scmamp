@@ -30,7 +30,7 @@ where `path.tar.gz.file` refers to the path of the downloaded file. Note that th
 
 ## Documentation
 
-The package includes a [vignette](http://htmlpreview.github.io/?https://github.com/b0rxa/scma/blob/master/inst/doc/Statistical%20comparison%20of%20multiple%20algorithms%20in%20multiple%20problems.html) explaining the basic use of the package. It can be accessed typing (once the package is installed):
+The package includes two vignettes, one for the [basic use](http://htmlpreview.github.io/?https://github.com/b0rxa/scma/blob/master/inst/doc/Statistical%20comparison%20of%20multiple%20algorithms%20in%20multiple%20problems.html) and another with information about the [data manipulation](http://htmlpreview.github.io/?https://raw.githubusercontent.com/b0rxa/scma/master/inst/doc/Data%20loading%20and%20manipulation.html). To access to the local versions of these vignettes (once the package is installed):
 
 ```r
 library("scma")
