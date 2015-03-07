@@ -287,6 +287,7 @@ exhaustive.sets <- function (set){
     E_l <- unique.exhaustive.sets(E_l)
   }
   gc()
+  E_l
 }
 
 #' @title Bergmann and Hommel dynamic correction of p-values
