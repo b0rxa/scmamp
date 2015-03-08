@@ -17,6 +17,7 @@ The main goal of this package is makeing the statistical analysis of emprical co
 The data matrices required by the package funtions should have one row per problem and a number of columns. The columns can be divided into two subsets, descriptors of the problem and results obtained by the algorithms applied to that problem. This is an example of the type of matrix needed:
 
 ```{r , echo=F}
+library(scma)
 data <- read.csv(paste(system.file("loading_tests",package="scma") , "beta_complete_comparison.out" , sep="/"))
 data[c(271,301,331),]
 ```

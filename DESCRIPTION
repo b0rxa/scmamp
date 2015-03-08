@@ -1,8 +1,8 @@
 Package: scma
 Type: Package
 Title: Statistical comparison of multiple algorithms
-Version: 0.12
-Date: 2015-02-25
+Version: 0.13
+Date: 2015-03-09
 Authors@R:  c(person(given = "Borja", family = "Calvo", role = c("aut", "cre") , email ="borja.calvo@ehu.eus"), 
    person(given = "Guzman", family = "Santafe", role = c("aut"), email = "guzman.santafe@unavarra.es")) 
 LazyData: yes

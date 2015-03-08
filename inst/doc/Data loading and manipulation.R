@@ -1,4 +1,5 @@
 ## ----, echo=F------------------------------------------------------------
+library(scma)
 data <- read.csv(paste(system.file("loading_tests",package="scma") , "beta_complete_comparison.out" , sep="/"))
 data[c(271,301,331),]
 

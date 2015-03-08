@@ -88,7 +88,7 @@ data <- data.garcia.herrera
 friedman.test(data)
 
 ## ----,full_process_2, prompt=TRUE , fig.width=10 , fig.height=5----------
-correction <- ifelse(dim(data)[2]<=8 , "Bergmann Hommel" , "Shaffer") 
+correction <- ifelse(dim(data)[2]<=length(E) , "Bergmann Hommel" , "Shaffer") 
 pwcomp <- pairwise.test(data , correction = correction)
 
 mean.rank <- colMeans(rank.matrix(data))

@@ -211,7 +211,7 @@ pre, code{font-size:90%;}
 
 <ul>
 <li><code>&#39;Shaffer&#39;</code>, for Shaffer&#39;s static approach (<em>Shaffer, 1986</em>), as explained in <em>Garcia and Herrera, 2008</em>, page 2680.</li>
-<li><code>&#39;Bergmann Hommel&#39;</code>, for Bergmann Hommel dynamic approach (<em>Bergmann and Hommel, 1988</em>), as explained in <em>Garcia and Herrera, 2008</em>, page 2680-2682. For computational reasons this option is only available when comparing 8 or less algorithms. In other case, the methdo is changed to <code>&#39;Shaffer&#39;</code> and a warning is displayed.</li>
+<li><code>&#39;Bergmann Hommel&#39;</code>, for Bergmann Hommel dynamic approach (<em>Bergmann and Hommel, 1988</em>), as explained in <em>Garcia and Herrera, 2008</em>, page 2680-2682. For computational reasons this option is only available when comparing 9 or less algorithms. In other case, the methdo is changed to <code>&#39;Shaffer&#39;</code> and a warning is displayed.</li>
 <li><code>&#39;Nemenyi&#39;</code>, for Nemenyi post hoct test. Note that the raw equivalent is the Friedman test, so it has to be coupled with that option in the <code>test</code> parameter. If not, it is changed and a warning is displayed.</li>
 <li><code>&#39;Tukey&#39;</code>, for Tukey post hoc test. Note that the raw equivalent is the t-test, so it has to be coupled with that option in the <code>test</code> parameter. If not, it is changed and a warning is displayed.</li>
 <li>Any of the valid methods in the <code>p.adjust</code> function. The complete list can be checked typing <code>p.adjust.methods</code></li>
@@ -242,7 +242,7 @@ pre, code{font-size:90%;}
 ## [5,] 0.4315793396 1.0000000 1.000000000 0.0109575859         NA
 </code></pre>
 
-<p>As we have said, the most powerful approach is the dynamic method by Bergmann and Hommel. The problem with this approach is that it is computationally very expensive because it requires testing whether a subset of hypothesis is complete. The complexity of this test is hyperexponential and thus, it is only feasible when comparing few algorithms. The package includes the pre-computed complete subsets for up to size 8 (stored in a list called <code>E</code>), so this method can only be used when comparing 8 or less algorithms.</p>
+<p>As we have said, the most powerful approach is the dynamic method by Bergmann and Hommel. The problem with this approach is that it is computationally very expensive because it requires testing whether a subset of hypothesis is complete. The complexity of this test is hyperexponential and thus, it is only feasible when comparing few algorithms. The package includes the pre-computed complete subsets for up to size 9 (stored in a list called <code>E</code>), so this method can only be used when comparing 9 or less algorithms.</p>
 
 <pre><code class="r">&gt; pwcomp.bh &lt;- pairwise.test(results.matrix = data.garcia.herrera , 
 +                              test = &quot;Friedman post&quot; , 
@@ -369,7 +369,7 @@ pre, code{font-size:90%;}
 
 <p>Provided that the p-value obtained is below \(\alpha\), check the pairwise comparisons.</p>
 
-<pre><code class="r">&gt; correction &lt;- ifelse(dim(data)[2]&lt;=8 , &quot;Bergmann Hommel&quot; , &quot;Shaffer&quot;) 
+<pre><code class="r">&gt; correction &lt;- ifelse(dim(data)[2]&lt;=length(E) , &quot;Bergmann Hommel&quot; , &quot;Shaffer&quot;) 
 &gt; pwcomp &lt;- pairwise.test(data , correction = correction)
 &gt; 
 &gt; mean.rank &lt;- colMeans(rank.matrix(data))

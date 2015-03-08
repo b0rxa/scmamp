@@ -225,9 +225,7 @@ partition <- function (set){
 # @param E list of exhaustive sets
 # @return The list without repetitions
 
-unique.exhaustive.sets <- function (E){
-  E.new <- list(E[[1]])
-  
+merge.sets <- function (E1 , E2){
   already.in <- function (e){
     compare.with.e <- function (en){
       if (all(dim(en)==dim(e))) {
@@ -236,12 +234,13 @@ unique.exhaustive.sets <- function (E){
         return (FALSE)
       }
     }    
-    comparisons <- unlist(lapply (E.new , FUN = compare.with.e))
+    comparisons <- unlist(lapply (E2 , FUN = compare.with.e))
     any(comparisons)
   }
+  
   ## Sequentially add partitions if they are not already in the solution
-  bk<-lapply (E , FUN = function (x) if (!already.in (x)) E.new <<- c(E.new , list(x)))
-  E.new
+  bk<-lapply (E1 , FUN = function (x) if (!already.in (x)) E2 <<- c(E2 , list(x)))
+  E2
 }
 
 
@@ -272,19 +271,18 @@ exhaustive.sets <- function (set){
         E1 <- exhaustive.sets (x$s1)
         E2 <- exhaustive.sets (x$s2)
         if (!is.null(E1)){
-          E_l <<- c(E_l , E1)
+          E_l <<- merge.sets(E1 , E_l)
           if (!is.null(E2)){
             lapply (E1 , FUN = function(e1){
-              E_l <<- c(E_l , lapply(E2 , FUN = function(e2) cbind(e1,e2)))
+              E_l <<- merge.sets(lapply(E2 , FUN = function(e2) cbind(e1,e2)) , E_l)
             })
           }
         }      
-        if (!is.null(E2)) E_l <<- c(E_l , E2)
+        if (!is.null(E2)) E_l <<- merge.sets(E2 , E_l)
       }
       ## Do the loop (bk is just to avoid printing trash in the screen ...)
       bk <- lapply(partitions , FUN = process.partition)
     }
-    E_l <- unique.exhaustive.sets(E_l)
   }
   gc()
   E_l
@@ -305,7 +303,7 @@ bergmann.hommel.dynamic <- function (raw.matrix){
   ## Load the exhaustive sets
   data("exhaustive.sets")
   k <- dim(raw.matrix)[1]
-  if(k>8) stop ("Sorry, this method is only available for 8 or less algorithms.")
+  if(k>length(E)) stop (paste("Sorry, this method is only available for ", length(E)," or less algorithms.",sep=""))
   pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
   Ek <- E[[k]]
   raw.pvalues <- raw.matrix[pairs]
