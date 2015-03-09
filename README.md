@@ -1,4 +1,4 @@
-# scma
+# scmamp: Statistical Comparison of Multiple Algorithms in Multiple Problems
 This is a simple R package aimed at simplifying the statistical analysis of the results in the comparison of algorithms in different problems.
 
 It is mainly focused on non parametric methods and implements Shaffer static and Bergmann and Hommel dynamic corrections for pairwise tests.
@@ -17,9 +17,9 @@ The last version of the package can be installed running the following commands:
 if (!require("devtools"))
   install.packages("devtools")
 
-devtools::install_github("b0rxa/scma")
+devtools::install_github("b0rxa/scmamp")
 ```
-The package can also be installed using the tar.gz files in the root directory. First, download the `scma_*.tar.gz` file and install it running:
+The package can also be installed using the tar.gz files in the root directory. First, download the `scmamp_*.tar.gz` file and install it running:
 
 ```r
 install.packages(path.tar.gz.file , reps=NULL)
@@ -30,9 +30,9 @@ where `path.tar.gz.file` refers to the path of the downloaded file. Note that th
 
 ## Documentation
 
-The package includes two vignettes, one for the [basic use](http://htmlpreview.github.io/?https://github.com/b0rxa/scma/blob/master/inst/doc/Statistical%20comparison%20of%20multiple%20algorithms%20in%20multiple%20problems.html) and another with information about the [data manipulation](http://htmlpreview.github.io/?https://raw.githubusercontent.com/b0rxa/scma/master/inst/doc/Data%20loading%20and%20manipulation.html). To access to the local versions of these vignettes (once the package is installed):
+The package includes two vignettes, one for the [basic use](http://htmlpreview.github.io/?https://github.com/b0rxa/scmamp/blob/master/inst/doc/Statistical%20comparison%20of%20multiple%20algorithms%20in%20multiple%20problems.html) and another with information about the [data manipulation](http://htmlpreview.github.io/?https://raw.githubusercontent.com/b0rxa/scmamp/master/inst/doc/Data%20loading%20and%20manipulation.html). To access to the local versions of these vignettes (once the package is installed):
 
 ```r
-library("scma")
-browseVignettes("scma")
+library("scmamp")
+browseVignettes("scmamp")
 ``` 
