@@ -26,7 +26,7 @@ A data.frame where each column represents either a feature of the experiment or 
 This function reads the data from all files in a directory. Each file is expected to to be formated as a comparison file, i.e., the file can have some columns that characterize the problem and one column per algorithm. If each row contain only the result obtained by one algorithm, use the \code{\link{read.experiment.dir}} function.
 }
 \examples{
-dir <- paste(system.file("loading_tests",package="scma") , "comparison_files" , sep="/")
+dir <- paste(system.file("loading_tests",package="scmamp") , "comparison_files" , sep="/")
 ## The format of the files is beta_ALPHA,BETA_size_SIZE.out, where variables to extract are in capital letters.
 list.files(dir)[1]
 ## The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.

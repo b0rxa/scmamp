@@ -3,8 +3,8 @@
 #' This package has been develop to simplify the statistical assessment of algorithms when tested in different problems. It includes statistical tests, as well as some plotting functions.
 #' @author Borja Calvo, Guzman Santafe
 #' @docType package
-#' @name scma
-#' @aliases scma-package
+#' @name scmamp
+#' @aliases scmamp-package
 NULL
 
 
@@ -139,7 +139,7 @@ pairwise.test <- function(results.matrix ,  test="Friedman post" , correction="S
 #' @param ... Additional parameters to be passed to the test or the summarization function. 
 #' @return A list with three matrices, \code{summary}, \code{raw.pvalues} and \code{adj.pvalues}. The first one contains the summarized values, the second one the raw p-values obtained in the comparison and the third one the adjusted pvalues. In the p-values matrices \code{NA} indicates the reference used in that row (i.e., the algorithms with the best value)
 #' @examples
-#' dir <- system.file("loading_tests",package="scma")
+#' dir <- system.file("loading_tests",package="scmamp")
 #' file <- paste(dir , "beta_complete_comparison.out" , sep="/")
 #' data <- read.comparison.file (file = file , alg.names = c('kakizawa','vitale','boundarykernel','betakernel'))
 #' all.vs.best.test (data , group.by = c('size' , 'alpha' , 'beta') , alg.col=4:7 , test = t.test , best='min' , summary = mean , correction = 'hommel' , na.rm = TRUE , paired = TRUE)

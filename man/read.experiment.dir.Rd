@@ -30,7 +30,7 @@ This function reads the data from all the files in a directory. Only one column 
 Note that all the files should have the same format (only one column with the same header)
 }
 \examples{
-dir <- paste(system.file("loading_tests",package="scma") , "experiment_files" , sep="/")
+dir <- paste(system.file("loading_tests",package="scmamp") , "experiment_files" , sep="/")
 ## The format of the files is beta_ALPHA,BETA_size_SIZE_ESTIMATOR.out, where variables to extract are in capital letters.
 list.files(dir)[1]
 ## The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.

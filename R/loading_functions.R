@@ -84,7 +84,7 @@ process.experiment.matrix <- function (data , alg.col , value.col){
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
 #' @seealso \code{\link{read.experiment.dir}}, \code{\link{read.comparison.file}}, \code{\link{read.comparison.dir}}
 #' @examples
-#' dir <- system.file("loading_tests",package="scma")
+#' dir <- system.file("loading_tests",package="scmamp")
 #' file <- paste(dir , "beta_complete_experiment.out" , sep="/")
 #' data <- read.experiment.file (file = file , alg.col = 'algorithm' , value.col = 'error')
 #' dim(data)
@@ -144,7 +144,7 @@ process.exp.file.in.dir <- function(file , names , alg.var.name , value.col , fn
 #' @details Note that all the files should have the same format (only one column with the same header)
 #' @seealso \code{\link{read.experiment.file}}, \code{\link{read.comparison.file}}, \code{\link{read.comparison.dir}}
 #' @examples
-#' dir <- paste(system.file("loading_tests",package="scma") , "experiment_files" , sep="/")
+#' dir <- paste(system.file("loading_tests",package="scmamp") , "experiment_files" , sep="/")
 #' ## The format of the files is beta_ALPHA,BETA_size_SIZE_ESTIMATOR.out, where variables to extract are in capital letters. 
 #' list.files(dir)[1]
 #' ## The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.
@@ -199,7 +199,7 @@ read.experiment.dir <- function(directory , names , alg.var.name , value.col , f
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
 #' @seealso \code{\link{read.experiment.file}}, \code{\link{read.experiment.dir}}, \code{\link{read.comparison.dir}}
 #' @examples
-#' dir <- system.file("loading_tests",package="scma")
+#' dir <- system.file("loading_tests",package="scmamp")
 #' file <- paste(dir , "beta_complete_comparison.out" , sep="/")
 #' data <- read.comparison.file (file = file , alg.cols = c('kakizawa','vitale','boundarykernel','betakernel'))
 #' dim(data)
@@ -271,7 +271,7 @@ process.comp.file.in.dir <- function(file , col.names , alg.cols , names , fname
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
 #' @seealso \code{\link{read.experiment.file}}, \code{\link{read.experiment.dir}}, \code{\link{read.comparison.dir}}
 #' @examples
-#' dir <- paste(system.file("loading_tests",package="scma") , "comparison_files" , sep="/")
+#' dir <- paste(system.file("loading_tests",package="scmamp") , "comparison_files" , sep="/")
 #' ## The format of the files is beta_ALPHA,BETA_size_SIZE.out, where variables to extract are in capital letters. 
 #' list.files(dir)[1]
 #' ## The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.

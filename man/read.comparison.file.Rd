@@ -22,7 +22,7 @@ A data.frame where each column represents either a feature of the experiment or 
 This function reads the data from a files where two or more algorithms are compared in different problems. The file can have some columns that characterize the problem and one column per algorithm. If each row contain only the result obtained by one algorithm, use the \code{\link{read.experiment.file}} function.
 }
 \examples{
-dir <- system.file("loading_tests",package="scma")
+dir <- system.file("loading_tests",package="scmamp")
 file <- paste(dir , "beta_complete_comparison.out" , sep="/")
 data <- read.comparison.file (file = file , alg.cols = c('kakizawa','vitale','boundarykernel','betakernel'))
 dim(data)

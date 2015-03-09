@@ -22,7 +22,7 @@ A data.frame where each column represents either a feature of the experiment or 
 This function reads the data from a file where each row is an experiment characterized by some variables (one of which should be the algorithm used) and with one and only one numeric result. for files where there is more than one result per line see \code{\link{read.comparison.file}}.
 }
 \examples{
-dir <- system.file("loading_tests",package="scma")
+dir <- system.file("loading_tests",package="scmamp")
 file <- paste(dir , "beta_complete_experiment.out" , sep="/")
 data <- read.experiment.file (file = file , alg.col = 'algorithm' , value.col = 'error')
 dim(data)

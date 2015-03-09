@@ -24,7 +24,7 @@ A data frame where, for each combination of the values in the columns indicated 
 This is a simple function to apply a summarization function to a matrix or data frame.
 }
 \examples{
-dir <- system.file("loading_tests",package="scma")
+dir <- system.file("loading_tests",package="scmamp")
 file <- paste(dir , "beta_complete_comparison.out" , sep="/")
 data <- read.comparison.file (file = file , alg.names = c('kakizawa','vitale','boundarykernel','betakernel'))
 summarize.data (data , group.by = c('size','alpha','beta') , ignore = c(4,5,7) , fun = median)

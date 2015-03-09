@@ -49,7 +49,7 @@ filter.data <- function (data , condition = "TRUE" , remove.cols = NULL){
 #' @return A data frame where, for each combination of the values in the columns indicated by \code{group.by}, each column (except those in \code{ignore}) contains the summarization of the values in the original matrix that have that combination of values.
 #' @seealso \code{\link{filter.data}}
 #' @examples
-#' dir <- system.file("loading_tests",package="scma")
+#' dir <- system.file("loading_tests",package="scmamp")
 #' file <- paste(dir , "beta_complete_comparison.out" , sep="/")
 #' data <- read.comparison.file (file = file , alg.names = c('kakizawa','vitale','boundarykernel','betakernel'))
 #' summarize.data (data , group.by = c('size','alpha','beta') , ignore = c(4,5,7) , fun = median)
