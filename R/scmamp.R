@@ -113,7 +113,7 @@ pairwise.test <- function(results.matrix ,  test="Friedman post" , correction="S
                         corrected.matrix <- matrix(rep(NA , k^2),ncol=k)
                         corrected.matrix[pairs] <- corrected.vector
                         corrected.matrix[pairs[,c(2,1)]] <- corrected.vector
-                        colnames(corrected.matrix) <- rownames(corrected.matrix) <- colnames(raw)
+                        colnames(corrected.matrix) <- rownames(corrected.matrix) <- colnames(matrix.raw)
                         corrected.matrix
                       })
   
