@@ -229,6 +229,8 @@ read.comparison.file <- function(file , alg.cols , col.names=NULL , ...){
 
 ## auxiliar function for read.comparison.dir
 process.comp.file.in.dir <- function(file , col.names , alg.cols , names , fname.pattern , first=2 , ...){
+  rcsv.args <- list(...)
+  if (!is.null(rcsv.args$header)) stop("The argument header cannot be set by hand. It depends on whether a col.names argument is passed or not")
   
   fname <- basename(file)
   
@@ -240,9 +242,10 @@ process.comp.file.in.dir <- function(file , col.names , alg.cols , names , fname
   replacement <- paste(paste("\\",1:length(names),sep=""),collapse=splt)
   params <- strsplit(gsub(fname.pattern , replacement , fname),splt)[[1]]
   names(params)<-names
-  data <- read.csv(file)
+  header <- ifelse (is.null(col.names) , TRUE , FALSE)
+  data <- read.csv (file , header = header , ...)
   if (!is.null(col.names)){
-    if (ncol(data)!=col.names) stop ("The size of the table and the number of column names do not match")
+    if (ncol(data)!=length(col.names)) stop ("The size of the table and the number of column names do not match")
     names(data)<-col.names
   }
   if(is.character(alg.cols)){
