@@ -62,42 +62,42 @@ summarize.data <- function (data, fun = mean , group.by = NULL , ignore = NULL  
   if (is.character(group.by)) group.by <- which(colnames(data) %in% group.by)
   if (is.character(ignore)) ignore <- which(colnames(data) %in% ignore)
   
+  ## Only numeric columns can be summarized
+  non.numeric <- which(!unlist(lapply(data , is.numeric)))
+  if (!all(non.numeric %in% c(group.by , ignore))){
+    warning ("Only numeric columns can be summarized. Character and factor columns should be either in the 'group.by' or the 'ignore' list. Non numeric columns will be ignored")
+    ignore <- unique(c(ignore , non.numeric))
+  }
+  
   ## Remove any index out of bounds
   group.by <- subset(group.by , subset = group.by>0 & group.by<=ncol(data))
   ignore <- subset(ignore , subset = ignore>0 & ignore<=ncol(data))
   
-  if (length(intersect(group.by,ignore))>0) stop("The same column cannot be sim in the 'group.by' and the 'ignore' list")
+  if (length(intersect(group.by,ignore))>0) stop("The same column cannot be simultaneously in the 'group.by' and the 'ignore' list")
   
   if (is.null(group.by))
   {
     if (!is.null(ignore)){
       data <- data[,-ignore]
     }
-    summ <-  apply(data , MARGIN = 2 , FUN = function(x) fun(x, ...))    
+    summ <-  apply(data , MARGIN = 2 , FUN = function(x) fun(x, ...)) 
   }else{  
     groups <- unique(data[,group.by])
     if(length(group.by)) groups <- data.frame(groups)
+    to.summarize <- (1:ncol(data))[-c(ignore, group.by)]
     summ.group <- function (group){
       if (length(group.by)==1){
         sub <- data[,group.by] == group  
       }else{
         sub <- apply(data[,group.by] , MARGIN = 1 , FUN = function(x) all(x == group))
       }
-      matrix <- subset(data , subset = sub)
-      if (length(c(ignore, group.by)) > 0) matrix <- matrix[,-c(ignore, group.by)]
-      if (length(ncol(data) - length(ignore) - length(group.by))==1) matrix <- data.frame(matrix)
-      s <- apply(matrix , MARGIN = 2 , FUN = function(x) fun(x , ...))
-      aux <- c(group , s)
-      if (length(c(ignore, group.by)) > 0){
-        nm <- c(colnames(data)[group.by] , colnames(data)[-c(ignore , group.by)])
-      }else{
-        nm <- c(colnames(data)[group.by] , colnames(data))
-      }
-      names(aux) <- nm
-      aux   
+      m <- subset(data , subset = sub)
+      m <- m[,to.summarize]
+      if (length(to.summarize)==1) m <- matrix(m,ncol=1)
+      apply(m , MARGIN = 2 , FUN = function(x) fun(x , ...))
     }
     aux <- lapply(1:nrow(groups) , FUN = function(i) summ.group(groups[i,]))
-    summ <- do.call(rbind,aux)
+    summ <- cbind(groups , do.call(rbind,aux))
   }
   summ
 }

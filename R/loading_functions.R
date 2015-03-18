@@ -121,6 +121,7 @@ process.exp.file.in.dir <- function(file , names , alg.var.name , value.col , fn
   if (!is.null(col.names)){
     data <- read.csv(file , header = FALSE , ...)
     if (length(col.names)!=ncol(data)) stop(paste("The number of columns (", ncol(data) ,") in the file does not match the length of 'col.names' (",length(col.names) , ")"))
+    colnames(data) <- col.names
   }else{
     data <- read.csv(file , header = TRUE , ...)
   }
@@ -154,7 +155,7 @@ process.exp.file.in.dir <- function(file , names , alg.var.name , value.col , fn
 #' dim(data)
 #' head(data)
 
-read.experiment.dir <- function(directory , names , alg.var.name , value.col , fname.pattern , ...){
+read.experiment.dir <- function(directory , names, fname.pattern , alg.var.name , value.col  , col.names=NULL , ...){
   rcsv.args <- list(...)
   if (!is.null(rcsv.args$header)) stop("The argument header cannot be set by hand. It depends on whether a col.names argument is passed or not")
   
@@ -165,7 +166,13 @@ read.experiment.dir <- function(directory , names , alg.var.name , value.col , f
   first <- ifelse(substring(fname.pattern , 1 , 1)=="(" , 1 , 2)
   ## Load the first file to check the header name
   f <- list.files(directory)[1]
-  data <- read.csv(paste(directory,f,sep="/") , ...)
+  if (is.null(col.names)){
+    data <- read.csv(paste(directory,f,sep="/") , header = TRUE , ...)
+  }else{
+    data <- read.csv(paste(directory,f,sep="/") , header = FALSE , ...)
+    if (length(col.names)!=ncol(data)) stop(paste("The number of columns (", ncol(data) ,") in the file does not match the length of 'col.names' (",length(col.names) , ")"))
+    colnames(data) <- col.names
+  }
   if (!alg.var.name %in% names & !alg.var.name %in% colnames(data))
       stop(paste("The name " , alg.var.name , " not found neither in the file name nor in the header." , sep=""))
   
@@ -181,7 +188,7 @@ read.experiment.dir <- function(directory , names , alg.var.name , value.col , f
   
   data <- data.frame()
   for (file in list.files(directory)){
-    data <- rbind(data , process.exp.file.in.dir(paste(directory,file,sep="/") , names, alg.var.name , value.col , fname.pattern , first , ...))
+    data <- rbind(data , process.exp.file.in.dir(paste(directory,file,sep="/") , names, alg.var.name , value.col , fname.pattern , first , col.names , ...))
   } 
   
   process.experiment.matrix(data , alg.var.name , value.col) 
@@ -229,6 +236,8 @@ read.comparison.file <- function(file , alg.cols , col.names=NULL , ...){
 
 ## auxiliar function for read.comparison.dir
 process.comp.file.in.dir <- function(file , col.names , alg.cols , names , fname.pattern , first=2 , ...){
+  rcsv.args <- list(...)
+  if (!is.null(rcsv.args$header)) stop("The argument header cannot be set by hand. It depends on whether a col.names argument is passed or not")
   
   fname <- basename(file)
   
@@ -240,9 +249,10 @@ process.comp.file.in.dir <- function(file , col.names , alg.cols , names , fname
   replacement <- paste(paste("\\",1:length(names),sep=""),collapse=splt)
   params <- strsplit(gsub(fname.pattern , replacement , fname),splt)[[1]]
   names(params)<-names
-  data <- read.csv(file)
+  header <- ifelse (is.null(col.names) , TRUE , FALSE)
+  data <- read.csv (file , header = header , ...)
   if (!is.null(col.names)){
-    if (ncol(data)!=col.names) stop ("The size of the table and the number of column names do not match")
+    if (ncol(data)!=length(col.names)) stop ("The size of the table and the number of column names do not match")
     names(data)<-col.names
   }
   if(is.character(alg.cols)){

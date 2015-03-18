@@ -149,8 +149,8 @@ all.vs.best.test <- function (results.matrix, test = wilcoxon.signed.test ,  gro
   
   if (length(alg.col)<2) stop("At least two algorithms are required to run the function")
   
-  if (is.character(group.by)) group.by <- which(colnames(data) %in% group.by)
-  if (is.character(alg.col)) alg.col <- which(colnames(data) %in% alg.col)
+  if (is.character(group.by)) group.by <- which(colnames(results.matrix) %in% group.by)
+  if (is.character(alg.col)) alg.col <- which(colnames(results.matrix) %in% alg.col)
   
   ## Remove any index out of bounds
   group.by <- subset(group.by , subset = group.by>0 & group.by<=ncol(results.matrix))
