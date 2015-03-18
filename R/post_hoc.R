@@ -329,3 +329,150 @@ bergmann.hommel.dynamic <- function (raw.matrix){
   
   adj.matrix
 }
+
+
+#' @title Holland correction of p-values
+#'
+#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Holland and Copenhaver (1987)
+#' @param pvalues Raw p-values in a matrix
+#' @return A matrix with the corrected p-values
+#' @details The test has been implemented according to the version in Garcia and Herrera (2010), page 2680-2682.
+#' @references Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @examples
+#' data(data.garcia.herrera)
+#' raw.pvalues <- friedman.post(data.garcia.herrera)
+#' holland (raw.pvalues)
+holland <- function(pvalues){
+  ord <- order(pvalues,na.last = NA)
+  pvalues.sorted <- pvalues[ord]
+  k <- length(pvalues.sorted)+1
+  
+  p.val_aux <- sapply(X=1:(k-1),FUN=function(j,p.val,k){    
+    1-(1-p.val[j])^(k-j)
+  },p.val=pvalues.sorted, k=k)
+  
+  p.adj_aux <- sapply(X=1:(k-1),FUN=function(i,p.val_aux){
+    min(1,max(p.val_aux[1:i]))
+  },p.val_aux=p.val_aux)  
+  
+  p.adj <- rep(NA,length(pvalues))
+  p.adj[ord] <- p.adj_aux
+  if(is.matrix(pvalues)){
+    p.adj <- matrix(p.adj,ncol=ncol(pvalues))
+    colnames(p.adj) <- colnames(pvalues)
+    rownames(p.adj) <- rownames(pvalues)
+  }
+  return(p.adj)
+}
+
+#' @title Finner correction of p-values
+#'
+#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Finner, H. (1993)
+#' @param pvalues Raw p-values in a matrix
+#' @return A matrix with the corrected p-values
+#' @details The test has been implemented according to the version in Garcia and Herrera (2010), page 2680-2682.
+#' @references Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @examples
+#' data(data.garcia.herrera)
+#' raw.pvalues <- friedman.post(data.garcia.herrera)
+#' finner (raw.pvalues)
+finner <- function(pvalues){
+  ord <- order(pvalues,na.last = NA)
+  pvalues.sorted <- pvalues[ord]
+  k <- length(pvalues.sorted)+1
+  
+  p.val_aux <- sapply(X=1:(k-1),FUN=function(j,p.val,k){    
+    1-(1-p.val[j])^((k-1)/j)
+  },p.val=pvalues.sorted, k=k)
+  
+  p.adj_aux <- sapply(X=1:(k-1),FUN=function(i,p.val_aux){
+    min(1,max(p.val_aux[1:i]))
+  },p.val_aux=p.val_aux)  
+  
+  p.adj <- rep(NA,length(pvalues))
+  p.adj[ord] <- p.adj_aux
+  if(is.matrix(pvalues)){
+    p.adj <- matrix(p.adj,ncol=ncol(pvalues))
+    colnames(p.adj) <- colnames(pvalues)
+    rownames(p.adj) <- rownames(pvalues)
+  }
+  return(p.adj)
+}
+
+
+#' @title Rom correction of p-values
+#'
+#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Rom, D. M. (1990)
+#' @param pvalues Raw p-values in a matrix
+#' @param alpha value for the averall test
+#' @return A matrix with the corrected p-values
+#' @details The test has been implemented according to the version in Garcia et al. (2010), page 2680-2682.
+#' @references Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @examples
+#' data(data.garcia.herrera)
+#' raw.pvalues <- friedman.post(data.garcia.herrera)
+#' rom(raw.pvalues,alpha=0.05)
+rom <- function(pvalues, alpha=0.05){
+  ord <- order(pvalues,na.last = NA)
+  pvalues.sorted <- pvalues[ord]
+  k <- length(pvalues.sorted)+1  
+  
+  alpha.adj <- numeric(k-1)
+  alpha.adj[k-1] <- alpha
+  alpha.adj[k-2] <- alpha/2  
+  for(i in 3:(k-1)){
+    j1 <- 1:(i-1)
+    j2 <- 1:(i-2)
+    alpha.adj[k-i] <- (sum(alpha^j1) - sum(choose(i,j2) * (alpha.adj[k-1-j2])^(i-j2))) / i      
+  }
+  
+  r <- alpha/alpha.adj
+  
+  p.val_aux <- r * pvalues.sorted
+  
+  p.adj_aux <- sapply(X=(k-1):1,FUN=function(i,p.val_aux){
+    min(p.val_aux[(k-1):i])
+  },p.val_aux=p.val_aux)
+  
+  p.adj <- rep(NA,length(pvalues))
+  p.adj[ord] <- p.adj_aux
+  if(is.matrix(pvalues)){
+    p.adj <- matrix(p.adj,ncol=ncol(pvalues))
+    colnames(p.adj) <- colnames(pvalues)
+    rownames(p.adj) <- rownames(pvalues)
+  }
+  return(p.adj)
+}
+
+#' @title Li correction of p-values
+#'
+#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Li, J. (2008)
+#' @param pvalues Raw p-values in a matrix
+#' @return A matrix with the corrected p-values
+#' @details The test has been implemented according to the version in Garcia et al. (2010), page 2680-2682.
+#' @references Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @examples
+#' data(data.garcia.herrera)
+#' raw.pvalues <- friedman.post(data.garcia.herrera)
+#' li(raw.pvalues)
+li <- function(pvalues){
+  ord <- order(pvalues,na.last = NA)
+  pvalues.sorted <- pvalues[ord]
+  k <- length(pvalues.sorted)+1   
+  
+  
+  p.adj <- sapply(X=1:(k-1),FUN=function(i,pvalues.sorted){
+    min(pvalues.sorted[length(pvalues.sorted)], 
+        pvalues.sorted[i]/(pvalues.sorted[i]+1-pvalues.sorted[length(pvalues.sorted)]))
+  },pvalues.sorted=pvalues.sorted)    
+  
+  p.adj <- rep(NA,length(pvalues))
+  p.adj[ord] <- p.adj_aux
+  if(is.matrix(pvalues)){
+    p.adj <- matrix(p.adj,ncol=ncol(pvalues))  
+    colnames(p.adj) <- colnames(pvalues)
+    rownames(p.adj) <- rownames(pvalues)
+  }
+  
+  return(p.adj)
+}

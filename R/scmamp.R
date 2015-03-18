@@ -189,7 +189,40 @@ all.vs.best.test <- function (results.matrix, test = wilcoxon.signed.test ,  gro
   ##########################################################
   
   pvalues <- t(apply(groups , MARGIN = 1 , FUN = test.row))
-  pvalues.adj <- matrix(p.adjust(unlist(pvalues)) , byrow = F , ncol = ncol(pvalues))
+  pvalues.adj <-   switch(correction ,
+                          "holland" = {
+                            correction.name <- "Holland"
+                            holland(pvalues)
+                          },
+                          "finner" = {
+                            correction.name <- "Finner"
+                            finner(pvalues)
+                          },
+                          "rom" = {
+                            correction.name <- "Rom"
+                            rom(pvalues,alpha=0.05)
+                          },
+                          "li" = {
+                            correction.name <- "Li"
+                            li(pvalues)
+                          },
+                          {
+                            
+            matrix(p.adjust(unlist(pvalues)) , byrow = F , ncol = ncol(pvalues))
+            if (!(correction %in% p.adjust.methods))
+            {
+             stop(paste("Non valid method for correction. Valid options are: holland, finner, rom, li " , paste(p.adjust.methods,collapse=", "),sep=""))
+            }
+            correction.name <- paste("p.adjust functions with method set at '" , correction , "'", sep = "")
+            matrix(p.adjust(unlist(pvalues)) , byrow = F , ncol = ncol(pvalues))            
+                        })
+    
+    
+    
+    
+    
+    
+    
   colnames(pvalues.adj) <- colnames(results.matrix)[alg.col]
   
   raw.matrix <- cbind(groups,pvalues)
