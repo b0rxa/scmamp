@@ -138,6 +138,16 @@ recursive.count <- function (k){
   sort(unique(res))
 }
 
+finner.adj <- function(raw.pvalues){
+  o <- order(raw.pvalues)
+  raw.pvalues <- sort(raw.pvalues)
+  k <- length(raw.pvalues)
+  adj.pvalues <- c(sapply (1:(k-1) , FUN = function(i) 1 - (1-raw.pvalues[i])^((k-1)/i) ),
+                   raw.pvalues[k])
+  adj.pvalues[order(o)]
+  
+}
+
 #' @title Shaffer's correction of p-values in pair-wise comparisons
 #'
 #' @description This function implements the Shaffer's multiple testing correction when the p-values correspond with pair-wise comparisons
@@ -212,7 +222,7 @@ partition <- function (set){
   }else{ ## In the general case, get all the subdivisions (which cannot have empty sets in the first subset) and add the last element at the end of each second subset.
     last <- set[n]
     sb <- subdivisions(set[-n])
-    ## Add the last element only to the second subset (see Figur 1 in Garcia and Herrera, 2008)
+    ## Add the last element only to the second subset (see Figure 1 in Garcia and Herrera, 2008)
     res <- lapply(sb , FUN = function (x) {list(s1=x$s1 , s2=c(x$s2 , last))})
   }
   res
@@ -253,7 +263,7 @@ merge.sets <- function (E1 , E2){
 #' exhaustive.sets(c("A","B","C","D"))
 exhaustive.sets <- function (set){
   k <- length(set)
-  if (k<=length(E)){ ## Reuse the computed sets stored in the variable E
+  if (!is.null(E) & k<=length(E)){ ## Reuse the computed sets stored in the variable E
     E_l <- lapply(E[[k]] , FUN=function(x) matrix(set[x],nrow=2))
   }else{
     ## All possible pairwise comparisons, Garcia and Herrera, Table 1 steps 1-5
@@ -304,6 +314,9 @@ bergmann.hommel.dynamic <- function (raw.matrix){
   data("exhaustive.sets")
   k <- dim(raw.matrix)[1]
   if(k>length(E)) stop (paste("Sorry, this method is only available for ", length(E)," or less algorithms.",sep=""))
+  if (k==9)
+    cat(paste("Applying Bergmann Hommel correction to the p-values computed in pairwise comparisions of 9 algorithms. This requires checking ", length(E$k9) , " sets of hypothesis. It may take a few seconds."))
+  
   pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
   Ek <- E[[k]]
   raw.pvalues <- raw.matrix[pairs]
