@@ -123,9 +123,7 @@ pairwise.test <- function(results.matrix ,  test="Friedman post" , correction="S
 
 
 
-
-
-#' @title All vs. best statistical comparisons
+#' @title All vs. control statistical comparisons
 #'
 #' @export
 #' @description Given a results matrix, this function tests the differences between all the algorithms with respect to the best.
@@ -133,19 +131,20 @@ pairwise.test <- function(results.matrix ,  test="Friedman post" , correction="S
 #' @param test Statistical test to be applied. The first two arguments should be the two vectors to compare. The result has to be a list with an element named p.value. An example of this output is the typical \code{\link{htest}} class returned by R's statistical tests.
 #' @param group.by A vector of names or indices of columns that will be used to group the results in \code{results.matrix}.
 #' @param alg.col A vector of names or indices of columns indicating which columns contain the results for the algorithms to compare.
-#' @param best A string indicating which should be considered the best result. Valid options are \code{'min'} and \code{'max'}.
+#' @param control A number or string indicating which should be considered the control result. Valid options: the position of the control algorith, the column name of the control algorithm, \code{'min'} or \code{'max'} indicating the algorithm with the minimum or maximun observed value.
 #' @param summary A function used to summarize the data when looking for the best algorithm. By default, the median is used.
 #' @param correction Type of correction to be applied to the p-values. Any method accepted by the \code{\link{p.adjust}} function is a valid option.
+#' @param sig.level significance level of the test. This value is used only for Rom post-hoc p-value correction.
 #' @param ... Additional parameters to be passed to the test or the summarization function. 
 #' @return A list with three matrices, \code{summary}, \code{raw.pvalues} and \code{adj.pvalues}. The first one contains the summarized values, the second one the raw p-values obtained in the comparison and the third one the adjusted pvalues. In the p-values matrices \code{NA} indicates the reference used in that row (i.e., the algorithms with the best value)
 #' @examples
 #' dir <- system.file("loading_tests",package="scmamp")
 #' file <- paste(dir , "beta_complete_comparison.out" , sep="/")
 #' data <- read.comparison.file (file = file , alg.cols = c('kakizawa','vitale','boundarykernel','betakernel'))
-#' all.vs.best.test (data , group.by = c('size' , 'alpha' , 'beta') , alg.col=4:7 , test = t.test , best='min' , summary = mean , correction = 'hommel' , na.rm = TRUE , paired = TRUE)
+#' all.vs.control.test (data , group.by = c('size' , 'alpha' , 'beta') , alg.col=4:7 , test = t.test , control='min' , summary = mean , correction = 'hommel' , na.rm = TRUE , paired = TRUE)
 
 
-all.vs.best.test <- function (results.matrix, test = wilcoxon.signed.test ,  group.by , alg.col , best='max' , summary = mean , correction='holm' ,  ...){
+all.vs.control.test <- function (results.matrix, test = wilcoxon.signed.test ,  group.by , alg.col , control='max' , summary = mean , correction='holm' ,  sig.level=0.05,...){
   
   if (length(alg.col)<2) stop("At least two algorithms are required to run the function")
   
@@ -176,14 +175,33 @@ all.vs.best.test <- function (results.matrix, test = wilcoxon.signed.test ,  gro
                                       paste(paste(colnames(groups) , "=" , group.values),collapse="; ") , sep = ""))
     
     summ <- apply(matrix , MARGIN = 2 , FUN = function(x) summary (x , ...))
-    id <- switch(best,'max' = which.max(summ) , 'min' = which.min(summ) , stop("The 'best' parameter has to be either min or max"))
-    res <- sapply(1:ncol(matrix) , FUN = function(i){
-      if (i!=id){
-        test (matrix[,i] , matrix[,id] , ...)$p.value  
-      }else{
-        NA
-      }
-    }) 
+    if(is.numeric(control) & control > 0 & control <= ncol(matrix))
+    {
+      id <- control
+    }
+    else if (control %in% colnames(results.matrix))
+    {
+      id <- which(colnames(results.matrix)[alg.col]==control)
+    }
+    else{
+      id <- switch(control,'max' = which.max(summ) , 'min' = which.min(summ) , stop("The 'best' parameter has to be either min or max"))
+    }
+    
+    if(is.function(test)){
+      res <- sapply(1:ncol(matrix) , FUN = function(i){
+        if (i!=id){
+          test (matrix[,i] , matrix[,id] , ...)$p.value  
+        }else{
+          NA
+        }
+      }) 
+    }
+    else{
+      res <- switch(test ,
+                    "friedman.test"={friedman.post(matrix,control=id)},
+                    "friedman.alignedranks.test"={friedman.alignedranks.post(matrix,control=id)},
+                    {stop("Post-hoc test not valid")})     
+    }    
     res
   }
   ##########################################################
@@ -200,7 +218,7 @@ all.vs.best.test <- function (results.matrix, test = wilcoxon.signed.test ,  gro
                           },
                           "rom" = {
                             correction.name <- "Rom"
-                            rom(pvalues,alpha=0.05)
+                            rom(pvalues,alpha=sig.level)
                           },
                           "li" = {
                             correction.name <- "Li"
