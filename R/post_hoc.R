@@ -1,31 +1,131 @@
-#' @title Friedman's post hoc raw p-values
+# #' @title Friedman's post hoc raw p-values
+# #'
+# #' @description This function computes the raw p-values for the post hoc based on Friedman's test
+# #' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
+# #' @return A matrix with all the pairwise raw p-values.
+# #' @details The test has been implemented according to the version in Demsar (2006), page 12
+# #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+# #' @examples
+# #' data(data.garcia.herrera)
+# #' friedman.post(data.garcia.herrera)
+# 
+# friedman.post <- function (data , ...){
+#   k <- dim(data)[2]
+#   N <- dim(data)[1]
+#   
+#   meanrank <- colMeans(rank.matrix(data))
+#   
+#   ## Generate all the pairs to test
+#   pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+#   
+#   ## Compute the p-value
+#   sd <- sqrt((k*(k+1))/(6*N))
+#   f<-function(x) (1 - pnorm(abs(meanrank[x[1]] - meanrank[x[2]])/sd))*2 ## Two tailed ...
+#   pvalues <- apply(pairs , MARGIN = 1 , FUN = f)
+#   matrix.raw <- matrix(rep(NA , k^2) , k)
+#   matrix.raw[pairs] <- pvalues
+#   matrix.raw[pairs[,c(2,1)]] <- pvalues
+#   colnames(matrix.raw) <- rownames(matrix.raw) <- colnames(data)
+#   matrix.raw
+# }
+
+
+#' @title Friedman's post hoc raw p-values for all.vs.control and all.vs.all comparison
 #'
 #' @description This function computes the raw p-values for the post hoc based on Friedman's test
 #' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
-#' @return A matrix with all the pairwise raw p-values.
+#' @param control the number of the column for the control algorithm. If control=NULL all.vs.all pairwise comparison is performed.
+#' @return A matrix with all the pairwise raw p-values (all.vs.all or all.vs.control).
 #' @details The test has been implemented according to the version in Demsar (2006), page 12
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' @examples
 #' data(data.garcia.herrera)
 #' friedman.post(data.garcia.herrera)
 
-friedman.post <- function (data , ...){
+friedman.post <- function (data , control=NULL, ...){
   k <- dim(data)[2]
   N <- dim(data)[1]
   
   meanrank <- colMeans(rank.matrix(data))
   
   ## Generate all the pairs to test
-  pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+  if(is.null(control)){ 
+    #all.vs.all comparison
+    pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+  }  else{ 
+    #all.vs.control comparison
+    pairs <- cbind(control,(1:k)[-control])
+  }
   
   ## Compute the p-value
   sd <- sqrt((k*(k+1))/(6*N))
   f<-function(x) (1 - pnorm(abs(meanrank[x[1]] - meanrank[x[2]])/sd))*2 ## Two tailed ...
   pvalues <- apply(pairs , MARGIN = 1 , FUN = f)
-  matrix.raw <- matrix(rep(NA , k^2) , k)
-  matrix.raw[pairs] <- pvalues
-  matrix.raw[pairs[,c(2,1)]] <- pvalues
-  colnames(matrix.raw) <- rownames(matrix.raw) <- colnames(data)
+  if(is.null(control)){ 
+    #all.vs.all comparison
+    matrix.raw <- matrix(rep(NA , k^2) , k)
+    matrix.raw[pairs] <- pvalues
+    matrix.raw[pairs[,c(2,1)]] <- pvalues
+    colnames(matrix.raw) <- rownames(matrix.raw) <- colnames(data)
+  }  else{ 
+    #all.vs.control comparison
+    matrix.raw <- matrix(rep(NA , k) , ncol=k)
+    matrix.raw[(1:k)[-control]] <- pvalues
+    colnames(matrix.raw) <- colnames(data)    
+  }   
+  matrix.raw
+}
+
+
+
+#' @title Friedman's aligned ranks post hoc raw p-values for all.vs.control comparison
+#'
+#' @description This function computes the raw p-values for the post hoc based on Friedman's aligned ranks test
+#' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
+#' @param control the number of the column for the control algorithm. If control=NULL all.vs.all pairwise comparison is performed.
+#' @return A matrix with all the pairwise raw p-values (all.vs.all or all.vs.control).
+#' @details The test has been implemented according to the version in Garcia et al. (2010), pages 2051,2054
+#' @references Garcia, S. et al. (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-20664.
+#' @examples
+#' data(data.garcia.herrera)
+#' friedman.post(data.garcia.herrera)
+
+friedman.alignedranks.post <- function (data , control=NULL, ...){
+  k <- dim(data)[2]
+  N <- dim(data)[1]
+  
+  dataset.means <- rowMeans(data)
+  diff <- data - matrix(rep(dataset.means,k),ncol=k)
+  
+  ranks <- matrix(order.with.ties(unlist(diff),decreasing = TRUE),ncol=k,byrow=FALSE)
+  colnames(ranks) <- colnames(data)
+  meanrank <- colSums(ranks)
+  
+  ## Generate all the pairs to test
+  if(is.null(control)){ 
+    #all.vs.all comparison
+    pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+  }  else{ 
+    #all.vs.control comparison
+    pairs <- cbind(control,(1:k)[-control])
+  }
+  
+  ## Compute the p-value
+  sd <- sqrt((k*(N+1))/6)
+  f<-function(x) (1 - pnorm(abs(meanrank[x[1]] - meanrank[x[2]])/sd))*2 ## Two tailed ...
+  pvalues <- apply(pairs , MARGIN = 1 , FUN = f)
+  if(is.null(control)){ 
+    #all.vs.all comparison
+    matrix.raw <- matrix(rep(NA , k^2) , k)
+    matrix.raw[pairs] <- pvalues
+    matrix.raw[pairs[,c(2,1)]] <- pvalues
+    colnames(matrix.raw) <- rownames(matrix.raw) <- colnames(data)
+  }  else{ 
+    #all.vs.control comparison
+    matrix.raw <- matrix(rep(NA , k) , ncol=k)
+    matrix.raw[(1:k)[-control]] <- pvalues
+    colnames(matrix.raw) <- colnames(data)    
+  }   
   matrix.raw
 }
 

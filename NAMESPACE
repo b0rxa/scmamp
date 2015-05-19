@@ -10,7 +10,7 @@ export(
   custom.post,
   friedman.post,
   anova.post,
-  all.vs.best.test,
+  all.vs.control.test,
   exhaustive.sets,
   rank.matrix,
   plot.pvalues,
