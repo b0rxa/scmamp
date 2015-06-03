@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Data loading and manipulation with scmamp</title>
+<link rel="stylesheet" media="all" href="http://jashkenas.github.io/docco/resources/linear/public/stylesheets/normalize.css" />
+<link rel="stylesheet" media="all" href="http://jashkenas.github.io/docco/resources/linear/docco.css" />
+<link href='http://yihui.name/media/css/docco-linear.css' rel='stylesheet' type='text/css'>
+<style type="text/css">
+img{display:block;margin:auto;}
+.container{width:auto;max-width:920px;}
+.page{width:auto;max-width:800px;}
+.page pre{width:100%;max-width:768px;}
+pre, code{font-size:90%;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/languages/r.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="http://yihui.name/media/js/center-images.js"></script>
+
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="page">
+<h1>Data loading and manipulation with scmamp</h1>
+
+<p>The main goal of this package is makeing the statistical analysis of emprical comparisions of algorithms easy and fast. For that reason, and with the aim at being a complete solution, the package includes functions to load data and manipulate data, as well as to format the results for its further use in publications. This vignettes shows the use of these functions.</p>
+
+<h2>Loading the data</h2>
+
+<p>The data matrices required by the package funtions should have one row per problem and a number of columns. The columns can be divided into two subsets, descriptors of the problem and results obtained by the algorithms applied to that problem. The package comes with three examples of data sets:</p>
+
+<pre><code class="r">&gt; library(scmamp)
+&gt; data(data_gh_2008)
+&gt; head(data.gh.2008)
+</code></pre>
+
+<pre><code>##             C4.5 k-NN(k=1) NaiveBayes Kernel   CN2
+## Abalone*   0.219     0.202      0.249  0.165 0.261
+## Adult*     0.803     0.750      0.813  0.692 0.798
+## Australian 0.859     0.814      0.845  0.542 0.816
+## Autos      0.809     0.774      0.673  0.275 0.785
+## Balance    0.768     0.790      0.727  0.872 0.706
+## Breast     0.759     0.654      0.734  0.703 0.714
+</code></pre>
+
+<pre><code class="r">&gt; data(data_gh_2010)
+&gt; head(data.gh.2010)
+</code></pre>
+
+<pre><code>##                PDFC  NNEP IS_CHC_1NN FH_GBML
+## Adult         0.752 0.773      0.785   0.795
+## Breast        0.727 0.748      0.724   0.713
+## Bupa          0.736 0.716      0.585   0.638
+## Car           0.994 0.861      0.880   0.791
+## Cleveland     0.508 0.553      0.575   0.515
+## Contraceptive 0.535 0.536      0.513   0.471
+</code></pre>
+
+<pre><code class="r">&gt; data(data_blum_2015)
+&gt; head(data.blum.2015)
+</code></pre>
+
+<pre><code>##   Size Radius FruitFly Shukla Ikeda Turau Rand1 Rand2 FrogCOL FrogMIS
+## 1 1000  0.049      223    213   214   214   214   212     246     226
+## 2 1000  0.049      224    207   209   216   205   211     241     219
+## 3 1000  0.049      219    206   215   214   209   213     243     221
+## 4 1000  0.049      227    208   218   218   215   219     251     230
+## 5 1000  0.049      231    218   210   212   211   217     243     239
+## 6 1000  0.049      230    214   214   208   211   206     246     229
+</code></pre>
+
+<p>The first two correspond to the example datasets used in <em>García and Herrera (2008)</em> and <em>García and Herrera (2010)</em> respectively, and they do not have any descriptor of the dataset&mdash;actually, the descritor is in the names of the rows, that indicate the data set used in each comparison. The thirds set corresponds to the results presented in <em>Blum et al. (2015)</em>. In particular, these are the results obtained by 8 decentralized algorithms in a set of random geometric graphs. In this case, the first two columns (<code>Size</code> and <code>Radius</code>) represent the descriptors of the problem (number of nodes in the graph and maximum distance to consider two nodes as connected).</p>
+
+<p>This type of matrix can be easily loaded from a csv file with the same structure&mdash;we will name this structure as <em>comparison format</em>. However, in some cases the results are not in this format. As an alternative to externally process the results to build such a file, the package includes some function to do this task in some typical cases. If you are able to construct a matrix like this in R, then you can skip this section.</p>
+
+<p>The most simple function is <code>readComparisonFile</code>, a function that process one single file in comparison format. This is the format of the tables shown above, so this function essentially reads files of this kind. The only additional processing of this function is the posibility of including the column names in case the file does not contain a header and a reorganization of the columns to have all the descriptors at the begining and the algorithms at the end. The function has three parameters:</p>
+
+<ul>
+<li><code>file</code> - The path of the file to load.</li>
+<li><code>alg.cols</code> - A vector with either column names or column indices to indicate which columns in the file contain results. The rest are assumed to be descriptors of the problem.</li>
+<li><code>col.names</code> - An optional parameter to indicate the name of the columns. If not provided, the names are taken from the header of the file (the first line).</li>
+</ul>
+
+<p>The function accepts additional parameter for the <code>read.csv</code> function, such as <code>sep</code> for the character used to separate columns or <code>skip</code> to skip the first <code>n</code> lines of the file. The only parameter not accepted is <code>header</code>, as it is fixed depending on whether the <code>col.names</code> parameter is used or not.</p>
+
+<p>For example, if we want to load a file named <code>results.dat</code> where the first 5 lines are comments, the elements are separated by a semicolon and the actual results are in three columns named <code>Alg_1</code>, <code>Alg_1</code> and <code>Alg_3</code>, the call would be:</p>
+
+<pre><code class="r">&gt; data.raw &lt;- readComparisonFile(file=&quot;results.dat&quot;, alg.cols=c(&#39;Alg_1&#39;, &#39;Alg_2&#39;, &#39;Alg_3&#39;), 
++                                skip=5, sep=&quot;;&quot;)
+</code></pre>
+
+<p>As an example of real use of this function, the package includes a file containing all the results in <code>data.blum.2015</code>. This file can be loaded as follows:</p>
+
+<pre><code class="r">&gt; data.dir &lt;- system.file(&quot;loading_tests&quot;,package=&quot;scmamp&quot;)
+&gt; file.path &lt;- paste(data.dir, &quot;rgg_complete_comparison.out&quot;, sep=&quot;/&quot;)
+&gt; data.raw &lt;- readComparisonFile(file=file.path, alg.cols=3:10, col.names=NULL)
+&gt; head(data.raw)
+</code></pre>
+
+<pre><code>##   Size Radius FruitFly Shukla Ikeda Turau Rand1 Rand2 FrogCOL FrogMIS
+## 1 1000  0.049      223    213   214   214   214   212     246     226
+## 2 1000  0.049      224    207   209   216   205   211     241     219
+## 3 1000  0.049      219    206   215   214   209   213     243     221
+## 4 1000  0.049      227    208   218   218   215   219     251     230
+## 5 1000  0.049      231    218   210   212   211   217     243     239
+## 6 1000  0.049      230    214   214   208   211   206     246     229
+</code></pre>
+
+<p>Quite often the results of an experimentation are separated into different files (e.g., when the experiment has been paralelized and run in a cluster). In such cases, part of the information we need to load may be encoded in the file name itself; <code>scmamp</code> includes functions to cope with this situation. In case each of the result files are in comparison format (i.e., they have a structure similar to the examples above), the function <code>readComparisonDir</code> can be used to load all the files in a given directory. Note that the function will try to load all the files, so the directory must contain only result files.</p>
+
+<p>Instead of passing the path to a file, in this case we need to provide the path of the directory that contains the files. As in the previous function, we have the parameters <code>alg.cols</code> and <code>col.names</code>, that have the same meaning as in <code>readComparisonFile</code>. The function has another two parameters, <code>names</code> and <code>fname.pattern</code>, which are the arguments used to define how the file names have to be processed.</p>
+
+<p>The <code>fname.pattern</code> is used to specify, using regular expressions, the pattern of the files. In this patter there should be one or more groups, which are represented between parenthesis. These groups are the part of the information that will be extracted from the name; the <code>names</code> argument is a vector to assign names to each of the extracted elements.</p>
+
+<p>Although the patterns can be far more complex, quite frequently the file name will be an alternation of fixed and variable parts. The package includes an example of directory with this kind of files.</p>
+
+<pre><code class="r">&gt; dir &lt;- paste(system.file(&quot;loading_tests&quot;,package=&quot;scmamp&quot;), 
++              &quot;comparison_files&quot;, sep=&quot;/&quot;)
+&gt; list.files(dir)
+</code></pre>
+
+<pre><code>##  [1] &quot;rgg_size_1000_r_0.049.out&quot; &quot;rgg_size_1000_r_0.058.out&quot;
+##  [3] &quot;rgg_size_1000_r_0.067.out&quot; &quot;rgg_size_1000_r_0.076.out&quot;
+##  [5] &quot;rgg_size_1000_r_0.085.out&quot; &quot;rgg_size_1000_r_0.094.out&quot;
+##  [7] &quot;rgg_size_1000_r_0.103.out&quot; &quot;rgg_size_1000_r_0.112.out&quot;
+##  [9] &quot;rgg_size_1000_r_0.121.out&quot; &quot;rgg_size_1000_r_0.134.out&quot;
+## [11] &quot;rgg_size_100_r_0.140.out&quot;  &quot;rgg_size_100_r_0.143.out&quot; 
+## [13] &quot;rgg_size_100_r_0.146.out&quot;  &quot;rgg_size_100_r_0.149.out&quot; 
+## [15] &quot;rgg_size_100_r_0.152.out&quot;  &quot;rgg_size_100_r_0.155.out&quot; 
+## [17] &quot;rgg_size_100_r_0.158.out&quot;  &quot;rgg_size_100_r_0.161.out&quot; 
+## [19] &quot;rgg_size_100_r_0.164.out&quot;  &quot;rgg_size_100_r_0.169.out&quot; 
+## [21] &quot;rgg_size_5000_r_0.024.out&quot; &quot;rgg_size_5000_r_0.036.out&quot;
+## [23] &quot;rgg_size_5000_r_0.048.out&quot; &quot;rgg_size_5000_r_0.060.out&quot;
+## [25] &quot;rgg_size_5000_r_0.072.out&quot; &quot;rgg_size_5000_r_0.084.out&quot;
+## [27] &quot;rgg_size_5000_r_0.096.out&quot; &quot;rgg_size_5000_r_0.108.out&quot;
+## [29] &quot;rgg_size_5000_r_0.120.out&quot; &quot;rgg_size_5000_r_0.134.out&quot;
+</code></pre>
+
+<p>The structure of the names in this example is as follows. All the names start with a fixed string, <code>rgg_size_</code>. Then there is an integer value, corresponding to the size of the graph. Then, after another fixed string (<code>_r_</code>), we a real number, the radius used to crate the graph. Finally, the name ends with the extension <code>.out</code>. The way we can construct the pattern for this files is:</p>
+
+<pre><code class="r">&gt; fname.pattern &lt;- &quot;rgg_size_([0-9]*)_r_([0-9]*.[0-9]*)\\.out&quot;
+</code></pre>
+
+<p>The pattern includes the fixed strings and the pattern of the variable parts between brackets. For instance, if we have an integer of variable size, we can define its pattern as <code>[0-9]*</code>, <code>[0-9]</code> representing any digit and <code>*</code> the previous pattern repeated any number of times. It is important to include these patterns between brackets, as only these parts will be extracted. In general, in most cases we can define between square brackets the chracters we may find and then add an <code>*</code> after it, as for example:</p>
+
+<ul>
+<li><code>[0-9]*.[0-9]*</code> for non-integer numbers.</li>
+<li><code>[a - z]*</code> for lower case strings.</li>
+<li><code>[A - Z]</code> for upper case strings.</li>
+<li><code>[A - Z][a - z]*</code> for lower case strings starting with an upper case letter.</li>
+</ul>
+
+<p>Note that, given that all the radius used start with 0., we can simplify the patter changing the <code>[0-9]*</code> berfore the period with just a 0. In the pattern above there are two groups defined and, thus, we need to assign three two to them:</p>
+
+<pre><code class="r">&gt; var.names &lt;- c(&quot;Size&quot;, &quot;Radius&quot;)
+</code></pre>
+
+<p>The files have a header indicaint the name of the columns which, in this case, correspond to the results obtained by the four estimators. Therefore, we do not need to specify the column names but, as in the case of a single file, we have to indicate which columns are the ones that have the results. This can be done using the index of the columns (used in the previous example), or their names:</p>
+
+<pre><code class="r">&gt; alg.names &lt;- c(&quot;FruitFly&quot;, &quot;Shukla&quot;, &quot;Ikeda&quot;, &quot;Turau&quot;, &quot;Rand1&quot;, &quot;Rand2&quot;, &quot;FrogCOL&quot;, &quot;FrogMIS&quot;)
+</code></pre>
+
+<p>Finally, we can load the data</p>
+
+<pre><code class="r">&gt; rm(&quot;data.raw&quot;)
+&gt; data.raw &lt;- readComparisonDir (directory=dir, alg.cols=alg.names, col.names=NULL,
++                            names=var.names, fname.pattern=fname.pattern)
+&gt; head(data.raw)
+</code></pre>
+
+<pre><code>##   Size Radius FruitFly Shukla Ikeda Turau Rand1 Rand2 FrogCOL FrogMIS
+## 1 1000  0.049      223    213   214   214   214   212     246     226
+## 2 1000  0.049      224    207   209   216   205   211     241     219
+## 3 1000  0.049      219    206   215   214   209   213     243     221
+## 4 1000  0.049      227    208   218   218   215   219     251     230
+## 5 1000  0.049      231    218   210   212   211   217     243     239
+## 6 1000  0.049      230    214   214   208   211   206     246     229
+</code></pre>
+
+<p>As we can see above, besides the content of files (the last four columns), the resulting matrix includes the information extracted from the name of the files, named according to <code>names</code>. Note that, when <code>alg.cols</code> contains the column indices, these are refered to the columns inside the file. In other words, we do not expect to have the name of the algorithm in the file name.</p>
+
+<p>However, in some situations, the results for each algorithm may be in a different file. Such kind of files contain the results of only one of the algorithms per line. We will name this structure <em>experiment format</em>, to distinguish it from the previous structure. There are two functions to handle this kind of files, <code>readExperimentFile</code> and <code>readExperimentDir</code>. These functions are similar to the previous two, but have some differences that have to do with the format of the files.</p>
+
+<p>Each row of these files will have the result of applying one algorithm to one problem. Therefore, the experiment is characterized using descriptors for the problem, a column indicating the algorithm used and a column containing the result to be compared. The package includes one example of this kind of file that contains all the results in <code>data.blum.2015</code>:</p>
+
+<pre><code class="r">&gt; dir &lt;- system.file(&quot;loading_tests&quot;, package=&quot;scmamp&quot;)
+&gt; file &lt;- paste(dir, &quot;rgg_complete_experiment.out&quot;, sep=&quot;/&quot;)
+&gt; content &lt;- read.csv(file)
+&gt; content[c(1,901,181),]
+</code></pre>
+
+<pre><code>##     Size Radius Algorithm Evaluation
+## 1   1000  0.049  FruitFly        223
+## 901 1000  0.049    Shukla        213
+## 181 1000  0.103  FruitFly         74
+</code></pre>
+
+<p>As can be seen above, the first two columns are the same descriptors as in previous examples, but now we have only two more columns. The <code>Algorithm</code> column, that indicates the algorithm used, and <code>Evaluation</code>, that contains the value to be used. This kind of file can be read using the function <code>readExperimentFile</code> in order to produce the table we need for the analysis.</p>
+
+<pre><code class="r">&gt; rm(&quot;data.raw&quot;)
+&gt; data.raw &lt;- readExperimentFile (file=file, alg.col=&quot;Algorithm&quot;, value.col=&quot;Evaluation&quot;)
+&gt; head(data.raw)
+</code></pre>
+
+<pre><code>##   Size Radius FruitFly Shukla Ikeda Turau Rand1 Rand2 FrogCOL FrogMIS
+## 1 1000  0.049      223    213   214   214   214   212     246     226
+## 2 1000  0.049      224    207   209   216   205   211     241     219
+## 3 1000  0.049      219    206   215   214   209   213     243     221
+## 4 1000  0.049      227    208   218   218   215   219     251     230
+## 5 1000  0.049      231    218   210   212   211   217     243     239
+## 6 1000  0.049      230    214   214   208   211   206     246     229
+</code></pre>
+
+<p>Note that, in this case, the file has to be process to build a matrix in comparison format and, thus, loading the data from this type of structure is computationally more expensive. Therefore, it is highly recommended to use the comparison format to store the results. </p>
+
+<p>Now, instead of an argument to determine which columns include the results we have two arguments, <code>alg.col</code> and <code>value.col</code>, that have to be either the name or the index of the columns that contain the algorithm used and the value obtained, respectively. Additionally, as in the previous functions there is an argument to indicate the name of the columns, in case the file has not a header.</p>
+
+<p>As in the case of the comparision format, the package includes a function to load all the files in a directory: <code>readExperimentDir</code>. Conversely to the previous function, as in this case the information about the algorithm can be either inside the file or in its name, instead of the <code>alg.col</code> argument that can be the name or the index, now we have an argument, <code>alg.var.name</code>, that can only be a string; This string should be a column name or the name assigned to any of the variables extracted from the file name.</p>
+
+<p>Similarly to the function <code>readComparisonDir</code>, we have two parameters, <code>name</code> and <code>fname.pattern</code>, to define how the name of the files will be processed. An example of the use of this function is the following.</p>
+
+<pre><code class="r">&gt; rm(&quot;data.raw&quot;)
+&gt; dir &lt;- paste(system.file(&quot;loading_tests&quot;, package=&quot;scmamp&quot;), 
++              &quot;experiment_files&quot;, sep=&quot;/&quot;)
+&gt; list.files(dir)[1:10]
+</code></pre>
+
+<pre><code>##  [1] &quot;rgg_size_1000_r_0.049_FrogCOL.out&quot; 
+##  [2] &quot;rgg_size_1000_r_0.049_FrogMIS.out&quot; 
+##  [3] &quot;rgg_size_1000_r_0.049_FruitFly.out&quot;
+##  [4] &quot;rgg_size_1000_r_0.049_Ikeda.out&quot;   
+##  [5] &quot;rgg_size_1000_r_0.049_Rand1.out&quot;   
+##  [6] &quot;rgg_size_1000_r_0.049_Rand2.out&quot;   
+##  [7] &quot;rgg_size_1000_r_0.049_Shukla.out&quot;  
+##  [8] &quot;rgg_size_1000_r_0.049_Turau.out&quot;   
+##  [9] &quot;rgg_size_1000_r_0.058_FrogCOL.out&quot; 
+## [10] &quot;rgg_size_1000_r_0.058_FrogMIS.out&quot;
+</code></pre>
+
+<pre><code class="r">&gt; pattern &lt;- &quot;rgg_size_([0-9]*)_r_(0.[0-9]*)_([a-z, A-Z, 1, 2]*).out&quot;
+&gt; var.names &lt;- c(&quot;Size&quot;, &quot;Radius&quot;, &quot;Algorithm&quot;)
+&gt; data.raw &lt;- readExperimentDir (directory=dir, names=var.names, fname.pattern=pattern,
++                                alg.var.name=&#39;Algorithm&#39;, value.col=1, col.names=&quot;Evaluation&quot;)
+&gt; head(data.raw)
+</code></pre>
+
+<pre><code>##   Size Radius FrogCOL FrogMIS FruitFly Ikeda Rand1 Rand2 Shukla Turau
+## 1 1000  0.049     246     226      223   214   214   212    213   214
+## 2 1000  0.049     241     219      224   209   205   211    207   216
+## 3 1000  0.049     243     221      219   215   209   213    206   214
+## 4 1000  0.049     251     230      227   218   215   219    208   218
+## 5 1000  0.049     243     239      231   210   211   217    218   212
+## 6 1000  0.049     246     229      230   214   211   206    214   208
+</code></pre>
+
+<p>In this case, the format of the file names is similar, but it includes the name of the estimator, so in this case the information about the algorithm used is in the file name itself. Actually, the files contain one single column with the results of 30 repetitions.</p>
+
+<h2>Filtering and summarizing results</h2>
+
+<p>The package includes functions that can be used perform two basic operations with data matrices, summarizing and filtering.</p>
+
+<p>The summarization can be achieved easily with the function <code>summarizeData</code>. For example, we can get the median value obtained, for each graph size, by the each algorithm:</p>
+
+<pre><code>##   groups FrogCOL FrogMIS FruitFly Ikeda Rand1 Rand2 Shukla Turau
+## 1   1000    93.5    87.0       93  79.5  81.5  79.5   81.0  79.5
+## 2    100    28.0    26.0       25  23.0  23.0  23.0   23.0  23.0
+## 3   5000   135.5   122.5        1 117.5 115.0 115.5  117.5 115.5
+</code></pre>
+
+<p>The function <code>filterData</code> can be used to remove rows and columns in a simple way. For example, to reduce the data matrix to the results where the size was 100 and Rand2 has a value higher than Rand1, retaining all the columns except the size, we can run:</p>
+
+<pre><code class="r">data.filtered &lt;- filterData(data=data.raw, 
+                            condition=&quot;Size == 100 &amp; Rand1 &lt;= Rand2&quot;, 
+                            remove.cols=&quot;Size&quot;)
+dim(data.filtered)
+</code></pre>
+
+<pre><code>## [1] 191   9
+</code></pre>
+
+<pre><code class="r">dim(data.raw)
+</code></pre>
+
+<pre><code>## [1] 900  10
+</code></pre>
+
+<p>This can be combined with the previous function to get, for instance, the average error for each radius.</p>
+
+<pre><code class="r">summarizeData(data.filtered, group.by=c(&quot;Radius&quot;))
+</code></pre>
+
+<pre><code>##    groups  FrogCOL  FrogMIS FruitFly    Ikeda    Rand1    Rand2   Shukla
+## 1   0.140 30.82353 28.88235 27.76471 25.52941 25.29412 26.76471 25.47059
+## 2   0.143 30.55000 28.55000 26.65000 25.85000 24.90000 26.60000 25.35000
+## 3   0.146 29.83333 28.05556 26.22222 25.22222 24.38889 25.88889 24.77778
+## 4   0.149 29.35000 28.00000 26.25000 24.30000 23.85000 25.35000 24.75000
+## 5   0.152 28.42105 25.78947 25.10526 23.47368 23.21053 24.36842 23.68421
+## 6   0.155 27.50000 25.59091 24.04545 22.81818 22.31818 23.36364 23.36364
+## 7   0.158 27.35000 24.30000 24.10000 22.55000 21.60000 23.30000 22.35000
+## 8   0.161 26.11765 23.58824 22.94118 21.23529 21.41176 22.23529 22.11765
+## 9   0.164 25.85000 23.20000 22.50000 20.80000 20.65000 22.20000 21.05000
+## 10  0.169 24.66667 22.27778 22.00000 20.16667 19.61111 21.00000 21.00000
+##       Turau
+## 1  26.05882
+## 2  25.60000
+## 3  25.66667
+## 4  24.75000
+## 5  23.26316
+## 6  23.09091
+## 7  22.55000
+## 8  22.05882
+## 9  20.80000
+## 10 20.11111
+</code></pre>
+
+<h2>Formating the results</h2>
+
+<p>The package includes a number of functions to generate plots and tables of results. The plots (shown in other vignettes) can be directly used as material for publication, but the tables requires some formating. The package includes a simple function to print tables in LaTeX format, called <code>writeTabular</code>.</p>
+
+<p>Suppose we want to compare, for each problem in the example presented above, all the classifiers with the best one. This can be done using the <code>postHocTest</code> function.</p>
+
+<pre><code class="r">group.by &lt;- c(&quot;Size&quot;,&quot;Radius&quot;)
+alg.cols &lt;- 3:10
+result &lt;- postHocTest(data=data.raw, algorithms=alg.cols, group.by=group.by,
+                      test=test, control=&quot;max&quot;, correct=&quot;holland&quot;)
+</code></pre>
+
+<p>The result includes the summarized values and the p-values associated to each comparison. In a typical table we would like to have the summarize values, highlighting the control value and those with no significant differences. We can create such a table with the followng call:</p>
+
+<pre><code class="r">summ &lt;- result$summary
+pval &lt;- result$corrected.pval
+bold &lt;- is.na(pval)
+mark &lt;- pval &gt; 0.05
+</code></pre>
+
+<pre><code>## Warning in Ops.factor(left, right): &#39;&gt;&#39; not meaningful for factors
+</code></pre>
+
+<pre><code>## Warning in Ops.factor(left, right): &#39;&gt;&#39; not meaningful for factors
+</code></pre>
+
+<pre><code class="r">mark[, (1:2)] &lt;- FALSE
+mark[is.na(mark)] &lt;- FALSE
+digits &lt;- c(0, 3, rep(2, 8))
+
+writeTabular(table=summ, format=&quot;f&quot;, bold=bold, mark=mark, mark.char=&quot;+&quot;, 
+             hrule=c(0, 10, 20, 30), vrule = c(2, 4), digits=digits, 
+             print.row.names=FALSE)
+</code></pre>
+
+<pre><code>## \begin{tabular}{|ll|ll|llllll|}
+## \hline
+## Size &amp; Radius &amp; FrogCOL &amp; FrogMIS &amp; FruitFly &amp; Ikeda &amp; Rand1 &amp; Rand2 &amp; Shukla &amp; Turau \\
+## \hline
+## 1000 &amp; 0.049 &amp; {\bf 247.67} &amp; 227.60 &amp; 226.27 &amp; 213.20 &amp; 212.70 &amp; 214.53 &amp; 212.40 &amp; 211.90 \\
+## 1000 &amp; 0.058 &amp; {\bf 189.90} &amp; 176.93 &amp; 174.90 &amp; 162.00 &amp; 161.47 &amp; 163.47 &amp; 162.87 &amp; 162.70 \\
+## 1000 &amp; 0.067 &amp; {\bf 151.93} &amp; 140.57 &amp; 142.23 &amp; 130.37 &amp; 129.83 &amp; 129.60 &amp; 130.83 &amp; 129.87 \\
+## 1000 &amp; 0.076 &amp; {\bf 122.87} &amp; 114.13 &amp; 117.80 &amp; 104.60 &amp; 105.30 &amp; 104.90 &amp; 105.30 &amp; 105.30 \\
+## 1000 &amp; 0.085 &amp; {\bf 102.37} &amp; 94.33 &amp; 99.43 &amp; 85.87 &amp; 86.73 &amp; 87.07 &amp; 87.43 &amp; 86.70 \\
+## 1000 &amp; 0.094 &amp; 85.47$^+$ &amp; 79.33 &amp; {\bf 85.80} &amp; 72.87 &amp; 72.63 &amp; 72.30 &amp; 74.20 &amp; 72.90 \\
+## 1000 &amp; 0.103 &amp; 74.20$^+$ &amp; 68.13 &amp; {\bf 75.57} &amp; 62.77 &amp; 63.23 &amp; 62.30 &amp; 63.17 &amp; 62.13 \\
+## 1000 &amp; 0.112 &amp; 64.37 &amp; 58.20 &amp; {\bf 66.90} &amp; 54.07 &amp; 54.17 &amp; 54.37 &amp; 54.50 &amp; 54.83 \\
+## 1000 &amp; 0.121 &amp; 56.50 &amp; 51.30 &amp; {\bf 59.53} &amp; 47.43 &amp; 47.03 &amp; 47.60 &amp; 47.97 &amp; 47.17 \\
+## 1000 &amp; 0.134 &amp; {\bf 47.53} &amp; 43.10 &amp; 24.27 &amp; 40.07 &amp; 39.93 &amp; 40.10 &amp; 40.77 &amp; 40.10 \\
+## \hline
+## 100 &amp; 0.140 &amp; {\bf 31.07} &amp; 29.10 &amp; 27.80 &amp; 25.70 &amp; 26.17 &amp; 26.10 &amp; 25.63 &amp; 25.90 \\
+## 100 &amp; 0.143 &amp; {\bf 30.53} &amp; 28.57 &amp; 26.80 &amp; 25.60 &amp; 25.17 &amp; 25.73 &amp; 25.43 &amp; 25.53 \\
+## 100 &amp; 0.146 &amp; {\bf 29.93} &amp; 28.03 &amp; 26.57 &amp; 25.37 &amp; 25.07 &amp; 25.30 &amp; 24.90 &amp; 25.80 \\
+## 100 &amp; 0.149 &amp; {\bf 29.10} &amp; 27.33$^+$ &amp; 25.80 &amp; 23.97 &amp; 23.87 &amp; 24.40 &amp; 24.47 &amp; 24.40 \\
+## 100 &amp; 0.152 &amp; {\bf 28.47} &amp; 25.97 &amp; 25.03 &amp; 23.57 &amp; 23.83 &amp; 23.87 &amp; 23.77 &amp; 23.57 \\
+## 100 &amp; 0.155 &amp; {\bf 27.30} &amp; 25.47 &amp; 24.13 &amp; 22.87 &amp; 22.63 &amp; 22.90 &amp; 23.27 &amp; 23.00 \\
+## 100 &amp; 0.158 &amp; {\bf 27.33} &amp; 24.57 &amp; 24.03 &amp; 22.63 &amp; 22.40 &amp; 22.90 &amp; 22.47 &amp; 22.50 \\
+## 100 &amp; 0.161 &amp; {\bf 25.83} &amp; 23.40 &amp; 22.80 &amp; 21.03 &amp; 21.57 &amp; 21.40 &amp; 21.70 &amp; 21.93 \\
+## 100 &amp; 0.164 &amp; {\bf 25.57} &amp; 22.93 &amp; 22.40 &amp; 20.67 &amp; 20.93 &amp; 21.43 &amp; 20.80 &amp; 20.90 \\
+## 100 &amp; 0.169 &amp; {\bf 24.50} &amp; 22.20 &amp; 21.73 &amp; 20.10 &amp; 20.13 &amp; 20.17 &amp; 20.57 &amp; 20.03 \\
+## \hline
+## 5000 &amp; 0.024 &amp; {\bf 975.90} &amp; 972.40$^+$ &amp; 964.53 &amp; 899.60 &amp; 897.83 &amp; 905.30 &amp; 898.23 &amp; 902.50 \\
+## 5000 &amp; 0.036 &amp; 502.00 &amp; 495.30 &amp; {\bf 515.83} &amp; 453.87 &amp; 455.57 &amp; 456.60 &amp; 459.30 &amp; 452.97 \\
+## 5000 &amp; 0.048 &amp; 309.17 &amp; 294.10 &amp; {\bf 332.13} &amp; 273.67 &amp; 275.23 &amp; 273.83 &amp; 276.40 &amp; 273.00 \\
+## 5000 &amp; 0.060 &amp; {\bf 210.90} &amp; 196.93 &amp; 42.03 &amp; 182.30 &amp; 184.73 &amp; 183.00 &amp; 185.60 &amp; 183.43 \\
+## 5000 &amp; 0.072 &amp; {\bf 153.90} &amp; 139.87 &amp; 2.80 &amp; 131.20 &amp; 132.50 &amp; 131.90 &amp; 134.97 &amp; 131.47 \\
+## 5000 &amp; 0.084 &amp; {\bf 117.90} &amp; 105.73 &amp; 0.27 &amp; 99.87 &amp; 99.37 &amp; 99.83 &amp; 102.03 &amp; 99.60 \\
+## 5000 &amp; 0.096 &amp; {\bf 93.30} &amp; 82.57 &amp; 0.00 &amp; 78.77 &amp; 78.73 &amp; 78.20 &amp; 79.97 &amp; 78.60 \\
+## 5000 &amp; 0.108 &amp; {\bf 75.83} &amp; 67.43 &amp; 0.00 &amp; 63.73 &amp; 63.33 &amp; 63.10 &amp; 64.50 &amp; 63.40 \\
+## 5000 &amp; 0.120 &amp; {\bf 63.27} &amp; 54.57 &amp; 0.00 &amp; 52.10 &amp; 52.63 &amp; 52.60 &amp; 54.07 &amp; 51.90 \\
+## 5000 &amp; 0.134 &amp; {\bf 52.20} &amp; 45.47 &amp; 0.00 &amp; 43.43 &amp; 43.10 &amp; 43.07 &amp; 44.27 &amp; 43.47 \\
+## \hline
+## \end{tabular}
+</code></pre>
+
+<p>The way the function works is quite simple. It has as imput up to four matrices of the same size:</p>
+
+<ul>
+<li><code>table</code> - This is mandatory and it has to contain the information to be printed</li>
+<li><code>bold</code> - An optional logical matrix indicating which cells have to be highlighted in bold font</li>
+<li><code>italic</code> - An optional logical matrix indicating which cells have to be highlighted in italic</li>
+<li><code>mark</code> - An optional logical matrix indicating which cells have to be highlighted in with a mark. This mark can be changed with the <code>mark.char</code>. Note that the way the mark is generated is using mathematical environment using the superscript modifier. Therefore, any code compatible with this can be used. For example, <code>mark.char = &#39;{H_0}&#39;</code> would be a valid way of marking cells.</li>
+</ul>
+
+<p>The function also has an argument <code>file</code>. If provided, the result is written to that file, rather than printed in the standard output. </p>
+
+<p>Regarding the formatting of the numbers, the funtion uses the R&#39;s <code>formatC</code> function, so for possible values for the <code>format</code> parameter check this function. This parameter also has to do with the <code>digits</code> parameter that can be either a single value or a vector of values indicating the numer of significant digits to be used in each column.</p>
+
+<p>Regarding the alignment of columns, the <code>align</code> argument can be modified to the typical values <code>&#39;l&#39;</code>,<code>&#39;r&#39;</code> or <code>&#39;c&#39;</code>.</p>
+
+<p>Optionally, the column and row names can be printed. This is the default behaviour, if they should not be printed, then the arguments <code>print.row.names</code> and/or <code>print.col.names</code> should be set to <code>FALSE</code>.</p>
+
+<p>Finally, the function allows the definition of the horizontal and vertical lines in the table through the parameters <code>bty</code> , <code>hrule</code> and <code>vrule</code>. </p>
+
+<p>The first is a vector of strings that indicate which borders have to be printed. Valid elements for this parameter are <code>&#39;t&#39;</code>, for top border,  <code>&#39;b&#39;</code>, for bottom border,  <code>&#39;l&#39;</code>, for left border and  <code>&#39;r&#39;</code>, for right border. Any subset of these values can be used.</p>
+
+<p>Regarding the <code>hrule</code> and <code>vrule</code> arguments, they can be a list of numbers ranging between 0 and the number of rows/columns - 1, and they indicate after which row/column a line has to be drawn. The 0 value is used to indicate that there has to be a line after the row/column name. Note that the lines after the last row/column are set using the <code>bty</code> argument.</p>
+
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

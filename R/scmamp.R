@@ -5,6 +5,7 @@
 #' @docType package
 #' @name scmamp
 #' @aliases scmamp-package
+#' @details
 NULL
 
 
@@ -15,241 +16,467 @@ NULL
 #'
 #' @format A data frame with 5 columns and 30 rows
 #' @source García S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for all Pairwise Comparisons. \emph{Journal of Machine Learning Research}. 9, 2677-2694.
-#' @name data.garcia.herrera
+#' @name data.gh.2008
+#' @details
 NULL
 
-
-#' @title Statistical pairwise comparisons of algorithms
+#' @title Auxiliar function to perform the post hoc tests
 #'
-#' @export
-#' @description This function gives access to different alternatives to test the algorithms pair-wise
-#' @param results.matrix A matrix or data.frame containing the results obtained by the algorithms (columns) in each problem (rows).
-#' @param test Parameter that indicates the statistical test to be used. It can be either a string indicating one of the available test (\code{'t-test'} for paired t-test,  \code{'Wilcoxon'}) for Wilcoxon Signed rank test, \code{'Friedman post'}, for raw p-values in Friedman test's Nemenyi post hoc or a test or a function with, at least, two parameters, \code{x} and \code{y}, which are the two samples to be compared. The function has to return a list that contains, at least, one element called p.value (as the \code{htest} objects that are usually returned by R's test implementations).
-#' @param correction A string indicating the type of correction that has to be applied to the p-values. Valid names are \code{Shaffer}, \code{Bergmann-Hommel}, \code{Nemenyi}, \code{Tukey} or any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}.
-#' @param ... Special argument used to pass additional parameters to the statistical test or the correction method.
-#' @return The function returns a list that contains:
-#' \itemize{
-#' \item {\code{raw.pvalues} - Matrix with the raw p-values}
-#' \item {\code{corrected.pvalues} - Matrix with the corrected p-values}
-#' \item {\code{test} - String character indicating the test used}
-#' \item {\code{correction} - String character indicating the correction used}
-#' }
-#' @details The most powerfull method is the dynamic procedure by Bergmann and Hommel, but its computational requirements render this method only applicable for few algorithms. In the current version of the package it accepts up to 9 algorithms. If selected in a dataset with more than 9 columns the correction is automatically changed to \code{'Shaffer'} and a warning is displayed. Shaffer's static approach increases the power without much less cost. Regarding the Nemenyi test, when used with \code{'Friedman post'} test it is equivalent to using Bonferroni's correction implemented in the \code{'mt.adj'} function. Note that Tukey post hoc test is designed for ANOVA and, thus, if selected the \code{test} parameter has to be \code{'t-test'}; otherwise a warning is shown and the \code{test} parameter is changed. Simalrly, the Nemenyi test has to be coupled with Friedman test's post, and if not it is modified an a warning is displayed.
-#' @seealso \code{plot.pvalues}, \code{plot.hypothesis}, \code{algorithm.graph}.
-#' @examples
-#' data(data.garcia.herrera)
-#' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
-#' plot.pvalues(pwcomp.bh$corrected.pvalues)
-
-pairwise.test <- function(results.matrix ,  test="Friedman post" , correction="Shaffer" , ...){
-  k <- dim(results.matrix)[2]
-  N <- dim(results.matrix)[1]
-
-  ## Corrections of the elections  
-  if (correction == "Nemenyi" && (is.function(test) || (!is.function(test) & test!="Friedman post"))){
-    warning("The Nemenyi test is Friedman test's post hoc and, thus, can only be coupled with this option. Ignoring the 'test' parameter and setting it to 'Friedman post'")
-    test="Friedman post"
-  }
-  
-  if (correction == "Tukey" && (is.function(test) || (!is.function(test) & test!="t-test"))){
-    warning("The Tukey test is, essentially, a corrected version of the pairwise t-test, so it has to be coupled with this option. Ignoring the 'test' parameter and setting it to 't-test'")
-    test="t-test"
-  }
-  
-  if (correction == "Bergmann Hommel" & k>length(E)){
-    warning("Currently the package only supports Bergmann Hommel procedure for 8 or less algorithms. The correction procedure has been changed to 'Shaffer'")
-  }
-  
-  ## Compute the raw p-value matrix
-  
-  test.name <- "NA"
-  if (is.function(test)){
-    matrix.raw <- custom.post(results.matrix, test , ...)
-    test.name <- paste("Ad hoc function:" , deparse(substitute(test)))
+#' @param data A matrix or data.frame containing the results obtained by the algorithms (columns) in each problem (rows). It can contain additional columns, but in that case it is mandatory to indicate, in the next parameter, which columns contain the algorithm information, unless these columns are (all) used in the \code{group.by} parameter.
+#' @param test Parameter that indicates the statistical test to be used. It can be a string indicating one of the available test (\code{'friedman'} for Friedman test, \code{'aligned ranks'}) for Friedman aligned ranks test, \code{'quade'}, for Quade test, \code{anova}, for ANOVA test. Alternatively, it can be a function that recives as first argument a matrix containing the columns to be compared, and that returns a a list with, at least, an element named \code{p.value} (as the \code{htest} objects that are usually returned by R's test implementations).
+#' @param control Colum used as control. If NULL, all the pairwise comparisons are performed
+#' @details
+#' @return The p-values obtained in the comparisons.
+#' 
+runPostHoc <- function (data, test, control, ...) {
+  # Auxiliar function to conduct the post hoc test
+  # Args:
+  #   data:    Dataset where the test is conducted. It should contain only the values 
+  #            to compare
+  #   test:    Test to be performed
+  #   control: Algorithm used as control
+  #
+  # Returns:
+  #   The obtained p-values
+  #
+  if (is.function(test)) {
+    matrix.raw <- customPost(data, test, ...)
   }else{
     matrix.raw <- switch(test,
-                      "t-test" = {
-                        test.name <- "Paired t-test"
-                        custom.post(results.matrix , function(x,y) t.test(x,y,paired=T)$p.value)
-                      },
-                      "Wilcoxon" = {
-                        test.name <- "Paired Wilcoxon test"
-                        custom.post(results.matrix , function(x,y) wilcoxon.signed.test(x,y)$p.value)
-                      },
-                      "Friedman post" = {
-                        test.name <- "Friedman test's post hoc"
-                        friedman.post(results.matrix)
-                      },
-                      stop("Unknown test. Valid options in the current version are 'Friedman post', 'Wilcoxon' ,'ANOVA post' and 't-test'. Alternatively, you can pass a function that performs a paired statistical texts which should have, at least, two parameters, 'x' and 'y' and returns the p-value associted to the comparison"))
+                         "t-test"= {
+                           test.name <- "Paired t-test"
+                           customPost(data=data, control=control, 
+                                       test=function(x, y) {
+                                         return(t.test(x, y, paired=TRUE))
+                                         })
+                       },
+                       "wilcoxon"= {
+                         test.name <- "Paired Wilcoxon test"
+                         customPost(data=data, control=control, 
+                                    test=function(x,y) {
+                                      return(wilcoxonSignedTest(x,y))
+                                    })
+                       },
+                       "friedman"= {
+                         test.name <- "Friedman test's post hoc"
+                         friedmanPost(data=data, 
+                                      control=control)
+                       },
+                       "aligned ranks"= {
+                         test.name <- "Friedman Aligned Rank test's post hoc"
+                         friedmanAlignedRanksPost(data=data, 
+                                                  control=control)
+                       },
+                       "quade"= {
+                         test.name <- "Quade test's post hoc"
+                         quadePost(data=data, 
+                                   control=control)
+                       },
+                       stop("Unknown test. Valid options in the current version ",
+                            "are 'Wilcoxon', 'Friedman', 'Aligned ranks', 'Quade', ",
+                            "and 't-test'. Alternatively, you can pass a function ",
+                            "that performs a paired statistical texts which ",
+                            "should have, at least, two parameters, 'x' and 'y' ",
+                            "and returns the p-value associted to the comparison"))
+  }
+
+  return(matrix.raw)
+}
+
+
+#' @title Post hoc test for multiple comparison analises
+#'
+#' @export
+#' @description This function is a wrapper to run the post hoc tests.
+#' @param data A matrix or data.frame containing the results obtained by the algorithms (columns) in each problem (rows). It can contain additional columns, but in that case it is mandatory to indicate, in the next parameter, which columns contain the algorithm information, unless these columns are (all) used in the \code{group.by} parameter.
+#' @param algorithms Vector with either the names or the indices of the columns that contain the values to be tested. If not provided, the function assumes that all the columns except those indicated in \code{group.by} represent the results obtained by an algorithm.
+#' @param group.by Vector with either the names or the indices of the columns to be used to group the data. A test is run for each group.
+#' @param test Parameter that indicates the statistical test to be used. It can be a string indicating one of the available test (\code{'friedman'} for Friedman test, \code{'aligned ranks'}) for Friedman aligned ranks test, \code{'quade'}, for Quade test, \code{anova}, for ANOVA test. Alternatively, it can be a function that recives as first argument a matrix containing the columns to be compared, and that returns a a list with, at least, an element named \code{p.value} (as the \code{htest} objects that are usually returned by R's test implementations).
+#' @param correct A string indicating the type of correction that has to be applied to the p-values, in case more than one group is tested. Valid names are \code{holland}, for Holland's method, \code{finner}, for Finner's method, \code{Rom}, for Rom's method, \code{li}, for Li's method, or any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}. Alternatively, a function that performs the correction can be passed. This function has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values {\emph in the same order} as the input vector.
+#' @param ... Special argument used to pass additional parameters to the statistical test or the correction method.
+#' @return In case the \code{group.by} argument is not provided (or it is \code{NULL}), the function return an object of class \code{htest}. If columns for grouping are provided, then the function returns a matrix that includes, for each group, the values of the \code{group.by} columns, the raw p-value and the corrected p-value.
+#' @details 
+#' @examples
+#' # Grouped data
+#' data(data_blum_2015)
+#' multipleComparisonTest (data=data.blum.2015, 
+#'                         algorithms=c("FrogCOL", "FrogMIS", "FruitFly"), 
+#'                         group.by=c("Size", "Radius"), 
+#'                         test="quade", correct="li")
+#' # Not grouped data
+#' data(data_gh_2008)
+#' multipleComparisonTest (data=data.gh.2008, test="aligned ranks", 
+#'                         correct="hochberg")
+#' 
+postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman", 
+                         control=NULL, use.rank=FALSE, sum.fun=mean, 
+                         correct="finner", alpha=0.05, ... ) {
+ 
+  # Convert string columns to their corresponding ID
+  if (!is.null(group.by) & is.character(group.by)) {
+    if (!all(group.by %in% colnames(data))) {
+      warning("Not all the columns indicated in the 'group.by' argument are in ",
+              "the dataset. None existing columns will be ignored")
+    }
+    group.by <- which(colnames(data) %in% group.by)
+  }
+
+  # Remove any index out of bounds
+  sbt <- group.by > 0 & group.by <= ncol(data)
+  if (!all(sbt)) {
+    warning("Not all the columns indicated in the 'group.by' argument are in ",
+            "the dataset. Out of range values will be ignored.")
+  }
+  group.by <- subset(group.by, subset=sbt)
+ 
+  # In case there is not a list of algorithms, then all the columns except those
+  # used to group the data are regarded as algorithm results
+  if (is.null(algorithms)) {
+    algorithms <- which(!(1:ncol(data) %in% group.by))
+  } else {
+    if (is.character(algorithms)) {
+      if (!all(algorithms %in% colnames(data))) {
+        warning("Not all the columns indicated in the 'algorithms' argument are in ",
+                "the dataset. None existing columns will be ignored")
+      }
+      algorithms <- which(colnames(data) %in% algorithms)
+    }
+  
+    sbt <- algorithms > 0 & algorithms <= ncol(data)
+    if (!all(sbt)) {
+      warning("Not all the columns indicated in the 'group.by' argument are in ",
+              "the dataset. Out of range values will be ignored.")
+    }
+    algorithms <- subset(algorithms, subset=sbt)
   }
   
-  matrix.adj <- switch(correction ,
-                      "Shaffer" = {
-                        correction.name <- "Shaffer static"
-                        shaffer.static(matrix.raw)
-                      },
-                      "Bergmann Hommel" = {
-                        correction.name <- "Bermannn Hommel dynamic"
-                        bergmann.hommel.dynamic(matrix.raw)
-                      },
-                      "Nemenyi" = {
-                        correction.name <- "Nemenyi test"
-                        res <- friedman.post(results.matrix)*(k*(k-1)/2)
-                        res[res>1] <- 1
-                        res
-                      },
-                      "Tukey" = {
-                        correction.name <- "Tukey test"
-                        anova.post(results.matrix)
-                      },
-                      {
-                        if (!(correction %in% p.adjust.methods))
-                          stop(paste("Non valid method for p.adjust function. Valid options are " , paste(p.adjust.methods,collapse="; "),sep=""))
-                        correction.name <- paste("p.adjust functions with method set at '" , correction , "'", sep = "")
-                        ## Generate all the pairs to test
-                        pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
-                        raw.vector <- matrix.raw[pairs]
-                        corrected.vector <- p.adjust(p = raw.vector , method = correction )
-                        corrected.matrix <- matrix(rep(NA , k^2),ncol=k)
-                        corrected.matrix[pairs] <- corrected.vector
-                        corrected.matrix[pairs[,c(2,1)]] <- corrected.vector
-                        colnames(corrected.matrix) <- rownames(corrected.matrix) <- colnames(matrix.raw)
-                        corrected.matrix
-                      })
+  # Just in case ...
+  if (length(algorithms) < 2) {
+    stop("At least two algorithms are required to run the function")
+  }
   
-  list(raw.pvalues = matrix.raw , corrected.pvalues = matrix.adj , test = test.name ,  correction = correction.name)
+  # Use name for the control to avoid problems when filtering
+  if (!is.null(control)) {
+    if (is.character(correct) & (correct == "shaffer" | correct == "bergmannHommel")) {
+      warning("Shaffer's and Bergman and Hommel's correction can only be used ",
+              "when all the pairs are compared. For comparisons with a control ",
+              "use any of the other corrections that do not take into account ",
+              "the particular nature of all pairwise comparisons.")
+    }
+    if (is.numeric(control)) {
+      control <- names(data)[control]
+    }
+  }  
+  
+  # Prepare the correction
+  if(is.character(correct)) {
+    correct.name <- correct
+    correct <- switch (correct,
+                       "shaffer"=adjustShaffer,
+                       "bergmann"=adjustBergmannHommel,
+                       "holland"=adjustHolland,
+                       "finner"=adjustFinner,
+                       "rom"={
+                         function(pvalues) {
+                           return(adjustRom(pvalues=pvalues, alpha=alpha))
+                         }
+                       },
+                       "li"=adjustLi,
+                       {
+                         if (!(correct %in% p.adjust.methods)){
+                           stop("Non valid method for p.adjust function. ",
+                                "Valid options are ",
+                                paste(p.adjust.methods, collapse="; "),
+                                ". Additionally, 'holland', 'finner', 'rom' and ",
+                                "'li' are also valid options")
+                         }
+                         function(pvalues, ...) {
+                           p.adjust(p=pvalues, method=correct.name)
+                         }
+                       })
+  } else {
+    correct.name <- deparse(substitute(test))  
+  }
+
+  # Build the summary matrix
+  if (is.null(group.by)){
+   if (use.rank) {
+     aux <- rankMatrix(data=data[, algorithms], ...)
+   } else {
+     aux <- data[, algorithms]
+   }
+   # Note that in aux the group.by columns are at the begining
+   # Some operations may change the name of the algorithms (special characters)
+   sum.matrix <- summarizeData(data=aux, fun=sum.fun, group.by=NULL, ...)
+   names(sum.matrix) <- colnames(data)[algorithms]
+  } else {
+    if (use.rank) {
+      aux <- cbind(data[, group.by], rankMatrix(data=data[, algorithms]), ...)
+    } else {
+      aux <- cbind(data[, group.by], data[, algorithms])
+    }
+    # Note that in aux the group.by columns are at the begining
+    sum.matrix <- summarizeData(data=aux, fun=sum.fun, group.by=1:length(group.by), ...)
+    # Some operations may change the name of the algorithms (special characters)
+    colnames(sum.matrix) < names(data)[c(group.by, algorithms)]
+  }
+  
+  if (!is.null(group.by)){
+    # Generate all the groups as a data.frame
+    groups <- unique(data[, group.by])
+    # In case the result is a vector, convert it into a data.frame
+    if(length(group.by)==1) {
+      groups <- data.frame(groups)
+    }
+    names(groups) <- names(data)[group.by]
+        
+    getRawPvalues <- function (i) {
+      # Filter the data
+      rows <- rep(TRUE, nrow(data))
+      for (j in seq(along.with=group.by)) {
+        g <- group.by[j]
+        rows <- rows & data[, g]==groups[i, j]
+      }
+      data.sub <- subset (data, rows)[, algorithms]
+      # Check the control algorithm
+      if (use.rank){
+        aux <- rankMatrix(data.sub)
+      } else {
+        aux <- data.sub
+      }
+      ref <- apply(aux, MARGIN=2, FUN=sum.fun)
+      if (!is.null(control) & is.character(control)) {
+        if (control=="max") {
+          control <- which.max(ref)
+        } else if (control=="min") {
+          control <- which.min(ref)
+        }
+      }
+      group.result <- runPostHoc (data.sub, test=test, control=control)
+      return(group.result)
+    }
+    
+    group.raw.pval <- unlist(lapply (1:nrow(groups), FUN=getRawPvalues))
+    group.corrected.pval <- correct(group.raw.pval)
+    
+    # Now we create either the arrays or the matrix, depending on whether we have
+    # a control or not
+    k <- length(algorithms)
+    p <- nrow(groups)
+    if (is.null(control)){
+      dim(group.raw.pval) <- c(k, k, p)
+      dim(group.corrected.pval) <- c(k, k, p)
+      
+      # Name the dimensions
+      group.names <- paste(names(groups)[1], groups[, 1], sep=": ")
+      if(ncol(groups) > 1) {
+        for (j in 2:ncol(groups)) {
+          group.names <- cbind(group.names, 
+                               paste(names(groups)[j], groups[, j], sep=": "))
+        }
+        
+        group.names <- apply(group.names, MARGIN=1, 
+                             FUN=function(x) {
+                               return(paste(x, collapse="; "))
+                             })
+      }
+      
+      dimnames(group.raw.pval) <- list(names(data)[algorithms],
+                                       names(data)[algorithms], 
+                                       group.names)
+      
+      dimnames(group.corrected.pval) <- list(names(data)[algorithms],
+                                             names(data)[algorithms],
+                                             group.names)
+    } else {
+      dim(group.raw.pval) <- c(k,p)
+      dim(group.corrected.pval) <- c(k,p)
+      group.raw.pval <- t(group.raw.pval)
+      group.corrected.pval <- t(group.corrected.pval)
+      colnames(group.raw.pval) <- names(data)[algorithms]
+      colnames(group.corrected.pval) <- names(data)[algorithms]
+      group.raw.pval <- cbind(groups, group.raw.pval)
+      group.corrected.pval <- cbind(groups, group.corrected.pval)
+    }
+    raw.pval <- group.raw.pval
+    corrected.pval <- group.corrected.pval
+  } else {
+    if (is.null(control)){
+      # Check the control algorithm
+      aux <- data[, algorithms]
+      if (use.rank){
+        aux <- rankMatrix(aux, ...)
+      }
+      ref <- apply(aux, MARGIN=2, FUN=sum.fun)
+      if (is.character(control)) {
+        if (control=="max") {
+          control <- which.max(ref)
+        } else if (control=="min") {
+          control <- which.min(ref)
+        }
+      }
+    }
+    raw.pval <- runPostHoc(data[, algorithms], test=test, control=control, ...)
+    corrected.pval <- correct(raw.pval)
+  }
+  
+  results <- list(summary=sum.matrix, raw.pval=raw.pval, 
+                  corrected.pval=corrected.pval)
+  return(results)
 }
 
 
 
-
-#' @title All vs. control statistical comparisons
+#' @title Tests for multiple comparisons
 #'
 #' @export
-#' @description Given a results matrix, this function tests the differences between all the algorithms with respect to the best.
-#' @param results.matrix A matrix or data.frame containing the results obtained by the algorithms (columns) in each problem (rows).
-#' @param test Statistical test to be applied. The first two arguments should be the two vectors to compare. The result has to be a list with an element named p.value. An example of this output is the typical \code{\link{htest}} class returned by R's statistical tests.
-#' @param group.by A vector of names or indices of columns that will be used to group the results in \code{results.matrix}.
-#' @param alg.col A vector of names or indices of columns indicating which columns contain the results for the algorithms to compare.
-#' @param control A number or string indicating which should be considered the control result. Valid options: the position of the control algorith, the column name of the control algorithm, \code{'min'} or \code{'max'} indicating the algorithm with the minimum or maximun observed value.
-#' @param summary A function used to summarize the data when looking for the best algorithm. By default, the median is used.
-#' @param correction Type of correction to be applied to the p-values. Any method accepted by the \code{\link{p.adjust}} function is a valid option.
-#' @param sig.level significance level of the test. This value is used only for Rom post-hoc p-value correction.
-#' @param ... Additional parameters to be passed to the test or the summarization function. 
-#' @return A list with three matrices, \code{summary}, \code{raw.pvalues} and \code{adj.pvalues}. The first one contains the summarized values, the second one the raw p-values obtained in the comparison and the third one the adjusted pvalues. In the p-values matrices \code{NA} indicates the reference used in that row (i.e., the algorithms with the best value)
+#' @description This function is a wrapper to multiple comparison tests.
+#' @param data A matrix or data.frame containing the results obtained by the algorithms (columns) in each problem (rows). It can contain additional columns, but in that case it is mandatory to indicate, in the next parameter, which columns contain the algorithm information, unless these columns are (all) used in the \code{group.by} parameter.
+#' @param algorithms Vector with either the names or the indices of the columns that contain the values to be tested. If not provided, the function assumes that all the columns except those indicated in \code{group.by} represent the results obtained by an algorithm.
+#' @param group.by Vector with either the names or the indices of the columns to be used to group the data. A test is run for each group.
+#' @param test Parameter that indicates the statistical test to be used. It can be a string indicating one of the available test (\code{'friedman'} for Friedman test, \code{'aligned ranks'}) for Friedman aligned ranks test, \code{'quade'}, for Quade test, \code{anova}, for ANOVA test. Alternatively, it can be a function that recives as first argument a matrix containing the columns to be compared, and that returns a a list with, at least, an element named \code{p.value} (as the \code{htest} objects that are usually returned by R's test implementations).
+#' @param correct A string indicating the type of correction that has to be applied to the p-values, in case more than one group is tested. Valid names are \code{holland}, for Holland's method, \code{finner}, for Finner's method, \code{Rom}, for Rom's method, \code{li}, for Li's method, or any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}. Alternatively, a function that performs the correction can be passed. This function has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values {\emph in the same order} as the input vector.
+#' @param ... Special argument used to pass additional parameters to the statistical test or the correction method.
+#' @return In case the \code{group.by} argument is not provided (or it is \code{NULL}), the function return an object of class \code{htest}. If columns for grouping are provided, then the function returns a matrix that includes, for each group, the values of the \code{group.by} columns, the raw p-value and the corrected p-value.
+#' @details 
 #' @examples
-#' dir <- system.file("loading_tests",package="scmamp")
-#' file <- paste(dir , "beta_complete_comparison.out" , sep="/")
-#' data <- read.comparison.file (file = file , alg.cols = c('kakizawa','vitale','boundarykernel','betakernel'))
-#' all.vs.control.test (data , group.by = c('size' , 'alpha' , 'beta') , alg.col=4:7 , test = t.test , control='min' , summary = mean , correction = 'hommel' , na.rm = TRUE , paired = TRUE)
+#' # Grouped data
+#' data(data_blum_2015)
+#' multipleComparisonTest (data=data.blum.2015, 
+#'                         algorithms=c("FrogCOL", "FrogMIS", "FruitFly"), 
+#'                         group.by=c("Size", "Radius"), 
+#'                         test="quade", correct="li")
+#' # Not grouped data
+#' data(data_gh_2008)
+#' multipleComparisonTest (data=data.gh.2008, test="aligned ranks", 
+#'                         correct="hochberg")
+#' 
+multipleComparisonTest <- function (data, algorithms=NULL, group.by=NULL, 
+                                    test="aligned ranks", correct="finner", 
+                                    alpha=0.05, ...){
 
-
-all.vs.control.test <- function (results.matrix, test = wilcoxon.signed.test ,  group.by , alg.col , control='max' , summary = mean , correction='holm' ,  sig.level=0.05,...){
-  
-  if (length(alg.col)<2) stop("At least two algorithms are required to run the function")
-  
-  if (is.character(group.by)) group.by <- which(colnames(results.matrix) %in% group.by)
-  if (is.character(alg.col)) alg.col <- which(colnames(results.matrix) %in% alg.col)
-  
-  ## Remove any index out of bounds
-  group.by <- subset(group.by , subset = group.by>0 & group.by<=ncol(results.matrix))
-  alg.col <- subset(alg.col , subset = alg.col>0 & alg.col<=ncol(results.matrix))
-  
-  
-  groups <- unique(results.matrix[,group.by])
-  if(length(group.by)) groups <- data.frame(groups)
-  
-  ##########################################################
-  test.row <- function (group.values){
-    if (length(group.by)==1){
-      sub <- results.matrix[,group.by] == group.values  
-    }else{
-      sub <- apply(results.matrix[,group.by] , MARGIN = 1 , FUN = function(x) all(x ==group.values))
+  # Convert string columns to their corresponding ID
+  if (!is.null(group.by) & is.character(group.by)) {
+    if (!all(group.by %in% colnames(data))) {
+      warning("Not all the columns indicated in the 'group.by' argument are in ",
+              "the dataset. None existing columns will be ignored")
     }
-    
-    matrix <- subset(results.matrix , 
-                     subset = sub, 
-                     select = alg.col)
-    
-    if(nrow(matrix)<15) warning(paste("Running test with less than 15 samples. Combination: " , 
-                                      paste(paste(colnames(groups) , "=" , group.values),collapse="; ") , sep = ""))
-    
-    summ <- apply(matrix , MARGIN = 2 , FUN = function(x) summary (x , ...))
-    if(is.numeric(control) & control > 0 & control <= ncol(matrix))
-    {
-      id <- control
-    }
-    else if (control %in% colnames(results.matrix))
-    {
-      id <- which(colnames(results.matrix)[alg.col]==control)
-    }
-    else{
-      id <- switch(control,'max' = which.max(summ) , 'min' = which.min(summ) , stop("The 'best' parameter has to be either min or max"))
-    }
-    
-    if(is.function(test)){
-      res <- sapply(1:ncol(matrix) , FUN = function(i){
-        if (i!=id){
-          test (matrix[,i] , matrix[,id] , ...)$p.value  
-        }else{
-          NA
-        }
-      }) 
-    }
-    else{
-      res <- switch(test ,
-                    "friedman.test"={friedman.post(matrix,control=id)},
-                    "friedman.alignedranks.test"={friedman.alignedranks.post(matrix,control=id)},
-                    {stop("Post-hoc test not valid")})     
-    }    
-    res
+    group.by <- which(colnames(data) %in% group.by)
   }
-  ##########################################################
   
-  pvalues <- t(apply(groups , MARGIN = 1 , FUN = test.row))
-  pvalues.adj <-   switch(correction ,
-                          "holland" = {
-                            correction.name <- "Holland"
-                            holland(pvalues)
-                          },
-                          "finner" = {
-                            correction.name <- "Finner"
-                            finner(pvalues)
-                          },
-                          "rom" = {
-                            correction.name <- "Rom"
-                            rom(pvalues,alpha=sig.level)
-                          },
-                          "li" = {
-                            correction.name <- "Li"
-                            li(pvalues)
-                          },
-                          {
-                            
-            matrix(p.adjust(unlist(pvalues)) , byrow = F , ncol = ncol(pvalues))
-            if (!(correction %in% p.adjust.methods))
-            {
-             stop(paste("Non valid method for correction. Valid options are: holland, finner, rom, li " , paste(p.adjust.methods,collapse=", "),sep=""))
-            }
-            correction.name <- paste("p.adjust functions with method set at '" , correction , "'", sep = "")
-            matrix(p.adjust(unlist(pvalues)) , byrow = F , ncol = ncol(pvalues))            
-                        })
-    
-    
-    
-    
-    
-    
-    
-  colnames(pvalues.adj) <- colnames(results.matrix)[alg.col]
+  # Remove any index out of bounds
+  sbt <- group.by > 0 & group.by <= ncol(data)
+  if (!all(sbt)) {
+    warning("Not all the columns indicated in the 'group.by' argument are in ",
+            "the dataset. Out of range values will be ignored.")
+  }
+  group.by <- subset(group.by, subset=sbt)
   
-  raw.matrix <- cbind(groups,pvalues)
-  adj.matrix <- cbind(groups,pvalues.adj)
-  colnames(raw.matrix) <- colnames(adj.matrix)
+  # In case there is not a list of algorithms, then all the columns except those
+  # used to group the data are regarded as algorithm results
+  if (is.null(algorithms)) {
+    algorithms <- which(!(1:ncol(data) %in% group.by))
+  } else {
+    # Same processing as with 'group.by'
+    if (is.character(algorithms)) {
+      if (!all(algorithms %in% colnames(data))) {
+        warning("Not all the columns indicated in the 'algorithms' argument are in ",
+                "the dataset. None existing columns will be ignored")
+      }
+      algorithms <- which(colnames(data) %in% algorithms)
+    }
   
-  ignore <- which(!colnames(results.matrix) %in% colnames(raw.matrix)) 
+    sbt <- algorithms > 0 & algorithms <= ncol(data)
+    if (!all(sbt)) {
+      warning("Not all the columns indicated in the 'group.by' argument are in ",
+              "the dataset. Out of range values will be ignored.")
+    }
+    algorithms <- subset(algorithms, subset=sbt)
+  }
   
-  summ <- summarize.data(results.matrix , fun = summary , group.by = group.by , ignore = ignore , ...)
+  # Just in case ...
+  if (length(algorithms) < 2) {
+    stop("At least two algorithms are required to run the function")
+  }
+
+  # Prepare the test function 
   
-  list(summary = summ , raw.pvalues = raw.matrix , adj.pvalues = adj.matrix)
+  if(is.character(test)) {
+    test.name <- test
+    test <- switch (test,
+                    "friedman"=friedmanTest,
+                    "iman"=imanDavenportTest,
+                    "aligned ranks"=friedmanAlignedRanksTest,
+                    "quade"=quadeTest,
+                    "anova"=anovaTest,
+                    stop("Unknown test. Valid options are 'friedman', ",
+                         "'aligned ranks', 'quade', 'anova' or a function that ",
+                         "gets as input a data.frame or matrix where each ",
+                         "algorithm is in a column"))
+  } else {
+    test.name <- deparse(substitute(test))  
+  }
+  
+  # Prepare the correction function
+  if(is.character(correct)) {
+    correct.name <- correct
+    correct <- switch (correct,
+                       "holland"=adjustHolland,
+                       "finner"=adjustFinner,,
+                       "rom"={
+                         function(pvalues) {
+                           return(adjustRom(pvalues=pvalues, alpha=alpha))
+                         }
+                       },
+                       "li"=adjustLi,
+                       {
+                         if (!(correct %in% p.adjust.methods)){
+                           stop("Non valid method for p.adjust function. ",
+                                "Valid options are ",
+                                paste(p.adjust.methods, collapse="; "),
+                                ". Additionally, 'holland', 'finner', 'rom' and ",
+                                "'li' are also valid options")
+                         }
+                         function(pvalues, ...) {
+                           p.adjust(p=pvalues, method=correct.name)
+                         }
+                       })
+  } else {
+    correct.name <- deparse(substitute(test))  
+  }
+
+  if (!is.null(group.by)){
+    # Generate all the groups as a data.frame
+    groups <- unique(data[, group.by])
+    # In case the result is a vector, convert it into a data.frame
+    if(length(group.by)==1) {
+      groups <- data.frame(groups)
+    }
+    names(groups) <- names(data)[group.by]
+  
+    getRawPvalues <- function (i) {
+      # Filter the data
+      rows <- rep(TRUE, nrow(data))
+      for (j in seq(along.with=group.by)) {
+        g <- group.by[j]
+        rows <- rows & data[, g]==groups[i, j]
+      }
+      data.sub <- subset (data, subset=rows, select=algorithms)
+      group.result <- test(data.sub, ...)$p.value
+      return(group.result)
+    }
+    group.raw.pval <- sapply (1:nrow(groups), FUN=getRawPvalues)
+  
+    # Correct the p-values and generate the final matrix
+    group.corrected.pval <- correct(group.raw.pval, ...)
+    res.matrix <- cbind(groups, group.raw.pval, group.corrected.pval)
+    colnames(res.matrix) <- c(colnames(groups), 
+                              paste("Raw_p-val_", test.name, sep=""), 
+                              paste("Corrected_p-val_", correct.name, sep=""))
+    result <- res.matrix
+  } else {
+    data.multipleComparisonTest <- data[, algorithms]
+    result <- test(data.multipleComparisonTest, ...)
+  }
+  return(result)
 }

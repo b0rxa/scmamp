@@ -1,0 +1,225 @@
+---
+title: "Data loading and manipulation with scmamp"
+author: "Borja Calvo and Guzmán Santafé"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data loading and manipulation with scmamp}
+  %\VignetteEngine{knitr::docco_linear}
+  \usepackage[utf8]{inputenc}
+---
+# Data loading and manipulation with scmamp
+
+The main goal of this package is makeing the statistical analysis of emprical comparisions of algorithms easy and fast. For that reason, and with the aim at being a complete solution, the package includes functions to load data and manipulate data, as well as to format the results for its further use in publications. This vignettes shows the use of these functions.
+
+## Loading the data
+
+The data matrices required by the package funtions should have one row per problem and a number of columns. The columns can be divided into two subsets, descriptors of the problem and results obtained by the algorithms applied to that problem. The package comes with three examples of data sets:
+
+```{r, prompt=TRUE}
+library(scmamp)
+data(data_gh_2008)
+head(data.gh.2008)
+data(data_gh_2010)
+head(data.gh.2010)
+data(data_blum_2015)
+head(data.blum.2015)
+```
+
+The first two correspond to the example datasets used in _García and Herrera (2008)_ and _García and Herrera (2010)_ respectively, and they do not have any descriptor of the dataset---actually, the descritor is in the names of the rows, that indicate the data set used in each comparison. The thirds set corresponds to the results presented in _Blum et al. (2015)_. In particular, these are the results obtained by 8 decentralized algorithms in a set of random geometric graphs. In this case, the first two columns (`Size` and `Radius`) represent the descriptors of the problem (number of nodes in the graph and maximum distance to consider two nodes as connected).
+
+This type of matrix can be easily loaded from a csv file with the same structure---we will name this structure as _comparison format_. However, in some cases the results are not in this format. As an alternative to externally process the results to build such a file, the package includes some function to do this task in some typical cases. If you are able to construct a matrix like this in R, then you can skip this section.
+
+The most simple function is `readComparisonFile`, a function that process one single file in comparison format. This is the format of the tables shown above, so this function essentially reads files of this kind. The only additional processing of this function is the posibility of including the column names in case the file does not contain a header and a reorganization of the columns to have all the descriptors at the begining and the algorithms at the end. The function has three parameters:
+
+* `file` - The path of the file to load.
+* `alg.cols` - A vector with either column names or column indices to indicate which columns in the file contain results. The rest are assumed to be descriptors of the problem.
+* `col.names` - An optional parameter to indicate the name of the columns. If not provided, the names are taken from the header of the file (the first line).
+
+The function accepts additional parameter for the `read.csv` function, such as `sep` for the character used to separate columns or `skip` to skip the first `n` lines of the file. The only parameter not accepted is `header`, as it is fixed depending on whether the `col.names` parameter is used or not.
+
+For example, if we want to load a file named `results.dat` where the first 5 lines are comments, the elements are separated by a semicolon and the actual results are in three columns named `Alg_1`, `Alg_1` and `Alg_3`, the call would be:
+
+```{r, eval=FALSE, prompt=TRUE}
+data.raw <- readComparisonFile(file="results.dat", alg.cols=c('Alg_1', 'Alg_2', 'Alg_3'), 
+                               skip=5, sep=";")
+```
+
+As an example of real use of this function, the package includes a file containing all the results in `data.blum.2015`. This file can be loaded as follows:
+
+```{r, prompt=TRUE}
+data.dir <- system.file("loading_tests",package="scmamp")
+file.path <- paste(data.dir, "rgg_complete_comparison.out", sep="/")
+data.raw <- readComparisonFile(file=file.path, alg.cols=3:10, col.names=NULL)
+head(data.raw)
+```
+
+Quite often the results of an experimentation are separated into different files (e.g., when the experiment has been paralelized and run in a cluster). In such cases, part of the information we need to load may be encoded in the file name itself; `scmamp` includes functions to cope with this situation. In case each of the result files are in comparison format (i.e., they have a structure similar to the examples above), the function `readComparisonDir` can be used to load all the files in a given directory. Note that the function will try to load all the files, so the directory must contain only result files.
+
+Instead of passing the path to a file, in this case we need to provide the path of the directory that contains the files. As in the previous function, we have the parameters `alg.cols` and `col.names`, that have the same meaning as in `readComparisonFile`. The function has another two parameters, `names` and `fname.pattern`, which are the arguments used to define how the file names have to be processed.
+
+The `fname.pattern` is used to specify, using regular expressions, the pattern of the files. In this patter there should be one or more groups, which are represented between parenthesis. These groups are the part of the information that will be extracted from the name; the `names` argument is a vector to assign names to each of the extracted elements.
+
+Although the patterns can be far more complex, quite frequently the file name will be an alternation of fixed and variable parts. The package includes an example of directory with this kind of files.
+
+```{r, prompt=TRUE}
+dir <- paste(system.file("loading_tests",package="scmamp"), 
+             "comparison_files", sep="/")
+list.files(dir)
+```
+
+The structure of the names in this example is as follows. All the names start with a fixed string, `rgg_size_`. Then there is an integer value, corresponding to the size of the graph. Then, after another fixed string (`_r_`), we a real number, the radius used to crate the graph. Finally, the name ends with the extension `.out`. The way we can construct the pattern for this files is:
+
+```{r, prompt=TRUE}
+fname.pattern <- "rgg_size_([0-9]*)_r_([0-9]*.[0-9]*)\\.out"
+```
+
+The pattern includes the fixed strings and the pattern of the variable parts between brackets. For instance, if we have an integer of variable size, we can define its pattern as `[0-9]*`, `[0-9]` representing any digit and `*` the previous pattern repeated any number of times. It is important to include these patterns between brackets, as only these parts will be extracted. In general, in most cases we can define between square brackets the chracters we may find and then add an `*` after it, as for example:
+
+- `[0-9]*.[0-9]*` for non-integer numbers.
+- `[a - z]*` for lower case strings.
+- `[A - Z]` for upper case strings.
+- `[A - Z][a - z]*` for lower case strings starting with an upper case letter.
+
+Note that, given that all the radius used start with 0., we can simplify the patter changing the `[0-9]*` berfore the period with just a 0. In the pattern above there are two groups defined and, thus, we need to assign three two to them:
+
+```{r, prompt=TRUE}
+var.names <- c("Size", "Radius")
+```
+
+The files have a header indicaint the name of the columns which, in this case, correspond to the results obtained by the four estimators. Therefore, we do not need to specify the column names but, as in the case of a single file, we have to indicate which columns are the ones that have the results. This can be done using the index of the columns (used in the previous example), or their names:
+
+```{r, prompt=TRUE}
+alg.names <- c("FruitFly", "Shukla", "Ikeda", "Turau", "Rand1", "Rand2", "FrogCOL", "FrogMIS")
+```
+
+Finally, we can load the data
+
+```{r, prompt=TRUE}
+rm("data.raw")
+data.raw <- readComparisonDir (directory=dir, alg.cols=alg.names, col.names=NULL,
+                           names=var.names, fname.pattern=fname.pattern)
+head(data.raw)
+```
+
+As we can see above, besides the content of files (the last four columns), the resulting matrix includes the information extracted from the name of the files, named according to `names`. Note that, when `alg.cols` contains the column indices, these are refered to the columns inside the file. In other words, we do not expect to have the name of the algorithm in the file name.
+
+However, in some situations, the results for each algorithm may be in a different file. Such kind of files contain the results of only one of the algorithms per line. We will name this structure _experiment format_, to distinguish it from the previous structure. There are two functions to handle this kind of files, `readExperimentFile` and `readExperimentDir`. These functions are similar to the previous two, but have some differences that have to do with the format of the files.
+
+
+Each row of these files will have the result of applying one algorithm to one problem. Therefore, the experiment is characterized using descriptors for the problem, a column indicating the algorithm used and a column containing the result to be compared. The package includes one example of this kind of file that contains all the results in `data.blum.2015`:
+
+```{r, prompt=TRUE}
+dir <- system.file("loading_tests", package="scmamp")
+file <- paste(dir, "rgg_complete_experiment.out", sep="/")
+content <- read.csv(file)
+content[c(1,901,181),]
+```
+
+As can be seen above, the first two columns are the same descriptors as in previous examples, but now we have only two more columns. The `Algorithm` column, that indicates the algorithm used, and `Evaluation`, that contains the value to be used. This kind of file can be read using the function `readExperimentFile` in order to produce the table we need for the analysis.
+
+```{r, prompt=TRUE, cache=TRUE}
+rm("data.raw")
+data.raw <- readExperimentFile (file=file, alg.col="Algorithm", value.col="Evaluation")
+head(data.raw)
+```
+
+Note that, in this case, the file has to be process to build a matrix in comparison format and, thus, loading the data from this type of structure is computationally more expensive. Therefore, it is highly recommended to use the comparison format to store the results. 
+
+Now, instead of an argument to determine which columns include the results we have two arguments, `alg.col` and `value.col`, that have to be either the name or the index of the columns that contain the algorithm used and the value obtained, respectively. Additionally, as in the previous functions there is an argument to indicate the name of the columns, in case the file has not a header.
+
+As in the case of the comparision format, the package includes a function to load all the files in a directory: `readExperimentDir`. Conversely to the previous function, as in this case the information about the algorithm can be either inside the file or in its name, instead of the `alg.col` argument that can be the name or the index, now we have an argument, `alg.var.name`, that can only be a string; This string should be a column name or the name assigned to any of the variables extracted from the file name.
+
+Similarly to the function `readComparisonDir`, we have two parameters, `name` and `fname.pattern`, to define how the name of the files will be processed. An example of the use of this function is the following.
+
+```{r, prompt=TRUE, cache=TRUE}
+rm("data.raw")
+dir <- paste(system.file("loading_tests", package="scmamp"), 
+             "experiment_files", sep="/")
+list.files(dir)[1:10]
+pattern <- "rgg_size_([0-9]*)_r_(0.[0-9]*)_([a-z, A-Z, 1, 2]*).out"
+var.names <- c("Size", "Radius", "Algorithm")
+data.raw <- readExperimentDir (directory=dir, names=var.names, fname.pattern=pattern,
+                               alg.var.name='Algorithm', value.col=1, col.names="Evaluation")
+head(data.raw)
+```
+
+In this case, the format of the file names is similar, but it includes the name of the estimator, so in this case the information about the algorithm used is in the file name itself. Actually, the files contain one single column with the results of 30 repetitions.
+
+## Filtering and summarizing results
+
+The package includes functions that can be used perform two basic operations with data matrices, summarizing and filtering.
+
+The summarization can be achieved easily with the function `summarizeData`. For example, we can get the median value obtained, for each graph size, by the each algorithm:
+
+```{r , echo=-1}
+summarizeData(data=data.raw, fun=median, group.by=c("Size"), ignore=c("Radius"))
+```
+
+The function `filterData` can be used to remove rows and columns in a simple way. For example, to reduce the data matrix to the results where the size was 100 and Rand2 has a value higher than Rand1, retaining all the columns except the size, we can run:
+
+```{r}
+data.filtered <- filterData(data=data.raw, 
+                            condition="Size == 100 & Rand1 <= Rand2", 
+                            remove.cols="Size")
+dim(data.filtered)
+dim(data.raw)
+```
+
+This can be combined with the previous function to get, for instance, the average error for each radius.
+
+```{r}
+summarizeData(data.filtered, group.by=c("Radius"))
+```
+
+
+## Formating the results
+
+The package includes a number of functions to generate plots and tables of results. The plots (shown in other vignettes) can be directly used as material for publication, but the tables requires some formating. The package includes a simple function to print tables in LaTeX format, called `writeTabular`.
+
+Suppose we want to compare, for each problem in the example presented above, all the classifiers with the best one. This can be done using the `postHocTest` function.
+
+```{r , warning=FALSE , cache=TRUE , echo=-1}
+test <- "wilcoxon"
+group.by <- c("Size","Radius")
+alg.cols <- 3:10
+result <- postHocTest(data=data.raw, algorithms=alg.cols, group.by=group.by,
+                      test=test, control="max", correct="holland")
+```
+
+The result includes the summarized values and the p-values associated to each comparison. In a typical table we would like to have the summarize values, highlighting the control value and those with no significant differences. We can create such a table with the followng call:
+
+```{r}
+summ <- result$summary
+pval <- result$corrected.pval
+bold <- is.na(pval)
+mark <- pval > 0.05
+mark[, (1:2)] <- FALSE
+mark[is.na(mark)] <- FALSE
+digits <- c(0, 3, rep(2, 8))
+
+writeTabular(table=summ, format="f", bold=bold, mark=mark, mark.char="+", 
+             hrule=c(0, 10, 20, 30), vrule = c(2, 4), digits=digits, 
+             print.row.names=FALSE)
+```
+
+The way the function works is quite simple. It has as imput up to four matrices of the same size:
+
+* `table` - This is mandatory and it has to contain the information to be printed
+* `bold` - An optional logical matrix indicating which cells have to be highlighted in bold font
+* `italic` - An optional logical matrix indicating which cells have to be highlighted in italic
+* `mark` - An optional logical matrix indicating which cells have to be highlighted in with a mark. This mark can be changed with the `mark.char`. Note that the way the mark is generated is using mathematical environment using the superscript modifier. Therefore, any code compatible with this can be used. For example, `mark.char = '{H_0}'` would be a valid way of marking cells.
+
+The function also has an argument `file`. If provided, the result is written to that file, rather than printed in the standard output. 
+
+Regarding the formatting of the numbers, the funtion uses the R's `formatC` function, so for possible values for the `format` parameter check this function. This parameter also has to do with the `digits` parameter that can be either a single value or a vector of values indicating the numer of significant digits to be used in each column.
+
+Regarding the alignment of columns, the `align` argument can be modified to the typical values `'l'`,`'r'` or `'c'`.
+
+Optionally, the column and row names can be printed. This is the default behaviour, if they should not be printed, then the arguments `print.row.names` and/or `print.col.names` should be set to `FALSE`.
+
+Finally, the function allows the definition of the horizontal and vertical lines in the table through the parameters `bty` , `hrule` and `vrule`. 
+
+The first is a vector of strings that indicate which borders have to be printed. Valid elements for this parameter are `'t'`, for top border,  `'b'`, for bottom border,  `'l'`, for left border and  `'r'`, for right border. Any subset of these values can be used.
+
+Regarding the `hrule` and `vrule` arguments, they can be a list of numbers ranging between 0 and the number of rows/columns - 1, and they indicate after which row/column a line has to be drawn. The 0 value is used to indicate that there has to be a line after the row/column name. Note that the lines after the last row/column are set using the `bty` argument.

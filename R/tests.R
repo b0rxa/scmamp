@@ -1,8 +1,21 @@
-## Function that returns the order an, in case of ties, the average rank
-order.with.ties <- function(x , decreasing = TRUE){
-  sorted <- sort(x,decreasing = decreasing)
-  sapply(x,FUN=function(i) mean(which(sorted==i)))
+getNemenyiCD <- function (alpha = 0.05, num.alg, num.problems) {
+  # Auxiliar function to compute the critical difference for Nemenyi test
+  # Args:
+  #   alpha:        Alpha for the test
+  #   num.alg:      Number of algorithms tested
+  #   num.problems: Number of problems where the algorithms have been tested
+  #
+  # Returns:
+  #   Corresponding critical difference
+  #
+  df <- num.alg * (num.problems - 1)
+  qa <- qtukey(p=1 - alpha, nmeans=num.alg, df=df)/sqrt(2)
+  cd <- qa * sqrt((num.alg * (num.alg + 1)) / (6 * num.problems))
+  return(cd)
 }
+
+
+# EXPORTED FUNCTIONS -----------------------------------------------------------
 
 #' @title Wilcoxon signed-rank est
 #'
@@ -18,25 +31,33 @@ order.with.ties <- function(x , decreasing = TRUE){
 #' y <- x + runif(50)*0.2
 #' wilcoxon.signed.test(x , y)
 
-wilcoxon.signed.test <- function (x , y , ...){
-  if (length(x)!=length(y)) stop("This is a paired test, so the two vectors have to have the same length")
-  N <- length(x)
-  d <- x-y
-  o <- order.with.ties(abs(d))
-  rp <- sum(o[d>0]) + sum(o[d==0])
-  rn <- sum(o[d<0]) + sum(o[d==0])
-  t <- min(rp , rn)
-  num <- t - 0.25*(N*(N+1))
-  den <- sqrt((N*(N+1)*(2*N+1))/24)
-  z <- num / den
+wilcoxonSignedTest <- function (x, y, ...) {
+  if (length(x) != length(y)) {
+    stop("This is a paired test, so the two vectors have to have the same length")
+  }
+  N  <- length(x)
+  d  <- x-y
+  # Compute the statistic based on the ordering of the differences. 
+  # We need to assign the highest rank to the biggest value, so we change the 
+  # sign of the absolute difference.
+  o  <- rank(-abs(d), ties.method="average")
+  rp <- sum(o[d>0]) + sum(o[d == 0])
+  rn <- sum(o[d<0]) + sum(o[d == 0])
+  t  <- min(rp, rn)
   
+  num    <- t - 0.25 * (N * (N + 1))
+  den    <- sqrt((N * (N + 1) * (2 * N + 1)) / 24)
+  z      <- num / den
   pvalue <- pnorm(z)  
-  names(t)<-"T"
-  method <- "Wilcoxon Signed-Rank test"
+  
+  names(t)  <- "T"
+  method    <- "Wilcoxon Signed-Rank test"
   data.name <- deparse(substitute(data))
-  res <- list(statistic = t , p.value = pvalue , method = method , data.name = data.name )
-  class(res)<-"htest"
-  res
+  
+  # Create and return the htest object
+  res <- list(statistic=t, p.value=pvalue, method=method, data.name=data.name )
+  class(res) <- "htest"
+  return(res)
 }
 
 #' @title ANOVA test for multiple comparisons
@@ -51,33 +72,34 @@ wilcoxon.signed.test <- function (x , y , ...){
 #' data(data.garcia.herrera)
 #' anova.test(data.garcia.herrera)
 
-anova.test <- function (data , ...){
+anovaTest <- function (data, ...){
   
-  ## Implemented according to Test 22 in 100 statistical tests
+  # Implemented according to Test 22 in 100 statistical tests
   k <- dim(data)[2]
   N <- dim(data)[1]
   
   m.x <- colMeans(data)
   
-  ## Variance of the observations with respect to their own sample
-  var.1 <- mean(apply(data , MARGIN = 2 , FUN = var))
+  # Variance of the observations with respect to their own sample
+  var.1 <- mean(apply(data, MARGIN=2, FUN=var))
   
-  ## Variance ofthe sample means with respect to the grand mean
-  g.m <- mean(unlist(data))
-  var.2 <- sum(N*(m.x - g.m)^2) / (k-1)
+  # Variance ofthe sample means with respect to the grand mean
+  g.m   <- mean(unlist(data))
+  var.2 <- sum(N * (m.x - g.m) ^ 2) / (k - 1)
   
-  ## Statistic that follows an F distribution with (k-1); k*(N-1) degrees of freedom
-  F = var.2 / var.1 
+  # Statistic that follows an F distribution with (k - 1); k * (N - 1) degrees of freedom
+  F.stat <- var.2 / var.1 
+  pvalue <- 1 - pf(F.stat, k - 1, k * (N - 1))
   
-  pvalue <- 1-pf(F,k-1,k*(N-1))
-  
-  parameters <- c(df1=k-1 , df2=k*(N-1))
-  names(F)<-"F statistic"
-  method <- "F-test for K population means (Analysis of Variance)"
-  data.name <- deparse(substitute(data))
-  res <- list(statistic = F , p.value = pvalue , parameters = parameters, method = method , data.name = data.name )
-  class(res)<-"htest"
-  res
+  # Build and return the htest object
+  parameters    <- c(df1=k - 1, df2=k * (N - 1))
+  names(F.stat) <- "F statistic"
+  method        <- "F-test for K population means (Analysis of Variance)"
+  data.name     <- deparse(substitute(data))
+  res <- list(statistic=F.stat, p.value=pvalue, parameters=parameters, 
+              method=method, data.name=data.name)
+  class(res) <- "htest"
+  return(res)
 }
 
 
@@ -91,10 +113,23 @@ anova.test <- function (data , ...){
 #' data("garcia.herrera")
 #' rank.matrix(data.garcia.herrera)
 
-rank.matrix <- function(data , decreasing = TRUE){
-  rankings <- t(apply (data , MARGIN = 1 , FUN = order.with.ties))
+rankMatrix <- function(data, decreasing=TRUE){
+  # The rank function is based on an increasing ordering. In case we need to
+  # get the rank of the descreasing ordering, just rank -x instead of x
+  if (decreasing){
+    f <- function(x){
+      rank(-x, ties.method="average")
+    }
+  } else {
+    f <- function(x){
+      rank(x, ties.method="average")
+    }
+  }
+  
+  rankings <- t(apply (data, MARGIN=1, FUN=f))
   colnames(rankings) <- colnames(data)
-  rankings
+  rownames(rankings) <- rownames(data)
+  return(rankings)
 }
 
 
@@ -108,24 +143,105 @@ rank.matrix <- function(data , decreasing = TRUE){
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' 
 #' @examples
-#' data("garcia.herrera")
-#' friedman.test(data.garcia.herrera)
+#' data("data.garcia.herrera")
+#' friedmanTest(data.garcia.herrera)
 
-friedman.test <- function (data , ...){
-  N<-dim(data)[1]
-  k<-dim(data)[2]
-  mr <- colMeans(rank.matrix(data))
+friedmanTest <- function (data, ...) {
+  N <- dim(data)[1]
+  k <- dim(data)[2]
+  mr <- colMeans(rankMatrix(data))
   
-  friedman.stat <- 12*N/(k*(k+1))*(sum(mr^2) - (k*(k+1)^2)/4)
-  p.value <- 1-pchisq(friedman.stat , df = (k-1))
-  names(friedman.stat)<-"Friedman's chi-squared"
-  parameter <- (k-1)
+  friedman.stat <- 12 * N / (k * (k + 1)) * (sum(mr^2) - (k * (k + 1)^2) / 4)
+  p.value <- 1 - pchisq(friedman.stat, df=(k - 1))
+  
+  names(friedman.stat) <- "Friedman's chi-squared"
+  parameter <- (k - 1)
   names(parameter) <- c("df")
   method <- "Friedman's rank sum test"
   data.name <- deparse(substitute(data))
-  res <- list(statistic = friedman.stat , parameter = parameter , p.value = p.value , method = method , data.name = data.name )
-  class(res)<-"htest"
-  res
+  htest.result <- list(statistic=friedman.stat, parameter=parameter, 
+                       p.value=p.value, method=method, data.name=data.name)
+  class(htest.result) <- "htest"
+  return(htest.result)
+}
+
+
+friedmanAlignedRanksTest <- function (data, ...) {
+  N <- dim(data)[1]
+  k <- dim(data)[2]
+  
+  # Compute the p-values for each pair
+  dataset.means <- rowMeans(data)
+  diff.matrix <- data - matrix(rep(dataset.means, k), ncol=k)
+  # To get the rank of a decreasing ordering, change the sign of the differences
+  ranks <- matrix(rank(-unlist(diff.matrix)), ncol=k, byrow=FALSE)
+  colnames(ranks) <- colnames(data)
+  
+  r.j <- colSums(ranks)
+  r.i <- rowSums(ranks)
+  
+  r.i.sq.sum <- sum(r.i^2)
+  r.j.sq.sum <- sum(r.j^2)
+  kn         <- k * N
+  
+  t.stat.num   <- (k - 1) * (r.j.sq.sum - (kn * N / 4) * (kn + 1)^2)
+  t.stat.denom <- ((kn * (kn + 1)) * ((2 * kn) + 1)) / 6 - (1 / k) * r.i.sq.sum
+  t.stat       <- t.stat.num / t.stat.denom
+  
+  p.value <- 1 - pchisq(t.stat, df=(k - 1))
+  
+  names(t.stat) <- "T"
+  parameter <- (k - 1)
+  names(parameter) <- c("df")
+  method <- "Friedman's Aligned Rank Test for Multiple Comparisons"
+  data.name <- deparse(substitute(data))
+  htest.result <- list(statistic=t.stat, parameter=parameter, 
+                       p.value=p.value, method=method, data.name=data.name)
+  class(htest.result) <- "htest"
+  return(htest.result)
+}
+
+
+
+quadeTest <- function (data, ...) {
+  N <- dim(data)[1]
+  k <- dim(data)[2]
+  
+  # Compute the p-values for each pair
+  range.dataset <- apply(data, MARGIN=1, 
+                         FUN=function(x) {
+                           rg <- range(x)
+                           return(diff(rg))
+                         })
+  q.i  <- rank(range.dataset)
+  r.ij <- rankMatrix(data)
+  aux.q.i <- matrix(rep(q.i, k), ncol=k, byrow=FALSE)
+  s.ij <- aux.q.i * (r.ij - ((k+1)/2))
+  w.ij <- aux.q.i * r.ij
+  
+  s.j <- colSums(s.ij)
+  w.j <- colSums(w.ij)
+  
+  t.j <- w.j / (N * (N + 1) / 2)
+  num <- k * (k + 1) * (2 * N + 1) * (k - 1)
+  den <- 18 * N * (N + 1)
+  nrm <- sqrt(num / den)
+  
+  a.2 <- N * (N + 1) * (2 * N + 1) * k * (k + 1) * (k - 1) / 72
+  b   <- 1 / N * sum(s.j^2)
+  t.3 <- ((N - 1) * b) / (a.2 - b)
+  
+  p.value <- 1 - pf(t.3, df1=(k - 1), df2 = (k - 1) * (N - 1))
+  
+  names(t.3) <- "T"
+  parameter <- (k - 1)
+  names(parameter) <- c("df")
+  method <- "Quade for Multiple Comparisons"
+  data.name <- deparse(substitute(data))
+  htest.result <- list(statistic=t.3, parameter=parameter, 
+                       p.value=p.value, method=method, data.name=data.name)
+  class(htest.result) <- "htest"
+  return(htest.result)
 }
 
 #' @title Iman Davenport's modification of Friedman's test
@@ -139,42 +255,27 @@ friedman.test <- function (data , ...){
 #' 
 #' @examples
 #' data("garcia.herrera")
-#' iman.davenport.test(data.garcia.herrera)
+#' imanDavenportTest(data.garcia.herrera)
 
-iman.davenport.test <- function (data , ...){
-  N<-dim(data)[1]
-  k<-dim(data)[2]
-  mr <- colMeans(rank.matrix(data))
+imanDavenportTest <- function (data, ...) {
+  N <- dim(data)[1]
+  k <- dim(data)[2]
+  mr <- colMeans(rankMatrix(data))
   
-  friedman.stat <- 12*N/(k*(k+1))*(sum(mr^2) - (k*(k+1)^2)/4)
-  ## Iman Davenport correction of Friedman's test
-  id.stat <- (N-1)*friedman.stat / (N*(k-1) - friedman.stat)
-  p.value <- 1-pf(id.stat , df1 = (k-1) , df2 = (k-1)*(N-1))
+  friedman.stat <- 12 * N / (k * (k + 1)) * (sum(mr^2) - (k * (k + 1)^2) / 4)
+  # Iman Davenport correction of Friedman's test
+  id.stat <- (N - 1) * friedman.stat / (N * (k - 1) - friedman.stat)
+  p.value <- 1 - pf(id.stat, df1=(k - 1), df2=(k - 1) * (N - 1))
+  
   names(id.stat)<-"Corrected Friedman's chi-squared"
-  parameter <- c((k-1) , (k-1)*(N-1))
-  names(parameter) <- c("df1","df2")
+  parameter <- c((k - 1), (k - 1) * (N - 1))
+  names(parameter) <- c("df1", "df2")
   method <- "Iman Davenport's correction of Friedman's rank sum test"
   data.name <- deparse(substitute(data))
-  res <- list(statistic = id.stat , parameter = parameter , p.value = p.value , method = method , data.name = data.name )
-  class(res)<-"htest"
-  res
-}
-
-## DO NOT USE ROXYGENIZE, NOT A PUBLIC FUNCTION
-# @title Nemenyi test critical difference
-#
-# @description This function computes the critical difference for the Nemenyi test
-# @param alpha Significance of the test
-# @param num.alg Number of algorithms (treatments, etc.)
-# @param num.problems Number of problems (samples)
-# @return Critical difference of averge rankings. When the difference is, in absolute value, greater than this value the null hypothesis (no differences) is rejected.
-# @details The test has been implemented according to the version in Demsar (2006), page 11
-# @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
-# @seealso \code{\link{nemenyi.test}}
-# 
-nemenyi.cd <- function (alpha = 0.05, num.alg , num.problems){
-  qa <- qtukey(1-alpha , num.alg , num.alg * (num.problems-1))/sqrt(2)
-  qa*sqrt((num.alg*(num.alg+1))/(6*num.problems))
+  htest.result <- list(statistic=id.stat, parameter=parameter, 
+                       p.value=p.value, method=method, data.name=data.name)
+  class(htest.result)<-"htest"
+  htest.result
 }
 
 #' @title Nemenyi test 
@@ -187,33 +288,37 @@ nemenyi.cd <- function (alpha = 0.05, num.alg , num.problems){
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' @examples
 #' data(data.garcia.herrera)
-#' res <- nemenyi.test(data.garcia.herrera , alpha = 0.1)
+#' res <- nemenyiTest(data.garcia.herrera , alpha = 0.1)
 #' res
 #' res$diff.matrix
 
-nemenyi.test <- function (data , alpha = 0.05){
+nemenyiTest <- function (data, alpha=0.05) {
   k <- dim(data)[2]
   N <- dim(data)[1]
-  cd <- nemenyi.cd (alpha = alpha , num.alg = k , num.problems = N)
+  cd <- getNemenyiCD (alpha=alpha, num.alg=k, num.problems=N)
   
-  mean.rank <- colMeans(rank.matrix(data))
-  pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
+  mean.rank <- colMeans(rankMatrix(data))
+  pairs <- generatePairs(k, control=NULL)
   
-  differences <- apply(pairs , MARGIN = 1 , FUN = function(x){mean.rank[x[1]] - mean.rank[x[2]]})
-  difference.matrix <- matrix(rep(0 , k^2) , ncol = k)
+  differences <- apply(pairs, MARGIN=1, 
+                       FUN=function(x) {
+                         mean.rank[x[1]] - mean.rank[x[2]]
+                       })
+  difference.matrix <- matrix(rep(0, k^2), ncol=k)
   difference.matrix[pairs] <- differences
   difference.matrix[pairs[,c(2,1)]] <- differences
-  colnames(difference.matrix) <- rownames(difference.matrix) <- colnames(data)
-  
-  
+  colnames(difference.matrix) <- rownames(difference.matrix)
+  colnames(difference.matrix) <- colnames(data)
+    
   names(cd)<-"Critical difference"
-  parameter <- c(k , (N-1)*k)
+  parameter <- c(k, (N - 1) * k)
   names(parameter) <- c("k","df")
   method <- "Nemenyi test"
   data.name <- deparse(substitute(data))
-  res <- list(statistic = cd , parameter = parameter , method = method , data.name = data.name , diff.matrix = difference.matrix )
-  class(res)<-"htest"
-  res
+  htest.results <- list(statistic=cd, parameter=parameter, method=method, 
+                        data.name=data.name, diff.matrix=difference.matrix)
+  class(htest.results)<-"htest"
+  return(htest.results)
 }
 
 #' @title Tukey test 
@@ -226,42 +331,47 @@ nemenyi.test <- function (data , alpha = 0.05){
 #' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 #' @examples
 #' data(data.garcia.herrera)
-#' res <- tukey.test(data.garcia.herrera , alpha = 0.1)
+#' res <- tukeyTest(data.garcia.herrera, alpha=0.1)
 #' res
 #' res$diff.matrix
 
-tukey.test <- function (data , alpha = 0.05){
-  ## Implemented as Test 28 in 100 statistical tests
-  
+tukeyTest <- function (data, alpha=0.05) {
+  # Implemented as Test 28 in 100 statistical tests
   k <- dim(data)[2]
   N <- dim(data)[1]
-  nu <- k*(N-1)
+  nu <- k * (N - 1)
   
-  ## Sample variances
-  var.vector <- apply(data , MARGIN = 2 , FUN = var)
+  # Sample variances
+  var.vector <- apply(data, MARGIN=2, FUN=var)
   m.vector <- colMeans(data)
   
-  ## Total variance. Given that all the samples have the same size, it is the average variance
+  # Total variance. Given that all the samples have the same size, 
+  # it is the average variance
   var <- mean(var.vector)
   
-  ## Studentized range value
-  q <- qtukey(alpha , nmeans = k , df = nu)
+  # Studentized range value
+  q <- qtukey(alpha, nmeans=k, df=nu)
   W <- q * sqrt(var / N)
   
-  ## Get the absolute difference of means
-  pairs <- do.call(rbind,sapply(1:(k-1), FUN=function(x) cbind((x),(x+1):k)))
-  f<-function(x) abs(m.vector[x[1]] - m.vector[x[2]])
-  differences <- apply(pairs , MARGIN = 1 , FUN = f)
-  difference.matrix <- matrix(rep(NA , k^2) , k)
+  # Get the absolute difference of means
+  pairs <- generatePairs(k, control=NULL)
+  getAbsDiff <- function(x) {
+    adf <- abs(m.vector[x[1]] - m.vector[x[2]])
+    return(adf)
+  }
+  differences <- apply(pairs, MARGIN=1, FUN=getAbsDiff)
+  difference.matrix <- matrix(rep(NA, k^2), k)
   difference.matrix[pairs] <- differences
   difference.matrix[pairs[,c(2,1)]] <- differences
-  colnames(difference.matrix) <- rownames(difference.matrix) <- colnames(data)
+  colnames(difference.matrix) <- colnames(data)
+  colnames(difference.matrix) <- rownames(difference.matrix)
   
   names(W)<-"Critical difference"
-  parameter <- c(K = k , df2 = (N-1)*k)
+  parameter <- c(K=k, df2=(N - 1) * k)
   method <- "Tukey test"
   data.name <- deparse(substitute(data))
-  res <- list(statistic = W , parameter = parameter , method = method , data.name = data.name , diff.matrix = difference.matrix )
-  class(res)<-"htest"
-  res
+  htest.results <- list(statistic=W, parameter=parameter, method=method, 
+                        data.name=data.name, diff.matrix=difference.matrix)
+  class(htest.results)<-"htest"
+  return(htest.results)
 }

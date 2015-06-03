@@ -3,31 +3,58 @@
 #' @title Gaussian distribution quantile-quantile plot
 #'
 #' @description This function creates a quantile-quantile plot to assess the goodness of fit of a Gaussian distribution to a given sample.
-#' @param sample List of data points to check
+#' @param data List of data points to check
 #' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_point}} function used to plot the sample points.
 #' @return A \code{\link{ggplot}} object.
-#' @seealso \code{\link{plot.densities}}
+#' @seealso \code{\link{plotDensities}}
 #' @examples
 #' ## Skewed distribution
 #' sample <- rbeta(100 , 2 , 50)
-#' gaussian.qqplot(sample)
+#' qqplotGaussian(sample)
 #' ## Symmetric distribution
 #' sample <- rbeta(100 , 5 , 5)
-#' gaussian.qqplot(sample)
+#' qqplotGaussian(sample)
 
-gaussian.qqplot <- function (sample , ...){
-  if(!require(ggplot2)) stop("This function requires the package ggplot2, which is not installed. You can install it typing install.packages('ggplot2')")
-  sample <- sort(sample)
-  m <- mean(sample)
-  sd <- sd(sample)
-  n <- length(sample)
-  q.gaussian <- qnorm(seq(1/n , (n-1)/n , 1/n) , m , sd)
-  q.sample <- sample[-n]
-  df <- data.frame(Empirical = q.sample , Gaussian = q.gaussian)  
-  m <- min(df)
-  M <- max(df)
+qqplotGaussian <- function (data, ...) {
+  if(!require(ggplot2)) {
+    stop("This function requires the package ggplot2, which is not ",
+         "installed. You can install it typing install.packages('ggplot2')")
+  }
   
-  ggplot(df , aes(x=Empirical , y=Gaussian)) + scale_x_continuous(limits = c(m,M))+ scale_y_continuous(limits = c(m,M)) + geom_abline(slope=1 , intercept = 0 , col="darkgray" , size=1.1) +  geom_point(...) 
+  processVector <- function (sample) {
+    # Auxiliar function to get the points for a single qqplot
+    sample <- sort(sample)
+    m      <- mean(sample)
+    sd     <- sd(sample)
+    n      <- length(sample)
+    
+    q.gaussian <- qnorm(seq(from=(1 / n), to=((n - 1) / n), by=(1/n)), 
+                        mean=m, sd=sd)
+    q.sample <- sample[-n]
+    
+    df <- data.frame(Empirical=q.sample, Gaussian=q.gaussian)  
+    return (df)
+  }
+  
+  if (is.vector(data)) {
+    df <- processVector(data)
+    facet <- NULL
+  } else {
+    aux <- lapply(1:ncol(data), 
+                  FUN=function(i) {
+                    alg.pts  <- processVector(data[, i])
+                    alg.name <- names(data)[i]
+                    return(cbind(alg.pts, Algorithm=alg.name))
+                  })
+    df <- do.call(rbind, aux)
+    facet <- facet_wrap(~Algorithm, scales="free")
+  }
+  
+  gplot <- ggplot(df, aes(x=Empirical, y=Gaussian)) +
+           geom_abline(slope=1, intercept=0, col="darkgray", size=1.1) +  
+           geom_point(...) + facet
+  
+  return(gplot)
 }
 
 
@@ -37,21 +64,35 @@ gaussian.qqplot <- function (sample , ...){
 #' @param results.matrix A matrix where columns represent the algorithms
 #' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points.
 #' @return A \code{\link{ggplot}} object.
-#' @seealso \code{\link{gaussian.qqplot}}
+#' @seealso \code{\link{qqplotGaussian}}
 #' @examples
 #' data(data.garcia.herrera)
-#' plot.densities(data.garcia.herrera)
+#' plotDensities(data.garcia.herrera)
 
-plot.densities <- function (results.matrix , ...){
-  if(!require(ggplot2)) stop("This function requires the package ggplot2, which is not installed. You can install it typing install.packages('ggplot2')")
-  k <- dim(results.matrix)[2]
-  aux <- lapply(1:k , FUN = function (x) {
-    d <- density(results.matrix[,x])
-    data.frame (Algorithm = colnames(results.matrix)[x] , Value = d$x , Density = d$y)
-  })
-  df <- do.call(rbind , aux)
-  ggplot(df , aes(x = Value , y = Density , col = Algorithm)) + geom_line(...)
+plotDensities <- function (data, ...) {
+  if(!require(ggplot2)) {
+    stop("This function requires the package ggplot2, which is not installed. ",
+         "You can install it typing install.packages('ggplot2')")
+  }
   
+  if (is.vector(data)){
+    d  <- density(data)
+    df <- data.frame(Value=d$x, Density=d$y)
+    mapping <- aes(x=Value, y=Density)
+  } else {
+    k <- dim(data)[2]
+    aux <- lapply(1:k, 
+                  FUN=function (x) {
+                    d  <- density(data[, x])
+                    df <- data.frame(Algorithm=colnames(data)[x], 
+                                     Value=d$x, Density=d$y)
+                    return(df)
+    })
+    df <- do.call(rbind, aux)
+    mapping <- aes(x=Value, y=Density, col=Algorithm)
+  }
+  gplot <- ggplot(df, mapping) + geom_line(...)
+  return(gplot)
 }
 
 # PLOTTING THE RESULTS ----------------------------------------------------
@@ -64,29 +105,41 @@ plot.densities <- function (results.matrix , ...){
 #' @param show.pvalue Logical value indicating whether the numerical values have to be printed
 #' @param font.size Size of the p-values, if printed
 #' @return A \code{\link{ggplot}} object.
-#' @seealso \code{\link{algorithm.graph}}, \code{\link{critical.difference.plot}}
+#' @seealso \code{\link{drawAlgorithmGraph}}, \code{\link{plotCD}}
 #' @examples
 #' data(data.garcia.herrera)
 #' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
-#' plot.pvalues(pwcomp.bh$corrected.pvalues)
+#' plotPvalues(pwcomp.bh$corrected.pvalues)
  
-
-plot.pvalues <- function(pvalue.matrix , alg.order = NULL , show.pvalue = TRUE , font.size = 5){
-  if(!require(reshape2)) stop("This function requires the package ggplot2, which is not installed. You can install it typing install.packages('reshape2')")
-  if(!require(ggplot2)) stop("This function requires the package ggplot2, which is not installed. You can install it typing install.packages('ggplot2')")
-  
-  df <- melt(pvalue.matrix)
-  colnames(df) <- c("X" , "Y" , "p.value")
-  if (!is.null(alg.order)){
-    l <- colnames(pvalue.matrix)[alg.order]
-    df$X <- factor(df$X , levels = l)
-    df$Y <- factor(df$Y , levels = l)
+plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.size=5) {
+  if(!require(reshape2)) {
+    stop("This function requires the package reshape2, which is not installed. ",
+         "You can install it typing install.packages('reshape2')")
   }
-  g <- ggplot(df, aes(x=X,y=Y,fill=p.value)) + geom_tile(col="white") +
-          scale_fill_continuous("p-value") +
-          labs(x="Algorithm" , y="Algorithm")
-  if (show.pvalue) g <- g + geom_text(aes(label = round(p.value,2)) , size = font.size , col="white")
-  g
+  
+  if(!require(ggplot2)) {
+    stop("This function requires the package ggplot2, which is not installed. ",
+         "You can install it typing install.packages('ggplot2')")
+  }
+  
+  # Convert the matrix into a data frame and order the algorithms according to 
+  # the desired order.
+  df <- melt(pvalue.matrix)
+  colnames(df) <- c("X", "Y", "p.value")
+  if (!is.null(alg.order)) {
+    l <- colnames(pvalue.matrix)[alg.order]
+    df$X <- factor(df$X, levels=l)
+    df$Y <- factor(df$Y, levels=l)
+  }
+  
+  gplot <- ggplot(df, aes(x=X, y=Y, fill=p.value)) + geom_tile(col="white") +
+          scale_fill_continuous("p-value") + labs(x="Algorithm" , y="Algorithm")
+  
+  if (show.pvalue) {
+    gplot <- gplot + geom_text(aes(label=round(p.value, 2)), 
+                               size=font.size, col="white")
+  }
+  return(gplot)
 } 
 
 
@@ -96,104 +149,126 @@ plot.pvalues <- function(pvalue.matrix , alg.order = NULL , show.pvalue = TRUE ,
 #' @param results.matrix Matrix or data frame with the results for each algorithm
 #' @param alpha Significance level to get the critical difference. By default this value is 0.05
 #' @param cex Numeric value to control the size of the font. By default it is set at 0.75.
-#' @seealso \code{\link{algorithm.graph}}, \code{\link{plot.pvalues}}
+#' @seealso \code{\link{drawAlgorithmGraph}}, \code{\link{plotPvalues}}
 #' @examples
 #' data(data.garcia.herrera)
 #' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
-#' critical.difference.plot(data.garcia.herrera)
+#' plotCD(data.garcia.herrera)
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 
-critical.difference.plot <- function (results.matrix , alpha = 0.05 , cex=0.75){
+plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   k <- dim(results.matrix)[2]
   N <- dim(results.matrix)[1]
-  cd <- nemenyi.test (data = results.matrix , alpha = alpha)$statistic
+  cd <- getNemenyiCD(alpha=alpha, num.alg=k, num.problems=N)
   
-  mean.rank <- sort(colMeans(rank.matrix(results.matrix)))
+  mean.rank <- sort(colMeans(rankMatrix(results.matrix, ...)))
   
-  ## Separate the algorithms in left and right parts
+  # Separate the algorithms in left and right parts
   lp <- round(k/2)
   left.algs <- mean.rank[1:lp]
   right.algs <- mean.rank[(lp+1):k]  
   max.rows <- ceiling(k/2)
   
-  ## Basic dimensions and definitions
-  char.size <- 0.001 ## Character size
-  line.spacing <- 0.25 ## Line spacing for the algorithm name
-  m <- floor(min(mean.rank))
-  M <- ceiling(max(mean.rank))
-  max.char <- max(sapply(colnames(results.matrix), FUN = nchar)) ## Longest length of a label
-  text.width <- (max.char+4) *char.size
-  w <- (M-m) + 2*text.width
-  h.up <- 2.5 * line.spacing                ## The upper part is fixed
-  h.down <- (max.rows + 2.25) * line.spacing ## The lower part depends on the number of algorithms. The 2 extra spaces are for the lines that join algorithms
-  tick.h <- 0.25 * line.spacing
-  label.displacement <- 0.1 ## Displacement of the label with respect to the axis
-  line.displacement <- 0.025 ## Displacement for the lines that join algorithms
+  # Basic dimensions and definitions
+  char.size    <- 0.001  # Character size
+  line.spacing <- 0.25   # Line spacing for the algorithm name
+  m            <- floor(min(mean.rank))
+  M            <- ceiling(max(mean.rank))
+  max.char     <- max(sapply(colnames(results.matrix), FUN = nchar))  # Longest length of a label
+  text.width   <- (max.char + 4) * char.size
+  w            <- (M-m) + 2 * text.width
+  h.up         <- 2.5 * line.spacing  # The upper part is fixed. Extra space is for the CD
+  h.down       <- (max.rows + 2.25) * line.spacing # The lower part depends on the no. of algorithms. 
+                                                   # The 2 extra spaces are for the lines that join algorithms
+  tick.h       <- 0.25 * line.spacing
   
-  ## Background
-  plot(0 , 0 , type='n' , xlim = c(m - w/(M-m) , M + w/(M-m)) , ylim=c(-h.down , h.up) , 
-       xaxt='n' , yaxt = 'n' , xlab = '' , ylab = '' , bty = 'n')
+  label.displacement <- 0.1    # Displacement of the label with respect to the axis
+  line.displacement  <- 0.025  # Displacement for the lines that join algorithms
   
-  ## Draw axis
-  lines (c(m,M) , c(0,0))
-  dk <- sapply(m:M , function(x) {
-    lines(c(x,x) , c(0 , tick.h))
-    text(x , 3*tick.h , labels = x , cex = cex)
-    })
+  # Background of the plot
+  plot(0, 0, type="n", xlim=c(m - w / (M - m), M + w / (M - m)), 
+       ylim=c(-h.down, h.up), xaxt="n", yaxt="n", xlab= "", ylab="", bty="n")
   
-  ## Draw CD
-  lines(c(m , m + cd) , c(1.75*line.spacing , 1.75*line.spacing))
-  text(m+cd/2 , 2.25*line.spacing , "CD" , cex = cex)
-  lines(c(m,m) ,  c(1.75*line.spacing-tick.h/4 , 1.75*line.spacing+tick.h/4))
-  lines(c(m + cd,m + cd) , c(1.75*line.spacing-tick.h/4 , 1.75*line.spacing+tick.h/4))
+  # Draw the axis
+  lines (c(m,M), c(0,0))
+  dk <- sapply(m:M, 
+               FUN=function(x) {
+                 lines(c(x,x), c(0, tick.h))
+                 text(x, 3*tick.h, labels=x, cex=cex)
+               })
   
-  ## Left part, labels
-  dk <- sapply (1:length(left.algs) , function(x) {
-    line.h <- -line.spacing*(x+2)
-    text(m-label.displacement , line.h , names(left.algs)[x] , cex=cex , adj = 1)
-    lines(c(m , left.algs[x]) , c(line.h , line.h))
-    lines(c(left.algs[x] , left.algs[x]) , c(line.h , 0))
-  })
+  # Draw the critical difference
+  lines(c(m, m + cd), c(1.75 * line.spacing, 1.75 * line.spacing))
+  text(m + cd / 2, 2.25 * line.spacing, "CD", cex=cex)
+  lines(c(m, m), c(1.75 * line.spacing - tick.h / 4, 
+                   1.75 * line.spacing + tick.h / 4))
+  lines(c(m + cd, m + cd), c(1.75 * line.spacing - tick.h / 4, 
+                             1.75 * line.spacing + tick.h / 4))
   
-  ## Right part, labels
-  dk <- sapply (1:length(right.algs) , function(x) {
-    line.h <- -line.spacing*(x+2)
-    text(M+label.displacement , line.h , names(right.algs)[x] , cex=cex , adj = 0)
-    lines(c(M , right.algs[x]) , c(line.h , line.h))
-    lines(c(right.algs[x] , right.algs[x]) , c(line.h , 0))
-  })
+  # Left part, labels
+  dk <- sapply (1:length(left.algs), 
+                FUN=function(x) {
+                  line.h <- -line.spacing * (x + 2)
+                  text(x=m - label.displacement, y=line.h, 
+                       labels=names(left.algs)[x], cex=cex, adj=1)
+                  lines(c(m, left.algs[x]), c(line.h, line.h))
+                  lines(c(left.algs[x], left.algs[x]), c(line.h, 0))
+                })
   
-  ## Draw the lines to join algorithms
-  get.interval <- function (x){
+  # Right part, labels
+  dk <- sapply (1:length(right.algs), 
+                FUN=function(x) {
+                  line.h <- -line.spacing * (x + 2)
+                  text(x=M + label.displacement, y=line.h, 
+                       labels=names(right.algs)[x], cex=cex, adj=0)
+                  lines(c(M, right.algs[x]), c(line.h, line.h))
+                  lines(c(right.algs[x], right.algs[x]), c(line.h, 0))
+                })
+  
+  # Draw the lines to join algorithms
+  getInterval <- function (x) {
     from <- mean.rank[x]
     diff <- mean.rank - from
-    ls <- which(diff>0 & diff<cd)
-    if (length(ls)>0)
-    {
-      c(from , mean.rank[max(ls)])
+    ls <- which(diff > 0 & diff < cd)
+    if (length(ls) > 0) {
+      c(from, mean.rank[max(ls)])
     }
   }
-  to.join <- do.call(rbind,mapply (1:k , FUN = get.interval))
+  
+  intervals <- mapply (1:k, FUN=getInterval)
+  aux <- do.call(rbind, intervals)
+  
+  # With this strategy, there can be intervals included into bigger ones
+  # We remove them in a sequential way
+  to.join <- aux[1,]
+  for (r in 2:nrow(aux)) {
+    if (aux[r - 1, 2] < aux[r, 2]) {
+      to.join <- rbind(to.join, aux[r, ])
+    }
+  }
+  
   row <- c(1)
-  ## Determine each lin in which row will be displayed
+  # Determine each line in which row will be displayed
   nlines <- dim(to.join)[1]
-  for(r in 2:nlines){
-    id <- which(to.join[r,1]>to.join[,2])
-    if(length(id)==0){
-      row <- c(row , tail(row,1)+1)
-    }else{
-      row <- c(row , min(row[id]))
+  for(r in 2:nlines) {
+    id <- which(to.join[r, 1] > to.join[, 2])
+    if(length(id) == 0) {
+      row <- c(row, tail(row, 1) + 1)
+    } else {
+      row <- c(row, min(row[id]))
     }
   }
   
-  step <- max(row)/2
+  step <- max(row) / 2
   
-  ## Draw the line
-  dk<-sapply (1:nlines , FUN = function(x){
-    y <- -line.spacing*(0.5 + row[x]/step)
-    lines(c(to.join[x,1]-line.displacement , to.join[x,2]+line.displacement) , c(y,y) , lwd=3)
+  # Draw the line
+  dk <- sapply (1:nlines, 
+                FUN = function(x) {
+                  y <- -line.spacing * (0.5 + row[x] / step)
+                  lines(c(to.join[x, 1] - line.displacement, 
+                          to.join[x, 2] + line.displacement), 
+                        c(y, y), lwd=3)
   })
-  
 }
 
 
@@ -212,39 +287,55 @@ critical.difference.plot <- function (results.matrix , alpha = 0.05 , cex=0.75){
 #' @param digits Number of digits to display the value associated to each node
 #' @param node.width Numeric value for the width of the node
 #' @param node.height Numeric value for the height of the node
-#' @seealso \code{\link{plot.pvalues}}, \code{\link{critical.difference.plot}}
+#' @seealso \code{\link{plotPvalues}}, \code{\link{plotCD}}
 #' @examples
 #' data(data.garcia.herrera)
 #' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
 #' mean.rank <- colMeans(rank.matrix(data.garcia.herrera))
-#' algorithm.graph(pwcomp.bh$corrected.pvalues , mean.rank , alpha = 0.01 , font.size = 10)
+#' drawAlgorithmGraph(pwcomp.bh$corrected.pvalues , mean.rank , alpha = 0.01 , font.size = 10)
 
-algorithm.graph <- function (pvalue.matrix, mean.value , ... , alpha = 0.05 , font.size = 15 , highlight="min" , highlight.color = "chartreuse3" , node.color="gray30" , font.color="white", digits = 2 , node.width = 5 , node.height=2){
-  if(!require(Rgraphviz)) stop("This function requires the package ggplot2, which is not installed. You can install it typing source('http://www.bioconductor.org/biocLite.R') and then biocLite('Rgraphviz')")
+drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ..., 
+                                alpha=0.05, font.size=15, highlight="min", 
+                                highlight.color="chartreuse3", node.color="gray30", 
+                                font.color="white", digits=2, 
+                                node.width=5, node.height=2) {
+  if(!require(Rgraphviz)) {
+    stop("This function requires the package Rgraphviz, which is not installed. ",
+         "You can install it typing\n\n ",
+         "source('http://www.bioconductor.org/biocLite.R')\n\n and then\n\n ",
+         "biocLite('Rgraphviz')\n\n")
+  }
   
-  if (!all(colnames(pvalue.matrix) %in% names(mean.value))) stop ("The names of the algorithms in the matrix and the mean.valu vector do not match")
+  if (!all(colnames(pvalue.matrix) %in% names(mean.value))) {
+    stop ("The names of the algorithms in the matrix and the mean.valu vector ",
+          "do not match")
+  }
   
   hypothesis.matrix <- pvalue.matrix > alpha
   
-  nc <- rep(node.color , length(mean.value))
-  if(highlight=="min"){
-    nc [which.min(mean.value)] <- highlight.color
-  }else if(highlight=="max"){
-    nc [which.max(mean.value)] <- highlight.color
+  nc <- rep(node.color, length(mean.value))
+  if(highlight == "min") {
+    nc[which.min(mean.value)] <- highlight.color
+  } else if(highlight == "max") {
+    nc[which.max(mean.value)] <- highlight.color
   }
     
   hypothesis.matrix[is.na(hypothesis.matrix)]<-FALSE
   adj.matrix <- hypothesis.matrix
-  colnames(adj.matrix) <- rownames(adj.matrix) <- names(mean.value)
+  colnames(adj.matrix) <- names(mean.value)
+  rownames(adj.matrix) <- names(mean.value)
   
-  nl <- paste(names(mean.value) , "\\\n" , round(mean.value,digits) , sep="")
+  nl <- paste(names(mean.value), "\\\n", round(mean.value, digits), sep="")
   
-  am.graph <- new("graphAM" , adjMat = adj.matrix , edgemode="undirected")
-  names(nc) <- names(nl) <- nodes(am.graph)
+  am.graph <- new("graphAM", adjMat=adj.matrix, edgemode="undirected")
+  names(nc) <- nodes(am.graph)
+  names(nl) <- nodes(am.graph)
+  
   nAttrs <- list()
-  nAttrs$label <- nl
-  nAttrs$fillcolor <- nc
-  attrs <- list(node = list(shape = "rectangle" , width = node.width , height = node.height ,
-                            fontcolor = font.color , fontsize = font.size))
-  plot(am.graph , ... , nodeAttrs = nAttrs , attrs = attrs)
+  nAttrs$label      <- nl
+  nAttrs$fillcolor  <- nc
+  
+  attrs <- list(node=list(shape="rectangle", width=node.width, height=node.height,
+                            fontcolor=font.color, fontsize=font.size))
+  plot(am.graph, ... , nodeAttrs=nAttrs, attrs=attrs)
 }
