@@ -62,12 +62,13 @@ qqplotGaussian <- function (data, ...) {
 #'
 #' @description This function estimates and plots the densities of the results of each algorithm
 #' @param results.matrix A matrix where columns represent the algorithms
-#' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points.
+#' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points. It can also be used to pass additional arguments to the \code{density} function, which is used to eastimate the densities.
 #' @return A \code{\link{ggplot}} object.
 #' @seealso \code{\link{qqplotGaussian}}
 #' @examples
-#' data(data.garcia.herrera)
-#' plotDensities(data.garcia.herrera)
+#' data(data_gh_2010)
+#' plotDensities(data.gh.2010)
+#' 
 
 plotDensities <- function (data, ...) {
   if(!require(ggplot2)) {
@@ -83,7 +84,7 @@ plotDensities <- function (data, ...) {
     k <- dim(data)[2]
     aux <- lapply(1:k, 
                   FUN=function (x) {
-                    d  <- density(data[, x])
+                    d  <- density(data[, x], ...)
                     df <- data.frame(Algorithm=colnames(data)[x], 
                                      Value=d$x, Density=d$y)
                     return(df)
@@ -99,7 +100,7 @@ plotDensities <- function (data, ...) {
 
 #' @title Plotting the p-value matrix
 #'
-#' @description This function plots the p-value matrix as a \code{\link{ggplot2}}'s tile plot.
+#' @description This function plots the p-value matrix as a tile plot.
 #' @param pvalue.matrix Matrix with the p-values to plot
 #' @param alg.order A permutation indicating the reordering of the algorithms
 #' @param show.pvalue Logical value indicating whether the numerical values have to be printed
@@ -107,9 +108,11 @@ plotDensities <- function (data, ...) {
 #' @return A \code{\link{ggplot}} object.
 #' @seealso \code{\link{drawAlgorithmGraph}}, \code{\link{plotCD}}
 #' @examples
-#' data(data.garcia.herrera)
-#' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
-#' plotPvalues(pwcomp.bh$corrected.pvalues)
+#' data(data_gh_2008)
+#' pvalues <- friedmanPost(data.gh.2008)
+#' ordering <- order(summarizeData(data.gh.2008))
+#' plotPvalues(pvalues, alg.order=ordering)
+#' 
  
 plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.size=5) {
   if(!require(reshape2)) {
@@ -145,17 +148,16 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
 
 #' @title Critical difference plot
 #'
-#' @description This function plots the critical difference plots shown in \emph{Demsar (2006)}
+#' @description This function plots the critical difference plots shown in Demsar (2006)
 #' @param results.matrix Matrix or data frame with the results for each algorithm
 #' @param alpha Significance level to get the critical difference. By default this value is 0.05
 #' @param cex Numeric value to control the size of the font. By default it is set at 0.75.
 #' @seealso \code{\link{drawAlgorithmGraph}}, \code{\link{plotPvalues}}
-#' @examples
-#' data(data.garcia.herrera)
-#' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
-#' plotCD(data.garcia.herrera)
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
-
+#' @examples
+#' data(data_gh_2008)
+#' plotCD(data.gh.2008, alpha=0.01)
+#' 
 plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   k <- dim(results.matrix)[2]
   N <- dim(results.matrix)[1]
@@ -274,13 +276,13 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
 
 #' @title Hypotheses represented as a graph
 #'
-#' @description This function can be used to plot a graph where algorithms that cannot be regarded as different are joined by an edge.
+#' @description This function can be used to plot a graph where algorithms are nodes and  algorithms that cannot be regarded as different are joined by an edge.
 #' @param pvalue.matrix Matrix with the p-values
 #' @param mean.value Vector of values to be written together with the name of the algorithm
 #' @param ... Additional parameters to the Rgraphviz function. This is mainly to change the layout of the graph
 #' @param alpha Significance level to determine which hypotheses are rejected.
 #' @param font.size Size of the font for the node labels.
-#' @param highlight A character indicating which node has to be highlighted. It can be the one with the maximum value (\code{'max'}), the minimum value ((\code{'min'})) or none ((\code{'none'})).
+#' @param highlight A character indicating which node has to be highlighted. It can be the one with the maximum value (\code{'max'}), the minimum value (\code{'min'}) or none (\code{'none'}).
 #' @param highlight.color Any R valid color for the highlighted node.
 #' @param node.color Any R valid color for the non-highlighted nodes.
 #' @param font.color Any R valid color for the node labels.
@@ -289,10 +291,11 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
 #' @param node.height Numeric value for the height of the node
 #' @seealso \code{\link{plotPvalues}}, \code{\link{plotCD}}
 #' @examples
-#' data(data.garcia.herrera)
-#' pwcomp.bh <- pairwise.test(results.matrix = data.garcia.herrera , test = "Friedman post" , correction = "Bergmann Hommel")
-#' mean.rank <- colMeans(rank.matrix(data.garcia.herrera))
-#' drawAlgorithmGraph(pwcomp.bh$corrected.pvalues , mean.rank , alpha = 0.01 , font.size = 10)
+#' data(data_blum_2015)
+#' data <- filterData(data.blum.2015, condition="Size == 1000", remove.cols=1:2)
+#' res <- postHocTest(data, test = "friedman", use.rank=TRUE, correct="bergmann")
+#' drawAlgorithmGraph(res$corrected.pval, res$summary)
+#' 
 
 drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ..., 
                                 alpha=0.05, font.size=15, highlight="min", 

@@ -349,25 +349,22 @@ plotPvalues(post.results$corrected.pval[, , i], alg.order=alg.order)
 
 ## References
 
-Bergmann G. and Homml G. (1988) Improvements of General Multiple Test Procedures for Redundant Systems of Hypothesis. In Bauer, P., Hommel, G., Sonnemann, E., editors  _Multiple Hypothesis Testing_, Springer, 100-115.
+G. Bergmann and G. Hommel (1988) Improvements of General Multiple Test Procedures for Redundant Systems of Hypothesis. In P. Bauer, G. Hommel and E- Sonnemann editors  _Multiple Hypothesis Testing_, Springer, 100-115.
 
-Demšar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. _Journal of Machine Learning Research_, 7, 1-30.
+J. Demšar (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. _Journal of Machine Learning Research_, 7, 1-30.
 
-Friedman, M. (1937) The Use of Ranks to Avoid the Assumption of Normality Implicit in the Analysis of Variance. _Journal of the American Statistical Association_, 32, 675-701.
+M. Friedman (1937) The Use of Ranks to Avoid the Assumption of Normality Implicit in the Analysis of Variance. _Journal of the American Statistical Association_, 32, 675-701.
 
-Friedman, M. (1940) A Comparison of Alternative Tests of Significance for the Problem of m Rankings. _Annals of Mathematical Statistics_, 11, 86-92.
+M. Friedman (1940) A Comparison of Alternative Tests of Significance for the Problem of m Rankings. _Annals of Mathematical Statistics_, 11, 86-92.
 
-García S. and Herrera, F. (2010) Advanced Nonparametric Tests for Multiple Comparison in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power. _Information Sciences_, 180, 2044-2064.
+S. García and F. Herrera (2010) Advanced Nonparametric Tests for Multiple Comparison in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power. _Information Sciences_, 180, 2044-2064.
 
-García S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for all Pairwise Comparisons. _Journal of Machine Learning Research_, 9, 2677-2694.
+S. García and F. Herrera (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for all Pairwise Comparisons. _Journal of Machine Learning Research_, 9, 2677-2694.
 
-Holm, S. (1979) A Simple Sequentially Rejective Multiple Test Procedure. _Scandinavian Journal of Statistics_, 6, 65-70.
+S. Holm (1979) A Simple Sequentially Rejective Multiple Test Procedure. _Scandinavian Journal of Statistics_, 6, 65-70.
 
-Iman, R. L. and Davenport J. M. (1980) Approximations of the Critical Region of the Friedman Statistic. _Communications in Statistics_, 571-595.
+R. L. Iman and J. M. Davenport (1980) Approximations of the Critical Region of the Friedman Statistic. _Communications in Statistics_, 571-595.
 
-Shaffer, J. P. (1986) Modified Sequential Rejective Multiple Test Procedures. _Journal of the American Statitstical Association_, 81(295), 826-831.
+J. P. Shaffer (1986) Modified Sequential Rejective Multiple Test Procedures. _Journal of the American Statitstical Association_, 81(295), 826-831.
 
-Wickham, H. (2009) _ggplot2: Elegant Graphics for Data Analysis_. Springer-Verlag.
-
-
-
+H. Wickham (2009) _ggplot2: Elegant Graphics for Data Analysis_. Springer-Verlag.

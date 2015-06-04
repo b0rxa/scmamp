@@ -215,18 +215,18 @@ processCompFile <- function(file, fname.pattern, names, alg.cols, col.names, ...
 
 #' @title Read data from an experiment-like file
 #'
-#' @export
-#' @description This function reads the data from a file where each row is an experiment characterized by some variables (one of which should be the algorithm used) and with one and only one numeric result. for files where there is more than one result per line see \code{\link{readComparisonFile}}.
+#' @description This function reads the data from a file where each row is an experiment characterized by some variables (one of which should be the algorithm used) and with one and only one numeric result. For files where there is more than one result per line see \code{\link{readComparisonFile}}.
 #' @param file Path to the file to read.
 #' @param alg.col Name or index of the column corresponding to the algorithm used in the experiment.
 #' @param value.col Name or index of the column corresponding to the numerical result of the experiment.
-#' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}).
+#' @param col.names Vector of names for the columns. If not provided (or \code{NULL}) the names will be read from the first line of the file.
+#' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}). Note that the \code{header} argument is automatically set according to the \code{col.names} argument.
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
-#' @seealso \code{\link{readExperimentDir}}, \code{\link{readComparisonFile}}, \code{\link{readComparisonDir}}
+#' @seealso \code{\link{readExperimentDir}}, \code{\link{readComparisonFile}}, \code{\link{readComparisonDir}}  and the vignette \code{vignette(topic="Data_loading_and_manipulation", package="scmamp")}
 #' @examples
 #' dir <- system.file("loading_tests",package="scmamp")
-#' file <- paste(dir , "beta_complete_experiment.out" , sep="/")
-#' data <- readExperimentFile (file = file , alg.col = 'algorithm' , value.col = 'error')
+#' file <- paste(dir , "rgg_complete_experiment.out" , sep="/")
+#' data <- readExperimentFile (file=file, alg.col="Algorithm", value.col="Evaluation")
 #' dim(data)
 #' head(data)
 
@@ -254,25 +254,27 @@ readExperimentFile <- function (file, alg.col, value.col, col.names=NULL, ...) {
 
 #' @title Read data from an experiment-like files in a directory
 #'
-#' @export
-#' @description This function reads the data from all the files in a directory. Only one column is expected in each file, correspondig to the results obtained by a single algorithm. If the files contain the results of two or more algorithms, see function \code{\link{readComparisonFile}}. The function can extract information from the file name.
+#' @description This function reads the data from all the files in a directory. Only one column of results is expected in each file. If the files contain the results of two or more algorithms, see function \code{\link{readComparisonFile}}. The function can extract information from the file name.
 #' @param directory Directory with the files to load. It should only contain files to load, no other kind of file.
 #' @param names List of names for the variables to be extracted from the file name
-#' @param alg.var.name Name of the variable that defines the algorithm used in the experiment. It can be either one of the variables extracted from the file name or the header of the data in the file.
-#' @param value.col Name or index (referred to the column in the file) of the column indicating the value for the algorithm
-#' @param fname.pattern Regular expression to extract information from the file names. It has to be a regular expression that matches the name of the files and where the information to be extrcted has to be between brakets. As an example, if the whole file name wants to be used, the expression \code{'([.]*)'} can be used. For more example see the examples below or the vignette covering the data loading.
-#' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}).
+#' @param alg.var.name Name of the variable that defines the algorithm used in the experiment. It can be either one of the variables extracted from the file name or the name of one of the columns in the file.
+#' @param value.col Name or index (referred to the column in the file) of the column containing the results.
+#' @param fname.pattern Regular expression to extract information from the file names. It has to be a regular expression that matches the name of the files and where the information to be extrcted has to be between brakets. As an example, to store the whole file name the expression \code{'([.]*)'} can be used. For more example see the examples below or the vignette covering the data loading.
+#' @param col.names Vector of names for the columns. If not provided (or \code{NULL}) the names will be read from the first line of the file.
+#' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}). Note that the \code{header} argument is automatically set according to the \code{col.names} argument.
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
-#' @details Note that all the files should have the same format (only one column with the same header)
-#' @seealso \code{\link{readExperimentFile}}, \code{\link{readComparisonFile}}, \code{\link{readComparisonDir}}
+#' @details Note that all the files should have the same format (same number of columns and, in case they have, same header)
+#' @seealso \code{\link{readExperimentFile}}, \code{\link{readComparisonFile}}, \code{\link{readComparisonDir}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", package="scmamp")}
 #' @examples
-#' dir <- paste(system.file("loading_tests",package="scmamp") , "experiment_files" , sep="/")
-#' ## The format of the files is beta_ALPHA,BETA_size_SIZE_ESTIMATOR.out, where variables to extract are in capital letters. 
-#' list.files(dir)[1]
-#' ## The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.
-#' pattern <- "beta_([0-9]*),([0-9]*)_size_([0-9]*)_([a-z]*).out"
-#' var.names <- c('alpha' , 'beta' , 'size', 'estimator')
-#' data <- readExperimentDir (dir , var.names , 'estimator' , pattern)
+#' dir <- paste(system.file("loading_tests",package="scmamp"), "experiment_files", sep="/")
+#' # The format of the files is rgg_size_SIZE_r_RADIUS_ALGORITHM.out, where variables to extract are in capital letters. 
+#' list.files(dir)[1:5]
+#' # The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.
+#' pattern <- "rgg_size_([0-9]*)_r_(0.[0-9]*)_([a-z,A-Z,1,2]*).out"
+#' var.names <- c("Size", "Radius", "Algorithm")
+#' data <- readExperimentDir (directory=dir, names=var.names, fname.pattern=pattern, 
+#'                            alg.var.name="Algorithm", value.col="Evaluation", 
+#'                            col.names="Evaluation")
 #' dim(data)
 #' head(data)
 
@@ -350,15 +352,16 @@ readExperimentDir <- function(directory, names, fname.pattern, alg.var.name,
 #' @param file Path of the file to load
 #' @param alg.cols A vector column names or indices inicating which columns contain the results. The rest are assumed as descriptors of the problems
 #' @param col.names Vector of names of the columns. If not NULL, the files are assumed not to have a header and the columns are named using this vector
-#' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}).
+#' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}). Note that the \code{header} argument is automatically set according to the \code{col.names} argument.
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
-#' @seealso \code{\link{readExperimentFile}}, \code{\link{readExperimentDir}}, \code{\link{readComparisonDir}}
+#' @seealso \code{\link{readExperimentFile}}, \code{\link{readExperimentDir}}, \code{\link{readComparisonDir}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", package="scmamp")}
 #' @examples
 #' dir <- system.file("loading_tests",package="scmamp")
-#' file <- paste(dir , "beta_complete_comparison.out" , sep="/")
-#' data <- readComparisonFile (file = file , alg.cols = c('kakizawa','vitale','boundarykernel','betakernel'))
+#' file <- paste(dir , "rgg_complete_comparison.out" , sep="/")
+#' data <- readComparisonFile(file=file, alg.cols=3:10)
 #' dim(data)
 #' head(data)
+#' 
 readComparisonFile <- function(file, alg.cols, col.names=NULL, ...) {
   rcsv.args <- list(...)
   if (!is.null(rcsv.args$header)) {
@@ -404,22 +407,22 @@ readComparisonFile <- function(file, alg.cols, col.names=NULL, ...) {
 #' @param col.names Vector of names of the columns. If not NULL, the files are assumed not to have a header and the columns are named using this vector.
 #' @param names List of names for the variables to be extracted from the file name.
 #' @param fname.pattern Regular expression to extract information from the file names. It has to be a regular expression that matches the name of the files and where the information to be extrcted has to be between brakets. As an example, if the whole file name wants to be used, the expression \code{'([.]*)'} can be used. For more example see the examples below or the vignette covering the data loading.
-#' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}).
+#' @param ... Additional parameters for the read.csv function used to load the data. It can be used, for example, to set the separator (e.g., \code{sep="\t"}). Note that the \code{header} argument is automatically set according to the \code{col.names} argument.
 #' @return A data.frame where each column represents either a feature of the experiment or the result of running an algorithm. Algorithm columns are placed always at the end of the table.
-#' @seealso \code{\link{readExperimentFile}}, \code{\link{readExperimentDir}}, \code{\link{readComparisonDir}}
+#' @seealso \code{\link{readExperimentFile}}, \code{\link{readExperimentDir}}, \code{\link{readComparisonDir}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", package="scmamp")}
 #' @examples
 #' dir <- paste(system.file("loading_tests",package="scmamp") , "comparison_files" , sep="/")
-#' ## The format of the files is beta_ALPHA,BETA_size_SIZE.out, where variables to extract are in capital letters. 
+#' # The format of the files is rgg_size_SIZE_r_RADIUS.out, where variables to extract are in capital letters.  
 #' list.files(dir)[1]
-#' ## The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.
-#' pattern <- "beta_([0-9]*),([0-9]*)_size_([0-9]*).out"
-#' var.names <- c('alpha' , 'beta' , 'size')
-#' alg.names <- c('kakizawa','vitale','boundarykernel','betakernel')
-#' data <- readComparisonDir (directory = dir , alg.cols = alg.names , col.names = NULL , names = var.names , fname.pattern = pattern)
+#' # The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.
+#' pattern <- "rgg_size_([0-9]*)_r_(0.[0-9]*).out"
+#' var.names <- c("Size", "Radius")
+#' data <- readComparisonDir (directory=dir, alg.cols=1:8, names=var.names, 
+#'                            fname.pattern=pattern)
 #' dim(data)
 #' head(data)
-
-readComparisonDir <- function (directory , alg.cols , col.names , names , fname.pattern , ...){
+readComparisonDir <- function (directory, alg.cols, names, fname.pattern, 
+                               col.names=NULL, ...){
   rcsv.args <- list(...)
   if (!is.null(rcsv.args$header)) stop("The argument header cannot be set by hand. It depends on whether a col.names argument is passed or not")
   

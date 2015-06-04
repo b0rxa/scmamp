@@ -92,35 +92,58 @@ processTableRow <- function (row, bold, italic, format, digits,
 #' @title Write a table in LaTeX format
 #'
 #' @description This is a simple function to create tabular environment in LaTeX
-#' @param table A data frame with the information to plot
+#' @param table A data frame with the information to write
 #' @param file Path of a file. If provided, the tabular is wirten in the given file. Otherwise, it is writen to the standard output
-#' @param format Format for the numeric values. The accepted formats are those in the function \code{\link{formatC}}. The typical values are \code{'g'} to automatically set theformat, \code{'f'} for a fixed sized floating point format and \code{'e'} or \code{'E'} for scientific notation
-#' @param bold A matrix that matches \code{'table'} in size indicating with true those cells that have to be printed in bold font
-#' @param italic A matrix that matches \code{'table'} in size indicating with true those cells that have to be printed in bold font
-#' @param mark A matrix that matches \code{'table'} in size indicating with true those cells that have to be marked with a superscipt symbol
+#' @param format Format for the numeric values. The accepted formats are those in the function \code{\link{formatC}}. The typical values are \code{'g'} to automatically set the format, \code{'f'} for a fixed sized floating point format and \code{'e'} or \code{'E'} for scientific notation
+#' @param bold A matrix that matches \code{'table'} in size indicating with \code{TRUE} those cells that have to be printed in bold font
+#' @param italic A matrix that matches \code{'table'} in size indicating with \code{TRUE} those cells that have to be printed in italic
+#' @param mark A matrix that matches \code{'table'} in size indicating with \code{TRUE} those cells that have to be marked with a superscipt symbol
 #' @param mark.char Character to be used to mark cells. Note that the superscript is included in a math environment, so this has to be either a character or a valid math command in LaTeX
 #' @param na.as Character to be used to write NA values in the table
 #' @param align Character indicating the alignment of the colums (\code{'l'},\code{'r'} or \code{'c'})
-#' @param hrule A vector of positions for the horizontal lines in the tabular. All the lines are drawn after the indicated line. When the column names are plotted, 0 means drawing a line after the column names. The maximum value is the number of rows - 1 (for a line after the last line see parametr \code{bty})
+#' @param hrule A vector of positions for the horizontal lines in the tabular. All the lines are drawn after the indicated line. When the column names are included, 0 means drawing a line after the column names. The maximum value is the number of rows - 1 (for a line after the last line see parametr \code{bty})
 #' @param vrule Similar to \code{'hrule'} but for vertical lines. . The maximum value is the number of columns - 1 (for a line after the last columns see parametr \code{bty})
 #' @param bty Vector indicating which borders should be printed. The vector can contain any of subset of \code{c('l','r','t','b')}, which represent, respectively, left, right, top and bottom border. If the parameter is set to \code{NULL} no border is printed.
 #' @param print.col.names Local value indicating whether the column names have to be printed or not
 #' @param print.row.names Local value indicating whether the row names have to be printed or not
 #' @param digits A single number or a numeric vector with the number of digits in each column. Its size has to match the number of the final table, i.e., the colums in \code{'table'} if the row names are not included or the number of columns + 1 if the row names are printed in the final table
 #' @return LaTeX code to print the table
+#' @seealso \code{\link{summarizeData}}, \code{\link{filterData}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", 
+#' package="scmamp")}
 #' @examples
-#' data(data.garcia.herrera)
-#' # Fixed width, 4 digits
-#' ncol <- dim(data.garcia.herrera)[2]
-#' digits <- rep(4,ncol+1)
-#' writeTabular(data.garcia.herrera , format = 'f' , hrule = 0 , vrule = 0 , digits = digits)
-#' # Scientific notation, maximum value in each row in bold
-#' max.matrix <- t(apply(data.garcia.herrera , MARGIN = 1 , FUN = function(x) x==max(x)))
-#' writeTabular(data.garcia.herrera , format = 'E' , bold = max.matrix)
+#' data(data_blum_2015)
+#' args <- list()
+#' # Write the summarization of the data
+#' args$table <- summarizeData(data.blum.2015, group.by=1:2)
+#' 
+#' # Set in bold the maximum values per row
+#' bold <- apply(summ[, -(1:2)], MARGIN=1, 
+#'              FUN=function(x) {
+#'                return(x==max(x))
+#'              })
+#' args$bold <- cbind(FALSE, FALSE, t(bold))
+#' # Fixed width, 2 decimals for the values, 0 for the size and 3 for the radius
+#' args$format <- "f"
+#' args$digits <- c(0,3,rep(2, 8))
+#' 
+#' # Print the colum names but not the row names
+#' args$print.row.names <- FALSE
+#' 
+#' # Only top and bottom borders
+#' args$bty <- c("t","b")
+#' 
+#' # Add additional horizontal rules to separate the sizes
+#' args$hrule <- c(0,10,20,30)
+#' 
+#' # An additional vertical rule to separate size and radius from the results
+#' args$vrule <- 2
+#' 
+#' # Print the table
+#' do.call(writeTabular, args)
 
-writeTabular <- function (table, file=NULL, format='g', bold=NULL, italic=NULL, 
-                          mark=NULL, mark.char='*', na.as="n/a", align='l', 
-                          hrule=NULL, vrule=NULL, bty=c('t','b','l','r'), 
+writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL, 
+                          mark=NULL, mark.char="*", na.as="n/a", align="l", 
+                          hrule=NULL, vrule=NULL, bty=c("t","b","l","r"), 
                           print.col.names=TRUE, print.row.names=TRUE, digits=3) {
   
   rows <- nrow(table)

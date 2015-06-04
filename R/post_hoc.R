@@ -302,7 +302,7 @@ friedmanPost <- function (data, control=NULL, ...) {
 #' @param ... Not used. 
 #' @return A matrix with all the pairwise raw p-values (all vs. all or all vs. control).
 #' @details The test has been implemented according to the version in Garcia et al. (2010), pages 2051,2054
-#' @references Garcia, S. et al. (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-20664.
+#' @references Garcia, S. et al. (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @examples
 #' data(data.garcia.herrera)
 #' friedmanAlignedRanksPost(data.garcia.herrera)

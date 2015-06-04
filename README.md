@@ -9,6 +9,9 @@ Demšar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Set
 
 García S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for all Pairwise Comparisons. _Journal of Machine Learning Research_, 9, 2677-2694.
 
+García S. and Herrera, F. (2010) Advanced Nonparametric Tests for Multiple Comparison in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power. _Information Sciences_, 180, 2044-2064.
+
+
 ## Package installation
 
 The last version of the package can be installed running the following commands:
