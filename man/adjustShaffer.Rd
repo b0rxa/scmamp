@@ -2,28 +2,32 @@
 % Please edit documentation in R/post_hoc.R
 \name{adjustShaffer}
 \alias{adjustShaffer}
-\title{Shaffer's correction of p-values in pair-wise comparisons}
+\title{Shaffer's correction of p-values in pairwise comparisons.
+.}
 \usage{
 adjustShaffer(raw.matrix)
 }
 \arguments{
-\item{raw.matrix}{A matrix with the pair-wise p-values. The p-values have to be, at least, in the upper part of the matrix.}
+\item{raw.matrix}{A matrix with the pairwise p-values. The p-values have to be, at least, in the upper part of the matrix.}
 }
 \value{
 A symetric matrix with the corrected p-values.
 }
 \description{
-This function implements the Shaffer's multiple testing correction when the p-values correspond with pair-wise comparisons
+This function implements the Shaffer's (static) multiple testing correction when the p-values correspond with pairwise comparisons.
 }
 \details{
 The test has been implemented according to the version in Garcia and Herrera (2008), page 2680.
 }
 \examples{
-data(data.garcia.herrera)
-raw.pvalues <- friedmanPost(data.garcia.herrera)
-adjustShaffer (raw.pvalues)
+data(data_gh_2008)
+raw.pvalues <- friedmanPost(data.gh.2008)
+raw.pvalues
+adjustShaffer(raw.pvalues)
 }
 \references{
-Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+S. Garcia and F. Herrera (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+
+J.P. Shaffer (1986) Modified sequentially rejective multiple test procedures. \emph{Journal of the American Statistical Association}, 81(395), 826-831.
 }
 

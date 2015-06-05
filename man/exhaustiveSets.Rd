@@ -2,18 +2,21 @@
 % Please edit documentation in R/post_hoc.R
 \name{exhaustiveSets}
 \alias{exhaustiveSets}
-\title{Create the complet set of exhaustive sets}
+\title{Complete set of exhaustive sets.}
 \usage{
 exhaustiveSets(set)
 }
 \arguments{
-\item{set}{Set to create the exhaustive sets. The complexity of this algorithm is huge, so use with caution for sets of more than 7-8 elements.}
+\item{set}{Set to create the exhaustive sets. The complexity of this algorithm is huge, so use with caution for sets of more than 7-8 elements. Indeed, the implementation, as it is, can be hardly used from sizes beyond 9.}
 }
 \value{
-A list with all the possible exhaustive sets, without repetitions
+A list with all the possible exhaustive sets, without repetitions.
 }
 \description{
-This function implements the algorithm in Figure 1, Garcia and Herrera (2008) to create, given a set, the complete set of exhaustive sets E
+This function implements the algorithm in Figure 1, Garcia and Herrera (2008) to create, given a set, the complete set of exhaustive sets E.
+}
+\details{
+The algorithm makes use of `exhaustive.sets`, a structure provided with the pacakge that contains the precomputed sets for size up to 9. With this structure the exhaustive sets are generated inmediately, but if the data is, for some reason, not loaded, the computation may take several hours (or even days, depending on the size of the set).
 }
 \examples{
 exhaustiveSets(c("A","B","C","D"))

@@ -21,8 +21,8 @@ This function performs F-test for K populations means
 The test has been implemented according to Test 22 in Kanji (2006).
 }
 \examples{
-data(data.garcia.herrera)
-anova.test(data.garcia.herrera)
+data(data_gh_2008)
+anovaTest(data.gh.2008)
 }
 \references{
 Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.

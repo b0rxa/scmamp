@@ -15,14 +15,14 @@ friedmanTest(data, ...)
 A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{parameter}, the two degrees of freedom of the F distribution; \code{p.value}, the p-value for the test; \code{method}, a character string indicating what type of test was performed and \code{data.name}, a character string giving the name of the data.
 }
 \description{
-This function performs Friedman's test
+This function performs Friedman's test for multiple comparisons
 }
 \details{
 The test has been implemented according to the version in Demsar (2006), page 11
 }
 \examples{
-data("data.garcia.herrera")
-friedmanTest(data.garcia.herrera)
+data(data_gh_2008)
+friedmanTest(data.gh.2008)
 }
 \references{
 Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.

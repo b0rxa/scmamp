@@ -15,17 +15,20 @@ adjustRom(pvalues, alpha = 0.05)
 A matrix with the corrected p-values
 }
 \description{
-This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Rom, D. M. (1990)
+This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Rom (1990)
 }
 \details{
-The test has been implemented according to the version in Garcia et al. (2010), page 2680-2682.
+The test has been implemented according to the version in Garcia\emph{et al.} (2010), page 2680-2682.
 }
 \examples{
 data(data_gh_2008)
 raw.pvalues <- friedmanPost(data.gh.2008)
+raw.pvalues
 adjustRom(raw.pvalues, alpha=0.05)
 }
 \references{
-Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+
+D. M. Rom (1990) A sequentially rejective test procedure based on a modified Bonferroni inequality. \emph{Biometrika}, 77, 663-665.
 }
 

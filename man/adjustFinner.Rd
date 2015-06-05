@@ -13,17 +13,20 @@ adjustFinner(pvalues)
 A matrix with the corrected p-values
 }
 \description{
-This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Finner, H. (1993)
+This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Finner (1993)
 }
 \details{
-The test has been implemented according to the version in Garcia and Herrera (2010), page 2680-2682.
+The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682.
 }
 \examples{
-data(data.garcia.herrera)
-raw.pvalues <- friedmanPost(data.garcia.herrera)
+data(data_gh_2008)
+raw.pvalues <- friedmanPost(data.gh.2008)
+raw.pvalues
 adjustFinner (raw.pvalues)
 }
 \references{
-Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+
+H. Finner (1993) On a monotocity problem in ste-down mulitple test procedures. \emph{Journal of the American Statistical Association}, 88, 920-923.
 }
 

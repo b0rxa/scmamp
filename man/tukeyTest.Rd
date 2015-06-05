@@ -21,8 +21,8 @@ This function performs the Tukey test
 The test has been implemented according to Test 28 in Kanji (2006).
 }
 \examples{
-data(data.garcia.herrera)
-res <- tukeyTest(data.garcia.herrera, alpha=0.1)
+data(data_gh_2008)
+res <- tukeyTest(data.gh.2008, alpha=0.1)
 res
 res$diff.matrix
 }

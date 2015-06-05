@@ -2,28 +2,31 @@
 % Please edit documentation in R/post_hoc.R
 \name{adjustBergmannHommel}
 \alias{adjustBergmannHommel}
-\title{Bergmann and Hommel dynamic correction of p-values}
+\title{Bergmann and Hommel dynamic correction of p-values.}
 \usage{
 adjustBergmannHommel(raw.matrix)
 }
 \arguments{
-\item{raw.matrix}{Raw p-values in a matrix}
+\item{raw.matrix}{Raw p-values in a matrix.}
 }
 \value{
 A matrix with the corrected p-values
 }
 \description{
-This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Bergmann and Hommel (1994)
+This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Bergmann and Hommel (1994).
 }
 \details{
 The test has been implemented according to the version in Garcia and Herrera (2008), page 2680-2682.
 }
 \examples{
-data(data.garcia.herrera)
-raw.pvalues <- friedmanAlignedRanksPost(data.garcia.herrera)
+data(data_gh_2008)
+raw.pvalues <- friedmanAlignedRanksPost(data.gh.2008)
+raw.pvalues
 adjustBergmannHommel (raw.pvalues)
 }
 \references{
-Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+S. Garcia and F. Herrera (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+
+G. Bergmann and G. Hommel (1988) Improvements of general multiple test procedures for redundant systems of hypogheses. In P. Bauer, G. Hommel and E. Sonnemann, editors, \emph{Multiple Hypotheses Testing}, 100-115, Springer, Berlin.
 }
 

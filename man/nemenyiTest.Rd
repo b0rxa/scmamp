@@ -21,8 +21,8 @@ This function performs the Nemenyi test
 The test has been implemented according to the version in Demsar (2006), page 7
 }
 \examples{
-data(data.garcia.herrera)
-res <- nemenyiTest(data.garcia.herrera , alpha = 0.1)
+data(data_gh_2008)
+res <- nemenyiTest(data.gh.2008, alpha = 0.1)
 res
 res$diff.matrix
 }

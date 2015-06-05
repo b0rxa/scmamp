@@ -2,7 +2,7 @@
 % Please edit documentation in R/post_hoc.R
 \name{friedmanPost}
 \alias{friedmanPost}
-\title{Friedman's post hoc raw p-values for all vs. control and all vs. all comparisons}
+\title{Friedman's post hoc raw p-values}
 \usage{
 friedmanPost(data, control = NULL, ...)
 }
@@ -23,10 +23,11 @@ This function computes the raw p-values for the post hoc based on Friedman's tes
 The test has been implemented according to the version in Demsar (2006), page 12.
 }
 \examples{
-data(data.garcia.herrera)
-friedmanPost(data.garcia.herrera)
+data(data_gh_2008)
+friedmanPost(data.gh.2008)
+friedmanPost(data.gh.2008, control=1)
 }
 \references{
-Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+J. Demsar (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 }
 

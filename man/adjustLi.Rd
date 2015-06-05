@@ -2,7 +2,7 @@
 % Please edit documentation in R/post_hoc.R
 \name{adjustLi}
 \alias{adjustLi}
-\title{Li correction of p-values}
+\title{Li correction of p-values.}
 \usage{
 adjustLi(pvalues)
 }
@@ -13,17 +13,19 @@ adjustLi(pvalues)
 A matrix with the corrected p-values
 }
 \description{
-This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Li, J. (2008)
+This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Li (2008).
 }
 \details{
-The test has been implemented according to the version in Garcia et al. (2010), page 2680-2682.
+The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682. This is a simple procedure that provides good results when the highest p-value corrected is below 0.5. However, When the highest p-value is close to 1 the correction is extremely conservative. Actually, when the highest p-value is 1, all the corrected p-values are set at 1. Therefore, it is not advisable to be used under these circumstances.
 }
 \examples{
-data(data.garcia.herrera)
-raw.pvalues <- friedmanPost(data.garcia.herrera)
+data(data_gh_2008)
+raw.pvalues <- friedmanPost(data.gh.2008)
 adjustLi(raw.pvalues)
 }
 \references{
-Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+
+J. Li (2008) A two-step rejection prcedure for testing mulitple hypotheses. \emph{Journal of Statistical Planning and Inference}, 138, 1521-1527.
 }
 

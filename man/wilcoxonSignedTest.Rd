@@ -23,9 +23,9 @@ This function implements the paired Wilcoxon signed-rank test
 The test has been implemented according to the version in Demsar (2006), page 7
 }
 \examples{
-x <- rbeta(50 , 2 , 20)
-y <- x + runif(50)*0.2
-wilcoxon.signed.test(x , y)
+x <- rbeta(50, 2, 20)
+y <- x + runif(50) * 0.2
+wilcoxonSignedTest(x, y)
 }
 \references{
 Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.

@@ -4,7 +4,7 @@
 \alias{rankMatrix}
 \title{Get the ranking matrix}
 \usage{
-rankMatrix(data, decreasing = TRUE)
+rankMatrix(data, decreasing = TRUE, ...)
 }
 \arguments{
 \item{data}{The matrix to rank.}
@@ -18,7 +18,7 @@ A matrix containing the per-row rankings. In case of ties, the mean rank is obta
 This function returns, given a matrix, the ranking of the colums in each row
 }
 \examples{
-data("garcia.herrera")
-rank.matrix(data.garcia.herrera)
+data(data_gh_2008)
+rankMatrix(data.gh.2008)
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/post_hoc.R
 \name{adjustHolland}
 \alias{adjustHolland}
-\title{Holland correction of p-values}
+\title{Holland correction of p-values.}
 \usage{
 adjustHolland(pvalues)
 }
@@ -16,14 +16,17 @@ A matrix with the corrected p-values
 This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Holland and Copenhaver (1987)
 }
 \details{
-The test has been implemented according to the version in Garcia and Herrera (2010), page 2680-2682.
+The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682.
 }
 \examples{
-data(data.garcia.herrera)
-raw.pvalues <- friedmanPost(data.garcia.herrera)
+data(data_gh_2008)
+raw.pvalues <- friedmanPost(data.gh.2008)
+raw.pvalues
 adjustHolland (raw.pvalues)
 }
 \references{
-Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+S. Garcia, A. Fernandez, J. Luengo and F. Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+
+B. S. Holland and M. D. Copenhaver (1987) An improved sequentially rejective Bonferroni test procedure \emph{Biometrics}, 43, 417-423.
 }
 

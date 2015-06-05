@@ -27,9 +27,9 @@ getNemenyiCD <- function (alpha = 0.05, num.alg, num.problems) {
 #' @details The test has been implemented according to the version in Demsar (2006), page 7
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' @examples
-#' x <- rbeta(50 , 2 , 20)
-#' y <- x + runif(50)*0.2
-#' wilcoxon.signed.test(x , y)
+#' x <- rbeta(50, 2, 20)
+#' y <- x + runif(50) * 0.2
+#' wilcoxonSignedTest(x, y)
 
 wilcoxonSignedTest <- function (x, y, ...) {
   if (length(x) != length(y)) {
@@ -69,8 +69,9 @@ wilcoxonSignedTest <- function (x, y, ...) {
 #' @details The test has been implemented according to Test 22 in Kanji (2006).
 #' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 #' @examples
-#' data(data.garcia.herrera)
-#' anova.test(data.garcia.herrera)
+#' data(data_gh_2008)
+#' anovaTest(data.gh.2008)
+#' 
 
 anovaTest <- function (data, ...){
   
@@ -110,10 +111,10 @@ anovaTest <- function (data, ...){
 #' @param decreasing Logical value indicating whether the top ranked has to be the highest value or not
 #' @return A matrix containing the per-row rankings. In case of ties, the mean rank is obtained (e.g, if there is a tie between the 4th and the 5th column, both are assigned a mean rank of 4.5)
 #' @examples
-#' data("garcia.herrera")
-#' rank.matrix(data.garcia.herrera)
-
-rankMatrix <- function(data, decreasing=TRUE){
+#' data(data_gh_2008)
+#' rankMatrix(data.gh.2008)
+#' 
+rankMatrix <- function(data, decreasing=TRUE, ...){
   # The rank function is based on an increasing ordering. In case we need to
   # get the rank of the descreasing ordering, just rank -x instead of x
   if (decreasing){
@@ -135,7 +136,7 @@ rankMatrix <- function(data, decreasing=TRUE){
 
 #' @title Friedman's test
 #'
-#' @description This function performs Friedman's test
+#' @description This function performs Friedman's test for multiple comparisons
 #' @param data Matrix where the test is performed
 #' @param ... Ignored
 #' @return A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{parameter}, the two degrees of freedom of the F distribution; \code{p.value}, the p-value for the test; \code{method}, a character string indicating what type of test was performed and \code{data.name}, a character string giving the name of the data.
@@ -143,9 +144,9 @@ rankMatrix <- function(data, decreasing=TRUE){
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' 
 #' @examples
-#' data("data.garcia.herrera")
-#' friedmanTest(data.garcia.herrera)
-
+#' data(data_gh_2008)
+#' friedmanTest(data.gh.2008)
+#'
 friedmanTest <- function (data, ...) {
   N <- dim(data)[1]
   k <- dim(data)[2]
@@ -165,6 +166,20 @@ friedmanTest <- function (data, ...) {
   return(htest.result)
 }
 
+
+#' @title Friedman's Aligned Ranks test
+#'
+#' @description This function performs Friedman's Aligned Rank test for multiple comparisons
+#' @param data Matrix where the test is performed
+#' @param ... Ignored
+#' @return A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{parameter}, the two degrees of freedom of the F distribution; \code{p.value}, the p-value for the test; \code{method}, a character string indicating what type of test was performed and \code{data.name}, a character string giving the name of the data.
+#' @details The test has been implemented according to the version in Garcia \emph{et al.} (2008).
+#' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' 
+#' @examples
+#' data(data_gh_2008)
+#' friedmanTest(data.gh.2008)
+#'
 
 friedmanAlignedRanksTest <- function (data, ...) {
   N <- dim(data)[1]
@@ -202,7 +217,19 @@ friedmanAlignedRanksTest <- function (data, ...) {
 }
 
 
-
+#' @title Quade's test
+#'
+#' @description This function performs Quade's test for multiple comparisons
+#' @param data Matrix where the test is performed
+#' @param ... Ignored
+#' @return A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{parameter}, the two degrees of freedom of the F distribution; \code{p.value}, the p-value for the test; \code{method}, a character string indicating what type of test was performed and \code{data.name}, a character string giving the name of the data.
+#' @details The test has been implemented according to the version in Garcia \emph{et al.} (2008).
+#' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' 
+#' @examples
+#' data(data_gh_2008)
+#' quadeTest(data.gh.2008)
+#' 
 quadeTest <- function (data, ...) {
   N <- dim(data)[1]
   k <- dim(data)[2]
@@ -254,8 +281,8 @@ quadeTest <- function (data, ...) {
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' 
 #' @examples
-#' data("garcia.herrera")
-#' imanDavenportTest(data.garcia.herrera)
+#' data(data_gh_2008)
+#' imanDavenportTest(data.gh.2008)
 
 imanDavenportTest <- function (data, ...) {
   N <- dim(data)[1]
@@ -287,8 +314,8 @@ imanDavenportTest <- function (data, ...) {
 #' @details The test has been implemented according to the version in Demsar (2006), page 7
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' @examples
-#' data(data.garcia.herrera)
-#' res <- nemenyiTest(data.garcia.herrera , alpha = 0.1)
+#' data(data_gh_2008)
+#' res <- nemenyiTest(data.gh.2008, alpha = 0.1)
 #' res
 #' res$diff.matrix
 
@@ -330,8 +357,8 @@ nemenyiTest <- function (data, alpha=0.05) {
 #' @details The test has been implemented according to Test 28 in Kanji (2006).
 #' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 #' @examples
-#' data(data.garcia.herrera)
-#' res <- tukeyTest(data.garcia.herrera, alpha=0.1)
+#' data(data_gh_2008)
+#' res <- tukeyTest(data.gh.2008, alpha=0.1)
 #' res
 #' res$diff.matrix
 

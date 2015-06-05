@@ -40,6 +40,8 @@ If a function is provided, the it has to recieve, as first argument, a vector of
 }
 \value{
 In case the \code{group.by} argument is not provided (or it is \code{NULL}), the function return an object of class \code{htest}. If columns for grouping are provided, then the function returns a matrix that includes, for each group, the values of the \code{group.by} columns, the raw p-value and the corrected p-value.
+
+#'
 }
 \description{
 This function is a wrapper to multiple comparison tests.
@@ -60,5 +62,8 @@ multipleComparisonTest (data=data.gh.2008, test="aligned ranks",
 S. Garcia and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 
 Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
+}
+\seealso{
+\code{\link{friedmanTest}}, \code{\link{friedmanAlignedRanksTest}}, \code{\link{quadeTest}}, \code{\link{anovaTest}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmann}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 }
 

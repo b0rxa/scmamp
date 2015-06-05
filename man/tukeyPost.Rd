@@ -2,12 +2,14 @@
 % Please edit documentation in R/post_hoc.R
 \name{tukeyPost}
 \alias{tukeyPost}
-\title{Tukey post hoc test for ANOVA}
+\title{Tukey post hoc test for ANOVA.}
 \usage{
 tukeyPost(data, control = NULL, ...)
 }
 \arguments{
-\item{data}{Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples}
+\item{data}{Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples.}
+
+\item{control}{Either the number or the name of the column for the control algorithm. If this parameter is not provided, the all vs all comparison is performed.}
 
 \item{...}{Not used.}
 }
@@ -15,16 +17,17 @@ tukeyPost(data, control = NULL, ...)
 A matrix with all the pairwise corrected p-values.
 }
 \description{
-This function computes all the pairwise p-values corrected using Tukey post hoc test
+This function computes all the pairwise p-values corrected using Tukey post hoc test.
 }
 \details{
 The test has been implemented according to Test 22 in Kanji (2006).
 }
 \examples{
-data(data.garcia.herrera)
-tukeyPost(data.garcia.herrera)
+data(data_gh_2008)
+tukeyPost(data.gh.2008)
+tukeyPost(data.gh.2008, control=1)
 }
 \references{
-Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
+G. K. Kanji (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 }
 

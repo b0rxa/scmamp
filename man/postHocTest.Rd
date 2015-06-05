@@ -19,10 +19,10 @@ postHocTest(data, algorithms = NULL, group.by = NULL, test = "friedman",
  \itemize{
    \item {\code{'wilcoxon'} - Wilcoxon Signed Rank test, as in Demsar (2006)}
    \item {\code{'t-test'} - t-test (R's t.test function with paired option set at \code{TRUE})}
-   \item {\code{'friedman'} - Friedman post hoc test, as in Garcia and Herrera (2010)}
+   \item {\code{'friedman'} - Friedman post hoc test, as in Demsar (2006)}
    \item {\code{'aligned ranks'} Friedman's Aligned Ranks post hoc test, as in Garcia and Herrera (2010)}
    \item {\code{'quade'} - Quade post hoc test, as in Garcia and Herrera (2010)}
-   \item {\code{'anova'} - ANOVA post hoc test, as in Test 22 in Kanji (2006).}
+   \item {\code{'tukey'} - Tukey's ANOVA post hoc test, as in Test 28 in Kanji (2006).}
  }
 
  If a function is provided, then it has to have as first argument a matrix containing the columns to be compared. The function has to return a  list with, at least, an element named \code{p.value} (as the \code{htest} objects that are usually returned by R's test implementations).}
@@ -91,5 +91,8 @@ Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Cla
 Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 
 Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+}
+\seealso{
+\code{\link{friedmanPost}}, \code{\link{friedmanAlignedRanksPost}}, \code{\link{quadePost}}, \code{\link{tukeyPost}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmann}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 }
 

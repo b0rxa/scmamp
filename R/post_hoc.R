@@ -125,7 +125,7 @@ countRecursively <- function(k) {
   #   k: Number of algorithms
   #
   # Returns:
-  #   List of the maximum number of true hypothesis in a pair-wise comparsison of k classifiers
+  #   List of the maximum number of true hypothesis in a pairwise comparsison of k classifiers
   #
   res <- c(0)
   if (k > 1) {
@@ -252,7 +252,7 @@ megeSets <- function (e1, e2){
 
 # EXPORTED FUNCTIONS -----------------------------------------------------------
 
-#' @title Friedman's post hoc raw p-values for all vs. control and all vs. all comparisons
+#' @title Friedman's post hoc raw p-values
 #'
 #' @description This function computes the raw p-values for the post hoc based on Friedman's test.
 #' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples.
@@ -260,10 +260,11 @@ megeSets <- function (e1, e2){
 #' @param ... Not used. 
 #' @return A matrix with all the pairwise raw p-values (all vs. all or all vs. control).
 #' @details The test has been implemented according to the version in Demsar (2006), page 12.
-#' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
+#' @references J. Demsar (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' @examples
-#' data(data.garcia.herrera)
-#' friedmanPost(data.garcia.herrera)
+#' data(data_gh_2008)
+#' friedmanPost(data.gh.2008)
+#' friedmanPost(data.gh.2008, control=1)
 
 friedmanPost <- function (data, control=NULL, ...) {
   k <- dim(data)[2]
@@ -294,18 +295,19 @@ friedmanPost <- function (data, control=NULL, ...) {
 
 
 
-#' @title Friedman's aligned ranks post hoc raw p-values for all vs. control and all vs. all comparisons
+#' @title Friedman's Aligned Ranks post hoc raw p-values
 #'
-#' @description This function computes the raw p-values for the post hoc based on Friedman's test.
+#' @description This function computes the raw p-values for the post hoc based on Friedman's Aligned Ranks test.
 #' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples.
 #' @param control Either the number or the name of the column for the control algorithm. If this parameter is not provided, the all vs all comparison is performed.
 #' @param ... Not used. 
 #' @return A matrix with all the pairwise raw p-values (all vs. all or all vs. control).
-#' @details The test has been implemented according to the version in Garcia et al. (2010), pages 2051,2054
-#' @references Garcia, S. et al. (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), pages 2051,2054
+#' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @examples
-#' data(data.garcia.herrera)
-#' friedmanAlignedRanksPost(data.garcia.herrera)
+#' data(data_gh_2008)
+#' friedmanAlignedRanksPost(data.gh.2008)
+#' friedmanAlignedRanksPost(data.gh.2008, control=1)
 
 friedmanAlignedRanksPost <- function (data, control=NULL, ...) {
   k <- dim(data)[2]
@@ -340,6 +342,21 @@ friedmanAlignedRanksPost <- function (data, control=NULL, ...) {
   return(matrix.raw)
 }
 
+
+#' @title Quade post hoc raw p-values
+#'
+#' @description This function computes the raw p-values for the post hoc based on Quade's test.
+#' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples.
+#' @param control Either the number or the name of the column for the control algorithm. If this parameter is not provided, the all vs all comparison is performed.
+#' @param ... Not used. 
+#' @return A matrix with all the pairwise raw p-values (all vs. all or all vs. control).
+#' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), pages 2052,2054
+#' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @examples
+#' data(data_gh_2008)
+#' quadePost(data.gh.2008)
+#' quadePost(data.gh.2008, control=1)
+#' 
 
 quadePost <- function (data, control=NULL, ...){
   k <- dim(data)[2]
@@ -386,21 +403,23 @@ quadePost <- function (data, control=NULL, ...){
 }
 
 
-#' @title Function to use custom tests to perform pairwise comparisons
+#' @title Function to use custom tests to perform post hoc comparisons.
 #'
-#' @description This function computes the raw p-values for all the pairwise comparisons using a custom function
-#' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
-#' @param test Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return a list that contains, at least, one element called p.value (as the \code{htest} objects that are usually returned by R's statistical test implementations)
+#' @description This function computes the raw p-values for all vs. all or all vs. control comparisons using a custom function.
+#' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples.
+#' @param control Either the number or the name of the column for the control algorithm. If this parameter is not provided, the all vs all comparison is performed.
+#' @param test Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return a list that contains, at least, one element called p.value (as the \code{htest} objects that are usually returned by R's statistical test implementations).
 #' @param ... Additional parameters for the test function.
 #' @return A matrix with all the pairwise raw p-values.
 #' @examples
-#' data(data.garcia.herrera)
+#' data(data_gh_2008)
 #' test <- function(x, y, ...) {
 #'   t.test(x, y, paired=TRUE)
 #' }
-#' customPost(data.garcia.herrera , test)
+#' customPost(data.gh.2008, control=1, test=test)
+#' customPost(data.gh.2008, test=test)
 
-customPost <- function(data, control, test, ...){
+customPost <- function(data, control=NULL, test, ...){
   k <- dim(data)[2]
   N <- dim(data)[1]
   
@@ -430,17 +449,19 @@ customPost <- function(data, control, test, ...){
   return(matrix.raw)
 }
 
-#' @title Tukey post hoc test for ANOVA
+#' @title Tukey post hoc test for ANOVA.
 #'
-#' @description This function computes all the pairwise p-values corrected using Tukey post hoc test
-#' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples
+#' @description This function computes all the pairwise p-values corrected using Tukey post hoc test.
+#' @param data Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples.
+#' @param control Either the number or the name of the column for the control algorithm. If this parameter is not provided, the all vs all comparison is performed.
 #' @param ... Not used.
 #' @return A matrix with all the pairwise corrected p-values.
 #' @details The test has been implemented according to Test 22 in Kanji (2006).
-#' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
+#' @references G. K. Kanji (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 #' @examples
-#' data(data.garcia.herrera)
-#' tukeyPost(data.garcia.herrera)
+#' data(data_gh_2008)
+#' tukeyPost(data.gh.2008)
+#' tukeyPost(data.gh.2008, control=1)
 
 tukeyPost <- function (data, control=NULL, ...){
   
@@ -471,22 +492,24 @@ tukeyPost <- function (data, control=NULL, ...){
   
   # Generate the final matrix with the p-values
   matrix.raw <- buildPvalMatrix(pvalues=pvalues, k=k, pairs=pairs, 
-                                cnames=colnames(data), control=NULL)
+                                cnames=colnames(data), control=control)
   return(matrix.raw)
 }
 
-#' @title Shaffer's correction of p-values in pair-wise comparisons
-#'
-#' @description This function implements the Shaffer's multiple testing correction when the p-values correspond with pair-wise comparisons
-#' @param raw.matrix A matrix with the pair-wise p-values. The p-values have to be, at least, in the upper part of the matrix.
+#' @title Shaffer's correction of p-values in pairwise comparisons.
+#'.
+#' @description This function implements the Shaffer's (static) multiple testing correction when the p-values correspond with pairwise comparisons.
+#' @param raw.matrix A matrix with the pairwise p-values. The p-values have to be, at least, in the upper part of the matrix.
 #' @return A symetric matrix with the corrected p-values.
 #' @details The test has been implemented according to the version in Garcia and Herrera (2008), page 2680.
-#' @references Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+#' @references S. Garcia and F. Herrera (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+#' @references J.P. Shaffer (1986) Modified sequentially rejective multiple test procedures. \emph{Journal of the American Statistical Association}, 81(395), 826-831.
 #' 
 #' @examples
-#' data(data.garcia.herrera)
-#' raw.pvalues <- friedmanPost(data.garcia.herrera)
-#' adjustShaffer (raw.pvalues)
+#' data(data_gh_2008)
+#' raw.pvalues <- friedmanPost(data.gh.2008)
+#' raw.pvalues
+#' adjustShaffer(raw.pvalues)
 
 adjustShaffer <- function (raw.matrix){  
   if (!(is.matrix(raw.matrix) | is.data.frame(raw.matrix))) {
@@ -527,13 +550,15 @@ adjustShaffer <- function (raw.matrix){
   return(adj.matrix)
 }
 
-#' @title Create the complet set of exhaustive sets
+#' @title Complete set of exhaustive sets.
 #'
-#' @description This function implements the algorithm in Figure 1, Garcia and Herrera (2008) to create, given a set, the complete set of exhaustive sets E
-#' @param set Set to create the exhaustive sets. The complexity of this algorithm is huge, so use with caution for sets of more than 7-8 elements.
-#' @return A list with all the possible exhaustive sets, without repetitions
+#' @description This function implements the algorithm in Figure 1, Garcia and Herrera (2008) to create, given a set, the complete set of exhaustive sets E.
+#' @param set Set to create the exhaustive sets. The complexity of this algorithm is huge, so use with caution for sets of more than 7-8 elements. Indeed, the implementation, as it is, can be hardly used from sizes beyond 9.
+#' @return A list with all the possible exhaustive sets, without repetitions.
+#' @details The algorithm makes use of `exhaustive.sets`, a structure provided with the pacakge that contains the precomputed sets for size up to 9. With this structure the exhaustive sets are generated inmediately, but if the data is, for some reason, not loaded, the computation may take several hours (or even days, depending on the size of the set).
 #' @examples
 #' exhaustiveSets(c("A","B","C","D"))
+#' 
 exhaustiveSets <- function (set){
   k <- length(set)
   # Reuse the computed sets stored in the variable 'exhaustive.sets'
@@ -584,17 +609,20 @@ exhaustiveSets <- function (set){
   return(es.l)
 }
 
-#' @title Bergmann and Hommel dynamic correction of p-values
+#' @title Bergmann and Hommel dynamic correction of p-values.
 #'
-#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Bergmann and Hommel (1994)
-#' @param raw.matrix Raw p-values in a matrix
+#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Bergmann and Hommel (1994).
+#' @param raw.matrix Raw p-values in a matrix.
 #' @return A matrix with the corrected p-values
 #' @details The test has been implemented according to the version in Garcia and Herrera (2008), page 2680-2682.
-#' @references Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+#' @references S. Garcia and F. Herrera (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
+#' @references G. Bergmann and G. Hommel (1988) Improvements of general multiple test procedures for redundant systems of hypogheses. In P. Bauer, G. Hommel and E. Sonnemann, editors, \emph{Multiple Hypotheses Testing}, 100-115, Springer, Berlin.
 #' @examples
-#' data(data.garcia.herrera)
-#' raw.pvalues <- friedmanAlignedRanksPost(data.garcia.herrera)
+#' data(data_gh_2008)
+#' raw.pvalues <- friedmanAlignedRanksPost(data.gh.2008)
+#' raw.pvalues
 #' adjustBergmannHommel (raw.pvalues)
+#' 
 adjustBergmannHommel <- function (raw.matrix){
   if (!(is.matrix(raw.matrix) | is.data.frame(raw.matrix))) {
     stop("This correction method requires a square matrix or data.frame with ",
@@ -654,17 +682,20 @@ adjustBergmannHommel <- function (raw.matrix){
 }
 
 
-#' @title Holland correction of p-values
+#' @title Holland correction of p-values.
 #'
 #' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Holland and Copenhaver (1987)
 #' @param pvalues Raw p-values in a matrix
 #' @return A matrix with the corrected p-values
-#' @details The test has been implemented according to the version in Garcia and Herrera (2010), page 2680-2682.
-#' @references Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682.
+#' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @references B. S. Holland and M. D. Copenhaver (1987) An improved sequentially rejective Bonferroni test procedure \emph{Biometrics}, 43, 417-423.
 #' @examples
-#' data(data.garcia.herrera)
-#' raw.pvalues <- friedmanPost(data.garcia.herrera)
+#' data(data_gh_2008)
+#' raw.pvalues <- friedmanPost(data.gh.2008)
+#' raw.pvalues
 #' adjustHolland (raw.pvalues)
+#' 
 adjustHolland <- function(pvalues) {
   ord <- order(pvalues, na.last=NA)
   pvalues.sorted <- pvalues[ord]
@@ -695,15 +726,18 @@ adjustHolland <- function(pvalues) {
 
 #' @title Finner correction of p-values
 #'
-#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Finner, H. (1993)
+#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Finner (1993)
 #' @param pvalues Raw p-values in a matrix
 #' @return A matrix with the corrected p-values
-#' @details The test has been implemented according to the version in Garcia and Herrera (2010), page 2680-2682.
-#' @references Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682.
+#' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @references H. Finner (1993) On a monotocity problem in ste-down mulitple test procedures. \emph{Journal of the American Statistical Association}, 88, 920-923.
 #' @examples
-#' data(data.garcia.herrera)
-#' raw.pvalues <- friedmanPost(data.garcia.herrera)
+#' data(data_gh_2008)
+#' raw.pvalues <- friedmanPost(data.gh.2008)
+#' raw.pvalues
 #' adjustFinner (raw.pvalues)
+#' 
 adjustFinner <- function(pvalues) {
   ord <- order(pvalues, na.last=NA)
   pvalues.sorted <- pvalues[ord]
@@ -735,15 +769,17 @@ adjustFinner <- function(pvalues) {
 
 #' @title Rom correction of p-values
 #'
-#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Rom, D. M. (1990)
+#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Rom (1990)
 #' @param pvalues Raw p-values in a matrix
 #' @param alpha value for the averall test
 #' @return A matrix with the corrected p-values
-#' @details The test has been implemented according to the version in Garcia et al. (2010), page 2680-2682.
-#' @references Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @details The test has been implemented according to the version in Garcia\emph{et al.} (2010), page 2680-2682.
+#' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @references D. M. Rom (1990) A sequentially rejective test procedure based on a modified Bonferroni inequality. \emph{Biometrika}, 77, 663-665.
 #' @examples
 #' data(data_gh_2008)
 #' raw.pvalues <- friedmanPost(data.gh.2008)
+#' raw.pvalues
 #' adjustRom(raw.pvalues, alpha=0.05)
 adjustRom <- function(pvalues, alpha=0.05){
   ord <- order(pvalues, na.last=NA)
@@ -789,22 +825,27 @@ adjustRom <- function(pvalues, alpha=0.05){
   return(p.adj)
 }
 
-#' @title Li correction of p-values
+#' @title Li correction of p-values.
 #'
-#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Li, J. (2008)
+#' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Li (2008).
 #' @param pvalues Raw p-values in a matrix
 #' @return A matrix with the corrected p-values
-#' @details The test has been implemented according to the version in Garcia et al. (2010), page 2680-2682.
-#' @references Garcia S., Fernandez, A., Luengo, J. and Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682. This is a simple procedure that provides good results when the highest p-value corrected is below 0.5. However, When the highest p-value is close to 1 the correction is extremely conservative. Actually, when the highest p-value is 1, all the corrected p-values are set at 1. Therefore, it is not advisable to be used under these circumstances.
+#' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
+#' @references J. Li (2008) A two-step rejection prcedure for testing mulitple hypotheses. \emph{Journal of Statistical Planning and Inference}, 138, 1521-1527.
 #' @examples
-#' data(data.garcia.herrera)
-#' raw.pvalues <- friedmanPost(data.garcia.herrera)
+#' data(data_gh_2008)
+#' raw.pvalues <- friedmanPost(data.gh.2008)
 #' adjustLi(raw.pvalues)
 adjustLi <- function(pvalues){
   ord <- order(pvalues, na.last=NA)
   pvalues.sorted <- pvalues[ord]
   k <- length(pvalues.sorted) + 1   
-    
+  if (max(pvalues) > 0.5)
+    warning("The highest p-value is above 0.05. In such a situation the method is ",
+            "far too conservative, so consider using another method.")
+  
+  
   p.adj.aux <- sapply(1:(k - 1),
                       FUN=function(i, ps) {
                         l <- length(ps)

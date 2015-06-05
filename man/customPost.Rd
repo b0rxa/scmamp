@@ -2,14 +2,16 @@
 % Please edit documentation in R/post_hoc.R
 \name{customPost}
 \alias{customPost}
-\title{Function to use custom tests to perform pairwise comparisons}
+\title{Function to use custom tests to perform post hoc comparisons.}
 \usage{
-customPost(data, control, test, ...)
+customPost(data, control = NULL, test, ...)
 }
 \arguments{
-\item{data}{Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples}
+\item{data}{Data set (matrix or data.frame) to apply the test. The column names are taken as the groups and the values in the matrix are the samples.}
 
-\item{test}{Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return a list that contains, at least, one element called p.value (as the \code{htest} objects that are usually returned by R's statistical test implementations)}
+\item{control}{Either the number or the name of the column for the control algorithm. If this parameter is not provided, the all vs all comparison is performed.}
+
+\item{test}{Function to perform the test. It requires two parameters, \code{x} and \code{y}, the two samples to be compared, and it has to return a list that contains, at least, one element called p.value (as the \code{htest} objects that are usually returned by R's statistical test implementations).}
 
 \item{...}{Additional parameters for the test function.}
 }
@@ -17,13 +19,14 @@ customPost(data, control, test, ...)
 A matrix with all the pairwise raw p-values.
 }
 \description{
-This function computes the raw p-values for all the pairwise comparisons using a custom function
+This function computes the raw p-values for all vs. all or all vs. control comparisons using a custom function.
 }
 \examples{
-data(data.garcia.herrera)
+data(data_gh_2008)
 test <- function(x, y, ...) {
   t.test(x, y, paired=TRUE)
 }
-customPost(data.garcia.herrera , test)
+customPost(data.gh.2008, control=1, test=test)
+customPost(data.gh.2008, test=test)
 }
 

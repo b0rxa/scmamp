@@ -79,32 +79,31 @@ runPostHoc <- function (data, test, control, ...) {
   }else{
     matrix.raw <- switch(test,
                          "t-test"= {
-                           test.name <- "Paired t-test"
                            customPost(data=data, control=control, 
                                        test=function(x, y) {
                                          return(t.test(x, y, paired=TRUE))
                                          })
                        },
                        "wilcoxon"= {
-                         test.name <- "Paired Wilcoxon test"
                          customPost(data=data, control=control, 
                                     test=function(x,y) {
                                       return(wilcoxonSignedTest(x,y))
                                     })
                        },
                        "friedman"= {
-                         test.name <- "Friedman test's post hoc"
                          friedmanPost(data=data, 
                                       control=control)
                        },
                        "aligned ranks"= {
-                         test.name <- "Friedman Aligned Rank test's post hoc"
                          friedmanAlignedRanksPost(data=data, 
                                                   control=control)
                        },
                        "quade"= {
-                         test.name <- "Quade test's post hoc"
                          quadePost(data=data, 
+                                   control=control)
+                       },
+                       "tukey"= {
+                         tukeyPost(data=data, 
                                    control=control)
                        },
                        stop("Unknown test. Valid options in the current version ",
@@ -129,10 +128,10 @@ runPostHoc <- function (data, test, control, ...) {
 #'  \itemize{
 #'    \item {\code{'wilcoxon'} - Wilcoxon Signed Rank test, as in Demsar (2006)}
 #'    \item {\code{'t-test'} - t-test (R's t.test function with paired option set at \code{TRUE})}
-#'    \item {\code{'friedman'} - Friedman post hoc test, as in Garcia and Herrera (2010)}
+#'    \item {\code{'friedman'} - Friedman post hoc test, as in Demsar (2006)}
 #'    \item {\code{'aligned ranks'} Friedman's Aligned Ranks post hoc test, as in Garcia and Herrera (2010)}
 #'    \item {\code{'quade'} - Quade post hoc test, as in Garcia and Herrera (2010)} 
-#'    \item {\code{'anova'} - ANOVA post hoc test, as in Test 22 in Kanji (2006).}
+#'    \item {\code{'tukey'} - Tukey's ANOVA post hoc test, as in Test 28 in Kanji (2006).}
 #'  }
 #'  
 #'  If a function is provided, then it has to have as first argument a matrix containing the columns to be compared. The function has to return a  list with, at least, an element named \code{p.value} (as the \code{htest} objects that are usually returned by R's test implementations).
@@ -156,6 +155,7 @@ runPostHoc <- function (data, test, control, ...) {
 #' 
 #' Note that Shaffer and Bergmann and Hommel's correction can only be applied when all the pairwise tests are conducted, due to their assumptions. Moreover, its use when the data is grouped (multiple pairwise comparsions) is not trivial and, thus, it is not possible to use it when the data is grouped.
 #' 
+#' @seealso \code{\link{friedmanPost}}, \code{\link{friedmanAlignedRanksPost}}, \code{\link{quadePost}}, \code{\link{tukeyPost}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmann}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 #' 
 #' @references S. Garcia and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @references Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
@@ -435,6 +435,7 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
 #' @param ... Special argument used to pass additional parameters to the statistical test and the correction method.
 #' @return In case the \code{group.by} argument is not provided (or it is \code{NULL}), the function return an object of class \code{htest}. If columns for grouping are provided, then the function returns a matrix that includes, for each group, the values of the \code{group.by} columns, the raw p-value and the corrected p-value.
 #' 
+#' #' @seealso \code{\link{friedmanTest}}, \code{\link{friedmanAlignedRanksTest}}, \code{\link{quadeTest}}, \code{\link{anovaTest}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmann}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 #' 
 #' @references S. Garcia and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
