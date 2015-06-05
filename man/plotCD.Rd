@@ -12,6 +12,8 @@ plotCD(results.matrix, alpha = 0.05, cex = 0.75, ...)
 \item{alpha}{Significance level to get the critical difference. By default this value is 0.05}
 
 \item{cex}{Numeric value to control the size of the font. By default it is set at 0.75.}
+
+\item{...}{Additional arguments for \code{\link{rankMatrix}}}
 }
 \description{
 This function plots the critical difference plots shown in Demsar (2006)

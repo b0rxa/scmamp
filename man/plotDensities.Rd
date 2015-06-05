@@ -7,9 +7,9 @@
 plotDensities(data, ...)
 }
 \arguments{
-\item{...}{The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points. It can also be used to pass additional arguments to the \code{density} function, which is used to eastimate the densities.}
+\item{data}{A matrix where columns represent the algorithms}
 
-\item{results.matrix}{A matrix where columns represent the algorithms}
+\item{...}{The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points. It can also be used to pass additional arguments to the \code{density} function, which is used to eastimate the densities.}
 }
 \value{
 A \code{\link{ggplot}} object.

@@ -148,14 +148,14 @@ runPostHoc <- function (data, test, control, ...) {
 #'   \item{\code{li} - Li's procedure, as in Garcia and Herrera (2010)}
 #'   \item{Any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}}
 #' }. 
-#' If a function is provided, the it has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values {\emph in the same order} as the input vector.
+#' If a function is provided, the it has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values \emph{in the same order} as the input vector.
 #' @param alpha Alpha value used in Rom's correction. By default, it is set at 0.05.
 #' @param ... Special argument used to pass additional parameters to the statistical test and the correction method.
 #' @return In all cases the function returns a list with three elements, the summarization of the data (a row per group), the raw p-values and the corrected p-values. When the data is grouped and all the pairwise comparisons are performed (no control is provided), the p-values are in three dimensional arrays where the last dimension is corresponds to the group. In any other cases the result is a matrix with one or more rows.
 #' 
 #' Note that Shaffer and Bergmann and Hommel's correction can only be applied when all the pairwise tests are conducted, due to their assumptions. Moreover, its use when the data is grouped (multiple pairwise comparsions) is not trivial and, thus, it is not possible to use it when the data is grouped.
 #' 
-#' @seealso \code{\link{friedmanPost}}, \code{\link{friedmanAlignedRanksPost}}, \code{\link{quadePost}}, \code{\link{tukeyPost}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmann}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
+#' @seealso \code{\link{friedmanPost}}, \code{\link{friedmanAlignedRanksPost}}, \code{\link{quadePost}}, \code{\link{tukeyPost}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmannHommel}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 #' 
 #' @references S. Garcia and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @references Garcia S. and Herrera, F. (2008) An Extension on "Statistical Comparisons of Classifiers over Multiple Data Sets" for All Pairwise Comparisons. \emph{Journal of Machine Learning Research}, 9, 2677-2694.
@@ -174,7 +174,7 @@ runPostHoc <- function (data, test, control, ...) {
 #' # Corrected pvalues for the first group
 #' res$corrected.pval[, , 1]
 #' 
-#' Grouped data, all vs. control
+#' # Grouped data, all vs. control
 #' res <- postHocTest (data=data.blum.2015, control="max", use.rank=FALSE, 
 #'                     group.by=c("Size","Radius"), test="wilcoxon", correct="finner")
 #'                    
@@ -430,12 +430,12 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
 #'   \item{\code{li} - Li's procedure, as in Garcia and Herrera (2010)}
 #'   \item{Any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}}
 #' }. 
-#' If a function is provided, the it has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values {\emph in the same order} as the input vector.
+#' If a function is provided, the it has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values \emph{in the same order} as the input vector.
 #' @param alpha Alpha value used in Rom's correction. By default, set at 0.05.
 #' @param ... Special argument used to pass additional parameters to the statistical test and the correction method.
 #' @return In case the \code{group.by} argument is not provided (or it is \code{NULL}), the function return an object of class \code{htest}. If columns for grouping are provided, then the function returns a matrix that includes, for each group, the values of the \code{group.by} columns, the raw p-value and the corrected p-value.
 #' 
-#' #' @seealso \code{\link{friedmanTest}}, \code{\link{friedmanAlignedRanksTest}}, \code{\link{quadeTest}}, \code{\link{anovaTest}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmann}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
+#' #' @seealso \code{\link{friedmanTest}}, \code{\link{friedmanAlignedRanksTest}}, \code{\link{quadeTest}}, \code{\link{anovaTest}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmannHommel}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 #' 
 #' @references S. Garcia and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
@@ -582,4 +582,44 @@ multipleComparisonTest <- function (data, algorithms=NULL, group.by=NULL,
     result <- test(data.multipleComparisonTest, ...)
   }
   return(result)
+}
+
+
+#' @title Contrast estimation based on medians
+#'
+#' @description This function performs estimates the contrast between algorithms through the medians
+#' @param data Matrix or data frame with the data to compare
+#' @return A matrix where the estimation of all the pairs of differences are output. 
+#' The differences correspond to row-column. 
+#' @details The test has been implemented according to Garcia \emph{et al.} (2010), Section 3.3.
+#' @references Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
+#' @examples
+#' data(data_gh_2008)
+#' contrastEstimationMatrix(data.gh.2008)
+
+contrastEstimationMatrix <- function (data) {
+  k <- dim(data)[2]
+  pairs <- generatePairs(k=k, control=NULL)
+  medians <- apply(pairs, MARGIN=1,
+                   FUN=function(x) {
+                     differences <- data[, x[1]] - data[, x[2]]
+                     return(median(differences))
+                   })
+  median.matrix <- matrix(rep(0, k^2), ncol=k)
+  median.matrix[pairs] <- medians
+  median.matrix[pairs[,c(2,1)]] <- -1*medians
+  adjusted.m <- rowMeans(median.matrix)
+  
+  adjusted.differences <- apply(pairs, MARGIN=1,
+                                FUN=function(x) {
+                                  differences <- adjusted.m[x[1]] - adjusted.m[x[2]]
+                                  return(median(differences))
+                                })
+  adjusted.matrix <- matrix(rep(0, k^2), ncol=k) 
+  adjusted.matrix[pairs] <- adjusted.differences
+  adjusted.matrix[pairs[,c(2,1)]] <- -1 * adjusted.differences
+  colnames(adjusted.matrix) <- colnames(data)
+  rownames(adjusted.matrix) <- colnames(data)
+  
+  return(adjusted.matrix)
 }

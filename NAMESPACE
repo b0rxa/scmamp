@@ -33,5 +33,6 @@ export(
   summarizeData,
   filterData,
   multipleComparisonTest,
-  postHocTest
+  postHocTest,
+  contrastEstimationMatrix
 )

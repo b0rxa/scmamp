@@ -2,20 +2,22 @@
 % Please edit documentation in R/tests.R
 \name{rankMatrix}
 \alias{rankMatrix}
-\title{Get the ranking matrix}
+\title{Get the ranking matrix.}
 \usage{
 rankMatrix(data, decreasing = TRUE, ...)
 }
 \arguments{
 \item{data}{The matrix to rank.}
 
-\item{decreasing}{Logical value indicating whether the top ranked has to be the highest value or not}
+\item{decreasing}{Logical value indicating whether the top ranked has to be the highest value or not.}
+
+\item{...}{Not used}
 }
 \value{
 A matrix containing the per-row rankings. In case of ties, the mean rank is obtained (e.g, if there is a tie between the 4th and the 5th column, both are assigned a mean rank of 4.5)
 }
 \description{
-This function returns, given a matrix, the ranking of the colums in each row
+This function returns, given a matrix, the ranking of the colums in each row.
 }
 \examples{
 data(data_gh_2008)

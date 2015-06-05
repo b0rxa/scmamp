@@ -43,7 +43,7 @@ postHocTest(data, algorithms = NULL, group.by = NULL, test = "friedman",
   \item{\code{li} - Li's procedure, as in Garcia and Herrera (2010)}
   \item{Any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}}
 }.
-If a function is provided, the it has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values {\emph in the same order} as the input vector.}
+If a function is provided, the it has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values \emph{in the same order} as the input vector.}
 
 \item{alpha}{Alpha value used in Rom's correction. By default, it is set at 0.05.}
 
@@ -69,7 +69,7 @@ res$summary
 # Corrected pvalues for the first group
 res$corrected.pval[, , 1]
 
-Grouped data, all vs. control
+# Grouped data, all vs. control
 res <- postHocTest (data=data.blum.2015, control="max", use.rank=FALSE,
                     group.by=c("Size","Radius"), test="wilcoxon", correct="finner")
 
@@ -93,6 +93,6 @@ Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edi
 Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 }
 \seealso{
-\code{\link{friedmanPost}}, \code{\link{friedmanAlignedRanksPost}}, \code{\link{quadePost}}, \code{\link{tukeyPost}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmann}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
+\code{\link{friedmanPost}}, \code{\link{friedmanAlignedRanksPost}}, \code{\link{quadePost}}, \code{\link{tukeyPost}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmannHommel}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 }
 

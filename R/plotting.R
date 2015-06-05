@@ -61,7 +61,7 @@ qqplotGaussian <- function (data, ...) {
 #' @title Kernel based density estimation of the samples
 #'
 #' @description This function estimates and plots the densities of the results of each algorithm
-#' @param results.matrix A matrix where columns represent the algorithms
+#' @param data A matrix where columns represent the algorithms
 #' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points. It can also be used to pass additional arguments to the \code{density} function, which is used to eastimate the densities.
 #' @return A \code{\link{ggplot}} object.
 #' @seealso \code{\link{qqplotGaussian}}
@@ -152,6 +152,7 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
 #' @param results.matrix Matrix or data frame with the results for each algorithm
 #' @param alpha Significance level to get the critical difference. By default this value is 0.05
 #' @param cex Numeric value to control the size of the font. By default it is set at 0.75.
+#' @param ... Additional arguments for \code{\link{rankMatrix}}
 #' @seealso \code{\link{drawAlgorithmGraph}}, \code{\link{plotPvalues}}
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' @examples

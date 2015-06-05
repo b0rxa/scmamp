@@ -32,7 +32,7 @@ multipleComparisonTest(data, algorithms = NULL, group.by = NULL,
   \item{\code{li} - Li's procedure, as in Garcia and Herrera (2010)}
   \item{Any of the methods implemented in the \code{p.adjust} function. For a list of options, type \code{p.adjust.methods}}
 }.
-If a function is provided, the it has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values {\emph in the same order} as the input vector.}
+If a function is provided, the it has to recieve, as first argument, a vector of pvalues to be corrected and has to return a verctor with the corrected p-values \emph{in the same order} as the input vector.}
 
 \item{alpha}{Alpha value used in Rom's correction. By default, set at 0.05.}
 
@@ -64,6 +64,6 @@ S. Garcia and F. Herrera (2010) Advanced nonparametric tests for multiple compar
 Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 }
 \seealso{
-\code{\link{friedmanTest}}, \code{\link{friedmanAlignedRanksTest}}, \code{\link{quadeTest}}, \code{\link{anovaTest}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmann}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
+\code{\link{friedmanTest}}, \code{\link{friedmanAlignedRanksTest}}, \code{\link{quadeTest}}, \code{\link{anovaTest}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmannHommel}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 }
 

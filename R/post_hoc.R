@@ -647,7 +647,7 @@ adjustBergmannHommel <- function (raw.matrix){
   if (k==9) {
     message("Applying Bergmann Hommel correction to the p-values computed in ",
             "pairwise comparisions of 9 algorithms. This requires checking", 
-            length(E$k9), "sets of hypothesis. It may take a few seconds.")
+            length(exhaustive.sets$k9), "sets of hypothesis. It may take a few seconds.")
   }
   es.k <- exhaustive.sets[[k]]
   
@@ -841,7 +841,7 @@ adjustLi <- function(pvalues){
   ord <- order(pvalues, na.last=NA)
   pvalues.sorted <- pvalues[ord]
   k <- length(pvalues.sorted) + 1   
-  if (max(pvalues) > 0.5)
+  if (max(pvalues, na.rm=TRUE) > 0.5)
     warning("The highest p-value is above 0.05. In such a situation the method is ",
             "far too conservative, so consider using another method.")
   

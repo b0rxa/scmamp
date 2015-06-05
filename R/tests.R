@@ -104,11 +104,12 @@ anovaTest <- function (data, ...){
 }
 
 
-#' @title Get the ranking matrix
+#' @title Get the ranking matrix.
 #'
-#' @description This function returns, given a matrix, the ranking of the colums in each row
+#' @description This function returns, given a matrix, the ranking of the colums in each row.
 #' @param data The matrix to rank.
-#' @param decreasing Logical value indicating whether the top ranked has to be the highest value or not
+#' @param decreasing Logical value indicating whether the top ranked has to be the highest value or not.
+#' @param ... Not used
 #' @return A matrix containing the per-row rankings. In case of ties, the mean rank is obtained (e.g, if there is a tie between the 4th and the 5th column, both are assigned a mean rank of 4.5)
 #' @examples
 #' data(data_gh_2008)

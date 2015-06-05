@@ -53,7 +53,7 @@ args <- list()
 args$table <- summarizeData(data.blum.2015, group.by=1:2)
 
 # Set in bold the maximum values per row
-bold <- apply(summ[, -(1:2)], MARGIN=1,
+bold <- apply(args$table[, -(1:2)], MARGIN=1,
              FUN=function(x) {
                return(x==max(x))
              })
