@@ -17,15 +17,16 @@ García S. and Herrera, F. (2010) Advanced Nonparametric Tests for Multiple Comp
 The last version of the package can be installed running the following commands:
 
 ```r
-if (!require("devtools"))
+if (!require("devtools")) {
   install.packages("devtools")
+}
 
 devtools::install_github("b0rxa/scmamp")
 ```
 The package can also be installed using the tar.gz files in the root directory. First, download the `scmamp_*.tar.gz` file and install it running:
 
 ```r
-install.packages(path.tar.gz.file , reps=NULL)
+install.packages(path.tar.gz.file, reps=NULL)
 ```
 
 where `path.tar.gz.file` refers to the path of the downloaded file. Note that these files may not be up to date.
