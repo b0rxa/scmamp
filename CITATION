@@ -1,0 +1,14 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "{scmamp}: Statistical Comparison of Multiple Algorithms in Multiple Problems",
+         author = c(person("Borja", "Calvo"),
+                    person("Guzm\'an", "Santaf\'e")),
+         year = year,
+         note = note,
+         url = "https://github.com/b0rxa/scmamp")
+
+textVersion =
+         paste0("Borja Calvo and Guzman Santafe (", year,
+                "). scmamp: Statistical Comparison of Multiple Algorithms in Multiple Problems. ", note, ".")
