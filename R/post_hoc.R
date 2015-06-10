@@ -327,7 +327,7 @@ friedmanAlignedRanksPost <- function (data, control=NULL, ...) {
   colnames(ranks) <- colnames(data)
   mean.rank <- colMeans(ranks)
   
-  sd <- sqrt((k * (N + 1)) / 6)
+  sd <- sqrt((k * (N*k + 1)) / 6)
   computePvalue  <- function(x) {
     stat <- abs(mean.rank[x[1]] - mean.rank[x[2]]) / sd
     # Two tailed test
