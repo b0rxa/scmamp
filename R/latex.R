@@ -198,7 +198,9 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
   }
   
   # Pass all to character to avoid problems with factors
+  nm <- rownames(table)
   table <- apply(table, MARGIN=2, FUN=as.character)
+  rownames(table) <- nm
   
   # Include row and/or col names as additional info in the table
   if (print.row.names) {
