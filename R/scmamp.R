@@ -75,7 +75,7 @@ runPostHoc <- function (data, test, control, ...) {
   #   The obtained p-values
   #
   if (is.function(test)) {
-    matrix.raw <- customPost(data, test, ...)
+    matrix.raw <- customPost(data=data, control=control, test=test, ...)
   }else{
     matrix.raw <- switch(test,
                          "t-test"= {
@@ -192,6 +192,13 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
                          control=NULL, use.rank=FALSE, sum.fun=mean, 
                          correct="finner", alpha=0.05, ... ) {
  
+  # If there are only two algorithms all vs. all approach is, actually equalt to
+  # all vs control. To avoid problems trying to generate matrix with only one row
+  # we will convert take the second algorithm as the control
+  if (length(algorithms) == 2 & is.null(control)) {
+    control <- algorithms[2]
+  }
+  
   # Convert string columns to their corresponding ID
   if (!is.null(group.by) & is.character(group.by)) {
     if (!all(group.by %in% colnames(data))) {
@@ -332,7 +339,7 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
           control <- which.min(ref)
         }
       }
-      group.result <- runPostHoc (data.sub, test=test, control=control)
+      group.result <- runPostHoc (data.sub, test=test, control=control, ...)
       return(group.result)
     }
     
@@ -496,8 +503,8 @@ multipleComparisonTest <- function (data, algorithms=NULL, group.by=NULL,
   }
   
   # Just in case ...
-  if (length(algorithms) < 2) {
-    stop("At least two algorithms are required to run the function")
+  if (length(algorithms) < 3) {
+    stop("At least three algorithms are required to run the function")
   }
 
   # Prepare the test function 
