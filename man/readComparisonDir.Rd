@@ -28,9 +28,11 @@ This function reads the data from all files in a directory. Each file is expecte
 }
 \examples{
 dir <- paste(system.file("loading_tests",package="scmamp") , "comparison_files" , sep="/")
-# The format of the files is rgg_size_SIZE_r_RADIUS.out, where variables to extract are in capital letters.
+# The format of the files is rgg_size_SIZE_r_RADIUS.out, where variables to extract are in
+# capital letters.
 list.files(dir)[1]
-# The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.
+# The regular expresion can be as simple as substituting each variable name in the expression
+# above by ([XXX]*), where XXX is the list of symbols that appear in the name.
 pattern <- "rgg_size_([0-9]*)_r_(0.[0-9]*).out"
 var.names <- c("Size", "Radius")
 data <- readComparisonDir (directory=dir, alg.cols=1:8, names=var.names,

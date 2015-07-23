@@ -5,7 +5,7 @@
 \title{Example in Garcia and Herrera (2008)}
 \format{A data frame with 5 columns and 30 rows}
 \source{
-S. García and F. Herrera (2008) An Extension on "Statistical
+S. Garcia and F. Herrera (2008) An Extension on "Statistical
 Comparisons of Classifiers over Multiple Data Sets" for all Pairwise
 Comparisons. \emph{Journal of Machine Learning Research}. 9, 2677-2694.
 }

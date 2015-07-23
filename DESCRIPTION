@@ -2,11 +2,12 @@ Package: scmamp
 Type: Package
 Title: Statistical Comparison of Multiple Algorithms in Multiple Problems
 Version: 0.2
-Date: 2015-03-09
+Date: 2015-07-09
 Authors@R:  c(person(given = "Borja", family = "Calvo", role = c("aut", "cre") , email ="borja.calvo@ehu.eus"), 
    person(given = "Guzman", family = "Santafe", role = c("aut"), email = "guzman.santafe@unavarra.es")) 
 LazyData: yes
-Suggests: ggplot2, reshape2, knitr, Rgraphviz
+Imports: ggplot2, graph, reshape2, Rgraphviz
+Suggests: knitr
 VignetteBuilder: knitr 
 Description: Given a matrix with results of different algorithms for different problems, the package uses statistical tests and corrections to assess the diferences between algorithms.
 License: GPL-2

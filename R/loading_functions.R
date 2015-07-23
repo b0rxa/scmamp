@@ -267,9 +267,11 @@ readExperimentFile <- function (file, alg.col, value.col, col.names=NULL, ...) {
 #' @seealso \code{\link{readExperimentFile}}, \code{\link{readComparisonFile}}, \code{\link{readComparisonDir}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", package="scmamp")}
 #' @examples
 #' dir <- paste(system.file("loading_tests",package="scmamp"), "experiment_files", sep="/")
-#' # The format of the files is rgg_size_SIZE_r_RADIUS_ALGORITHM.out, where variables to extract are in capital letters. 
+#' # The format of the files is rgg_size_SIZE_r_RADIUS_ALGORITHM.out, where variables to extract are in 
+#' # capital letters. 
 #' list.files(dir)[1:5]
-#' # The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.
+#' # The regular expresion can be as simple as substituting each variable name in the expression
+#' # above by ([XXX]*), where XXX is the list of symbols that appear in the name.
 #' pattern <- "rgg_size_([0-9]*)_r_(0.[0-9]*)_([a-z,A-Z,1,2]*).out"
 #' var.names <- c("Size", "Radius", "Algorithm")
 #' data <- readExperimentDir (directory=dir, names=var.names, fname.pattern=pattern, 
@@ -412,9 +414,11 @@ readComparisonFile <- function(file, alg.cols, col.names=NULL, ...) {
 #' @seealso \code{\link{readExperimentFile}}, \code{\link{readExperimentDir}}, \code{\link{readComparisonDir}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", package="scmamp")}
 #' @examples
 #' dir <- paste(system.file("loading_tests",package="scmamp") , "comparison_files" , sep="/")
-#' # The format of the files is rgg_size_SIZE_r_RADIUS.out, where variables to extract are in capital letters.  
+#' # The format of the files is rgg_size_SIZE_r_RADIUS.out, where variables to extract are in
+#' # capital letters.  
 #' list.files(dir)[1]
-#' # The regular expresion can ba as simple as substituting each variable name in the expression above by ([XXX]*), where XXX is the list of symbols that appear in the name.
+#' # The regular expresion can be as simple as substituting each variable name in the expression 
+#' # above by ([XXX]*), where XXX is the list of symbols that appear in the name.
 #' pattern <- "rgg_size_([0-9]*)_r_(0.[0-9]*).out"
 #' var.names <- c("Size", "Radius")
 #' data <- readComparisonDir (directory=dir, alg.cols=1:8, names=var.names, 

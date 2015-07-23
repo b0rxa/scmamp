@@ -16,10 +16,10 @@
 #' qqplotGaussian(sample)
 
 qqplotGaussian <- function (data, ...) {
-  if(!require(ggplot2)) {
-    stop("This function requires the package ggplot2, which is not ",
-         "installed. You can install it typing install.packages('ggplot2')")
-  }
+#   if(!require(ggplot2)) {
+#     stop("This function requires the package ggplot2, which is not ",
+#          "installed. You can install it typing install.packages('ggplot2')")
+#   }
   
   processVector <- function (sample) {
     # Auxiliar function to get the points for a single qqplot
@@ -50,7 +50,7 @@ qqplotGaussian <- function (data, ...) {
     facet <- facet_wrap(~Algorithm, scales="free")
   }
   
-  gplot <- ggplot(df, aes(x=Empirical, y=Gaussian)) +
+  gplot <- ggplot(df, aes_string(x="Empirical", y="Gaussian")) +
            geom_abline(slope=1, intercept=0, col="darkgray", size=1.1) +  
            geom_point(...) + facet
   
@@ -71,15 +71,15 @@ qqplotGaussian <- function (data, ...) {
 #' 
 
 plotDensities <- function (data, ...) {
-  if(!require(ggplot2)) {
-    stop("This function requires the package ggplot2, which is not installed. ",
-         "You can install it typing install.packages('ggplot2')")
-  }
+#   if(!require(ggplot2)) {
+#     stop("This function requires the package ggplot2, which is not installed. ",
+#          "You can install it typing install.packages('ggplot2')")
+#   }
   
   if (is.vector(data)){
     d  <- density(data)
     df <- data.frame(Value=d$x, Density=d$y)
-    mapping <- aes(x=Value, y=Density)
+    mapping <- aes_string(x="Value", y="Density")
   } else {
     k <- dim(data)[2]
     aux <- lapply(1:k, 
@@ -90,7 +90,7 @@ plotDensities <- function (data, ...) {
                     return(df)
     })
     df <- do.call(rbind, aux)
-    mapping <- aes(x=Value, y=Density, col=Algorithm)
+    mapping <- aes_string(x="Value", y="Density", col="Algorithm")
   }
   gplot <- ggplot(df, mapping) + geom_line(...)
   return(gplot)
@@ -115,15 +115,15 @@ plotDensities <- function (data, ...) {
 #' 
  
 plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.size=5) {
-  if(!require(reshape2)) {
-    stop("This function requires the package reshape2, which is not installed. ",
-         "You can install it typing install.packages('reshape2')")
-  }
+#   if(!require(reshape2)) {
+#     stop("This function requires the package reshape2, which is not installed. ",
+#          "You can install it typing install.packages('reshape2')")
+#   }
   
-  if(!require(ggplot2)) {
-    stop("This function requires the package ggplot2, which is not installed. ",
-         "You can install it typing install.packages('ggplot2')")
-  }
+#   if(!require(ggplot2)) {
+#     stop("This function requires the package ggplot2, which is not installed. ",
+#          "You can install it typing install.packages('ggplot2')")
+#   }
   
   # Convert the matrix into a data frame and order the algorithms according to 
   # the desired order.
@@ -135,11 +135,12 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
     df$Y <- factor(df$Y, levels=l)
   }
   
-  gplot <- ggplot(df, aes(x=X, y=Y, fill=p.value)) + geom_tile(col="white") +
+  gplot <- ggplot(df, aes_string(x="X", y="Y", fill="p.value")) + geom_tile(col="white") +
           scale_fill_continuous("p-value") + labs(x="Algorithm" , y="Algorithm")
   
   if (show.pvalue) {
-    gplot <- gplot + geom_text(aes(label=round(p.value, 2)), 
+    p.value <- df$p.value
+    gplot <- gplot + geom_text(aes_string(label="round(p.value, 2)"), 
                                size=font.size, col="white")
   }
   return(gplot)
@@ -309,12 +310,12 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
                                 highlight.color="chartreuse3", node.color="gray30", 
                                 font.color="white", digits=2, 
                                 node.width=5, node.height=2) {
-  if(!require(Rgraphviz)) {
-    stop("This function requires the package Rgraphviz, which is not installed. ",
-         "You can install it typing\n\n ",
-         "source('http://www.bioconductor.org/biocLite.R')\n\n and then\n\n ",
-         "biocLite('Rgraphviz')\n\n")
-  }
+#   if(!require(Rgraphviz)) {
+#     stop("This function requires the package Rgraphviz, which is not installed. ",
+#          "You can install it typing\n\n ",
+#          "source('http://www.bioconductor.org/biocLite.R')\n\n and then\n\n ",
+#          "biocLite('Rgraphviz')\n\n")
+#   }
   
   if (!all(colnames(pvalue.matrix) %in% names(mean.value))) {
     stop ("The names of the algorithms in the matrix and the mean.valu vector ",
@@ -338,8 +339,8 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
   nl <- paste(names(mean.value), "\\\n", round(mean.value, digits), sep="")
   
   am.graph <- new("graphAM", adjMat=adj.matrix, edgemode="undirected")
-  names(nc) <- nodes(am.graph)
-  names(nl) <- nodes(am.graph)
+  names(nc) <- graph::nodes(am.graph)
+  names(nl) <- graph::nodes(am.graph)
   
   nAttrs <- list()
   nAttrs$label      <- nl

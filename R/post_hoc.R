@@ -635,9 +635,8 @@ adjustBergmannHommel <- function (raw.matrix){
   }
   
   k <- dim(raw.matrix)[1]
-  # Load the exhaustive sets. Computing every time the function is called is
+  # The exhaustive.sets is a pre-computed global variable. Computing it every time the function is called is
   # unaffordable
-  data("exhaustive_sets")
   if(k > length(exhaustive.sets)) {
     stop ("Sorry, this method is only available for", 
           length(exhaustive.sets),

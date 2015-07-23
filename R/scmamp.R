@@ -24,7 +24,7 @@ NULL
 #' Garcia and Herrera (2008).
 #'
 #' @format A data frame with 5 columns and 30 rows
-#' @source S. García and F. Herrera (2008) An Extension on "Statistical 
+#' @source S. Garcia and F. Herrera (2008) An Extension on "Statistical 
 #' Comparisons of Classifiers over Multiple Data Sets" for all Pairwise 
 #' Comparisons. \emph{Journal of Machine Learning Research}. 9, 2677-2694.
 #' @name data.gh.2008
@@ -37,7 +37,7 @@ NULL
 #' Garcia and Herrera (2010).
 #'
 #' @format A data frame with 4 columns and 24 rows
-#' @source S. García and F. Herrera (2010) Advanced Nonparametric Tests for 
+#' @source S. Garcia and F. Herrera (2010) Advanced Nonparametric Tests for 
 #' Multiple Comparison in the Design of Experiments in Computational Intelligence 
 #' and Data Mining: Experimental Analysis of Power. \emph{Information Sciences}, 
 #' 180, 2044-2064.

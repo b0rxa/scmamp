@@ -1,3 +1,8 @@
+import(ggplot2,
+       graph,
+       reshape2,
+       Rgraphviz)
+
 export(
   wilcoxonSignedTest,
   friedmanTest,
