@@ -295,7 +295,12 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
    # Note that in aux the group.by columns are at the begining
    # Some operations may change the name of the algorithms (special characters)
    sum.matrix <- summarizeData(data=aux, fun=sum.fun, group.by=NULL, ...)
-   names(sum.matrix) <- colnames(data)[algorithms]
+   ## when the data is not summaryced by groups summarizeData returns a verctor of numeric values.
+   ## As this may produce problems in other method, we force the sum.matrix to be a matrix
+   if(is.numeric(sum.matrix)){
+     sum.matrix <- t(as.matrix(sum.matrix))
+   }
+   colnames(sum.matrix) <- colnames(data)[algorithms]
   } else {
     if (use.rank) {
       aux <- cbind(data[, group.by], rankMatrix(data=data[, algorithms]), ...)
