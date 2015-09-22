@@ -200,6 +200,11 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
   # Pass all to character to avoid problems with factors
   nm <- rownames(table)
   table <- apply(table, MARGIN=2, FUN=as.character)
+  ## if table was a matrix with only one row, apply will transform it in a vector and it may
+  ## cause problems letter. Therefore, it is converted back to a matrix
+  if(is.null(dim(table))){
+    table <- t(as.matrix(table))
+  }
   rownames(table) <- nm
   
   # Include row and/or col names as additional info in the table
