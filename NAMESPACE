@@ -38,6 +38,7 @@ export(
   plotCD,
   drawAlgorithmGraph,
   writeTabular,
+  booleanMatrix,
   readExperimentFile,
   readComparisonFile,
   readExperimentDir,

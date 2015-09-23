@@ -128,3 +128,106 @@ summarizeData <- function (data, fun=mean, group.by=NULL, ignore=NULL, ... ) {
   }
   return(summ)
 }
+
+
+
+#' @title Creation of boolean matrices for highlighting results
+#'
+#' @export
+#' @description A simple function to create boolean matrices to be used when constructing LaTeX tables.
+#' @param data It can be a data frame, a matrix or a vector.
+#' @param find A string indicating what has to be detected. Possible values are:
+#' \itemize{
+#'   \item{\code{'eq'}}{ All values equal to the value passed in \code{th}}
+#'   \item{\code{'le'}}{ All values lower or equal to the value passed in \code{th}}
+#'   \item{\code{'ge'}}{ All values greater or equal to the value passed in \code{th}}
+#'   \item{\code{'lw'}}{ All values lower than the value passed in \code{th}}
+#'   \item{\code{'gt'}}{ All values greater than the value passed in \code{th}}
+#'   \item{\code{'min'}}{ Minimum value in each row / column / matrix}
+#'   \item{\code{'max'}}{ Maximum value in each row / column / matrix}
+#' }
+#' @param th Thershold used when \code{find} is set to \code{'eq'}, \code{'ge'}, \code{'le'}, \code{'gt'} or \code{'lw'}.
+#' @param by A string or string vector indicating where the min/max values have to be find. It can be \code{'row'}, \code{'col'} or \code{'mat'} for the row, column and matrix min/max respectively.
+#' @return A boolean matrix that matches in dimension the output data and where the identified elements are marked as TRUE.
+#' @examples
+#' data('data_gh_2008')
+#' booleanMatrix(data.gh.2008, find='min', by='row')
+#' booleanMatrix(data.gh.2008, find='ge',  th=0.5)
+#' 
+booleanMatrix <- function (data, find='max', th=0, by='row') {
+  
+  # Check whether all the values are numeric or not
+  if (is.data.frame(data)) {
+    numeric.data <- all(apply(data, FUN="is.numeric", MARGIN=c(1,2)))
+  } else if (is.matrix(data) | is.vector(data)) {
+    numeric.data <- is.numeric(data)
+  } else {
+    stop("The 'data' argument has to be either a data frame, a matrix or a vector")
+  }
+  
+  if (!numeric.data && find!='eq') {
+    stop("For non-numeric matrices the only posible comparison is find='eq'")
+  }
+  
+    if (by=='col') {
+      margin <- 2
+    } else if (by == 'row') {
+      margin <- 1
+    } else if (by != 'mat') {
+      stop("The 'by' argument can only take values 'col', 'row' and 'mat'")
+    }
+
+  matrix <- switch(find,
+                   'eq'={
+                     data == th
+                   },
+                   'ge'={
+                     data >= th
+                   },
+                   'le'={
+                     data <= th
+                   },
+                   'gt'={
+                     data > th
+                   },
+                   'lw'={
+                     data < th
+                   },
+                   'min'={
+                     if (is.vector(data)) {
+                       res <- data == min(data)
+                     } else {
+                       if(by == 'mat') {
+                         res <- data == min(data)
+                       } else {
+                         res <- apply(data, MARGIN=margin,
+                                      FUN=function(x) {
+                                        return (x==min(x))
+                                      })
+                         if (margin == 1) {
+                           res <- t(res)
+                         }
+                       }
+                     }
+                     res
+                   },
+                   'max'={
+                     if (is.vector(data)) {
+                       res <- data == max(data)
+                     } else {
+                       if(length(margin) > 1) {
+                         res <- data == max(data)
+                       } else {
+                         res <- apply(data, MARGIN=margin,
+                                      FUN=function(x) {
+                                        return (x==max(x))
+                                      })
+                         if (margin == 1) {
+                           res <- t(res)
+                         }
+                       }
+                     }
+                     res
+                   }) 
+  return(matrix)
+}

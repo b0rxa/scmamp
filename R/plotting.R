@@ -316,9 +316,13 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
 #          "source('http://www.bioconductor.org/biocLite.R')\n\n and then\n\n ",
 #          "biocLite('Rgraphviz')\n\n")
 #   }
+  # Just in case we have a matrix ...
+  if (is.matrix(mean.value)) {
+    mean.value <- mean.value[1, ]
+  }
   
   if (!all(colnames(pvalue.matrix) %in% names(mean.value))) {
-    stop ("The names of the algorithms in the matrix and the mean.valu vector ",
+    stop ("The names of the algorithms in the matrix and the mean.value vector ",
           "do not match")
   }
   
