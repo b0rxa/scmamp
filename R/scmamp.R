@@ -279,7 +279,6 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
                          }
                          function(pvalues, ...) {
                            p.adjust(p=pvalues, method=correct.name)
-                         }
                        })
   } else {
     correct.name <- deparse(substitute(test))  
