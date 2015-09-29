@@ -154,7 +154,7 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
 #' @param alpha Significance level to get the critical difference. By default this value is 0.05
 #' @param cex Numeric value to control the size of the font. By default it is set at 0.75.
 #' @param ... Additional arguments for \code{\link{rankMatrix}}
-#' @seealso \code{\link{drawAlgorithmGraph}}, \code{\link{plotPvalues}}
+#' @seealso \code{\link{drawAlgorithmGraph}},   \code{\link{plotCD}}, \code{\link{plotPvalues}}
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' @examples
 #' data(data_gh_2008)
@@ -183,7 +183,7 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   w            <- (M-m) + 2 * text.width
   h.up         <- 2.5 * line.spacing  # The upper part is fixed. Extra space is for the CD
   h.down       <- (max.rows + 2.25) * line.spacing # The lower part depends on the no. of algorithms. 
-                                                   # The 2 extra spaces are for the lines that join algorithms
+  # The 2 extra spaces are for the lines that join algorithms
   tick.h       <- 0.25 * line.spacing
   
   label.displacement <- 0.1    # Displacement of the label with respect to the axis
@@ -278,8 +278,161 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
                   lines(c(to.join[x, 1] - line.displacement, 
                           to.join[x, 2] + line.displacement), 
                         c(y, y), lwd=3)
-  })
+                })
 }
+
+
+
+#' @title RankingPlot
+#'
+#' @description This function creates a plot similar to the critical difference plot, but applicable to any corrected pvalue.
+#' @param pvalues Matrix or data frame with the p-values used to determine the differences
+#' @param summary Summary values used to place the algorithms. Typically it will be the average ranking, but it can be any other value 
+#' @param alpha Significance level to determine the significativity of the differences. By default this value is 0.05
+#' @param cex Numeric value to control the size of the font. By default it is set at 0.75.
+#' @param decreasing A logical value to determine whether the values have to be plotter from smaller to larger or the other way round.
+#' @seealso \code{\link{drawAlgorithmGraph}}, \code{\link{plotCD}}, \code{\link{plotPvalues}}
+#' @examples
+#' data(data_gh_2008)
+#' test <- postHocTest(data.gh.2008, test="friedman", correct="bergmann", use.rank=TRUE)
+#' plotRanking(pvalues=test$corrected.pval, summary=test$summary, alpha=0.05)
+#' 
+plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALSE) {
+  k <- length(summary)
+
+  if (is.matrix(summary)) {
+    if (ncol(summary) == 1) {
+      summary <- summary[, 1]    
+    } else {
+      summary <- summary[1, ]
+    }
+  }
+  
+  # Check the names
+  if (!all(sort(colnames(pvalues)) %in% sort(names(summary))) |
+      !all(sort(names(summary)) %in% sort(colnames(pvalues)))) {
+    stop("The column names of 'pvalues' and the names of 'summary' have to contain the same names")
+  }
+  
+  
+  
+  # Reorder the pvalues and mean ranks
+  o <- order(summary, decreasing=decreasing)
+  summary <- summary[o]
+  pvalues <- pvalues[names(summary),names(summary)]
+  
+  
+  # Separate the algorithms in left and right parts
+  lp <- round(k/2)
+  left.algs <- summary[1:lp]
+  right.algs <- summary[(lp+1):k]  
+  max.rows <- ceiling(k/2)
+  
+  # Basic dimensions and definitions
+  char.size    <- 0.001  # Character size
+  line.spacing <- 0.25   # Line spacing for the algorithm name
+  m            <- floor(min(summary))
+  M            <- ceiling(max(summary))
+  max.char     <- max(sapply(colnames(pvalues), FUN = nchar))  # Longest length of a label
+  text.width   <- (max.char + 4) * char.size
+  w            <- (M-m) + 2 * text.width
+  h.up         <- 2.5 * line.spacing  # The upper part is fixed. Extra space is for the CD
+  h.down       <- (max.rows + 2.25) * line.spacing # The lower part depends on the no. of algorithms. 
+  # The 2 extra spaces are for the lines that join algorithms
+  tick.h       <- 0.25 * line.spacing
+  
+  label.displacement <- 0.1    # Displacement of the label with respect to the axis
+  line.displacement  <- 0.025  # Displacement for the lines that join algorithms
+  
+  # Background of the plot
+  plot(0, 0, type="n", xlim=c(m - w / (M - m), M + w / (M - m)), 
+       ylim=c(-h.down, h.up), xaxt="n", yaxt="n", xlab= "", ylab="", bty="n")
+  
+  # Draw the axis
+  lines (c(m,M), c(0,0))
+  dk <- sapply(m:M, 
+               FUN=function(x) {
+                 lines(c(x,x), c(0, tick.h))
+                 text(x, 3*tick.h, labels=x, cex=cex)
+               })
+  
+  
+  # Left part, labels
+  dk <- sapply (1:length(left.algs), 
+                FUN=function(x) {
+                  line.h <- -line.spacing * (x + 2)
+                  text(x=m - label.displacement, y=line.h, 
+                       labels=names(left.algs)[x], cex=cex, adj=1)
+                  lines(c(m, left.algs[x]), c(line.h, line.h))
+                  lines(c(left.algs[x], left.algs[x]), c(line.h, 0))
+                })
+  
+  # Right part, labels
+  dk <- sapply (1:length(right.algs), 
+                FUN=function(x) {
+                  line.h <- -line.spacing * (x + 2)
+                  text(x=M + label.displacement, y=line.h, 
+                       labels=names(right.algs)[x], cex=cex, adj=0)
+                  lines(c(M, right.algs[x]), c(line.h, line.h))
+                  lines(c(right.algs[x], right.algs[x]), c(line.h, 0))
+                })
+  
+  # Draw the lines to join algorithms
+  getInterval <- function (x) {
+    ls <- which(pvalues[x, ] > alpha)
+    if (length(ls) > 0) {
+      c(summary[x], summary[max(ls)])
+    }
+  }
+  
+  intervals <- mapply (1:k, FUN=getInterval)
+  
+  # Under some circumstances the function does not return a matrix ...
+  if (is.matrix(intervals)) {
+    aux <- t(intervals)
+  } else {
+    aux <- do.call(rbind, intervals)
+  }
+  
+  # With this strategy, there can be intervals included into bigger ones
+  # We remove them in a sequential way
+  to.join <- aux[1,]
+  if(nrow(aux) > 1) {  
+    for (r in 2:nrow(aux)) {
+      if (aux[r - 1, 2] < aux[r, 2]) {
+        to.join <- rbind(to.join, aux[r, ])
+      }
+    }
+  }
+  
+  row <- c(1)
+  # Determine each line in which row will be displayed
+  if (!is.matrix(to.join)) {  # To avoid treating vector separately
+    to.join <- t(as.matrix(to.join))
+  }
+  nlines <- dim(to.join)[1]
+  
+  for(r in 1:nlines) {
+    id <- which(to.join[r, 1] > to.join[, 2])
+    if(length(id) == 0) {
+      row <- c(row, tail(row, 1) + 1)
+    } else {
+      row <- c(row, min(row[id]))
+    }
+  }
+  
+  step <- max(row) / 2
+  
+  # Draw the line
+  dk <- sapply (1:nlines, 
+                FUN = function(x) {
+                  y <- -line.spacing * (0.5 + row[x] / step)
+                  lines(c(to.join[x, 1] - line.displacement, 
+                          to.join[x, 2] + line.displacement), 
+                        c(y, y), lwd=3)
+                })
+}
+
 
 
 #' @title Hypotheses represented as a graph
@@ -297,7 +450,7 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
 #' @param digits Number of digits to display the value associated to each node
 #' @param node.width Numeric value for the width of the node
 #' @param node.height Numeric value for the height of the node
-#' @seealso \code{\link{plotPvalues}}, \code{\link{plotCD}}
+#' @seealso \code{\link{plotPvalues}}, \code{\link{plotCD}}, \code{\link{plotCD}}
 #' @examples
 #' data(data_blum_2015)
 #' data <- filterData(data.blum.2015, condition="Size == 1000", remove.cols=1:2)
