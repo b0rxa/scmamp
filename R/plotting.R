@@ -154,7 +154,7 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
 #' @param alpha Significance level to get the critical difference. By default this value is 0.05
 #' @param cex Numeric value to control the size of the font. By default it is set at 0.75.
 #' @param ... Additional arguments for \code{\link{rankMatrix}}
-#' @seealso \code{\link{drawAlgorithmGraph}},   \code{\link{plotCD}}, \code{\link{plotPvalues}}
+#' @seealso \code{\link{drawAlgorithmGraph}},   \code{\link{plotRanking}}, \code{\link{plotPvalues}}
 #' @references Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 #' @examples
 #' data(data_gh_2008)
@@ -283,7 +283,7 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
 
 
 
-#' @title RankingPlot
+#' @title Ranking Plots
 #'
 #' @description This function creates a plot similar to the critical difference plot, but applicable to any corrected pvalue.
 #' @param pvalues Matrix or data frame with the p-values used to determine the differences
@@ -448,7 +448,7 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
 #' @param digits Number of digits to display the value associated to each node
 #' @param node.width Numeric value for the width of the node
 #' @param node.height Numeric value for the height of the node
-#' @seealso \code{\link{plotPvalues}}, \code{\link{plotCD}}, \code{\link{plotCD}}
+#' @seealso \code{\link{plotPvalues}}, \code{\link{plotRanking}}, \code{\link{plotCD}}
 #' @examples
 #' data(data_blum_2015)
 #' data <- filterData(data.blum.2015, condition="Size == 1000", remove.cols=1:2)

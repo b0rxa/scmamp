@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plotRanking}
 \alias{plotRanking}
-\title{RankingPlot}
+\title{Ranking Plots}
 \usage{
 plotRanking(pvalues, summary, alpha = 0.05, cex = 0.75,
   decreasing = FALSE)

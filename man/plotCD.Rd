@@ -26,6 +26,6 @@ plotCD(data.gh.2008, alpha=0.01)
 Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 }
 \seealso{
-\code{\link{drawAlgorithmGraph}},   \code{\link{plotCD}}, \code{\link{plotPvalues}}
+\code{\link{drawAlgorithmGraph}},   \code{\link{plotRanking}}, \code{\link{plotPvalues}}
 }
 
