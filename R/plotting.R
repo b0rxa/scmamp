@@ -314,8 +314,6 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
     stop("The column names of 'pvalues' and the names of 'summary' have to contain the same names")
   }
   
-  
-  
   # Reorder the pvalues and mean ranks
   o <- order(summary, decreasing=decreasing)
   summary <- summary[o]
