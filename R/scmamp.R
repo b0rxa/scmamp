@@ -192,6 +192,11 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
                          control=NULL, use.rank=FALSE, sum.fun=mean, 
                          correct="finner", alpha=0.05, ... ) {
  
+  #If data is a matrix, convert it to a data.frame to avoid problems with the use of further methods
+  if(is.matrix(data)){
+    data <- data.frame(data)
+  }
+  
   # If there are only two algorithms all vs. all approach is, actually equalt to
   # all vs control. To avoid problems trying to generate matrix with only one row
   # we will convert take the second algorithm as the control
@@ -244,7 +249,7 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
   
   # Use name for the control to avoid problems when filtering
   if (!is.null(control)) {
-    if (is.character(correct) & (correct == "shaffer" | correct == "bergmannHommel")) {
+    if (is.character(correct) & (correct == "shaffer" | correct == "bergmann")) {
       warning("Shaffer's and Bergman and Hommel's correction can only be used ",
               "when all the pairs are compared. For comparisons with a control ",
               "use any of the other corrections that do not take into account ",
