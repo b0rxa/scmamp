@@ -63,6 +63,36 @@ NULL
 
 # AUXILIAR FUNCTIONS -----------------------------------------------------------
 
+correctPValues <- function(pvalues, correct) {
+  # Auxiliar function to correct pvalues in either a vector (or a one row matrix) or 
+  # a symmetric matrix where pvalues are repeated in both the upper and the lower half 
+  # of the matrix
+  # Args:
+  #   pvalues:    Vector or matrix of the pvalues to correct
+  #   correct:    Function to perform the correction
+  #
+  # Returns:
+  #   The corrected p-values matrix
+  #
+  
+  if (is.vector(pvalues) || nrow(pvalues)==1){
+    res <- correct(pvalues)
+  }else{
+    k <- nrow(pvalues)
+    pairs <- generatePairs(k, NULL)
+    pval.vector <- pvalues[pairs]
+    pval.vector.corrected <- correct(pval.vector)
+    corrected.pvalues <- pvalues
+    corrected.pvalues[pairs] <- pval.vector.corrected
+    corrected.pvalues[pairs[,2:1]] <- pval.vector.corrected
+    colnames(corrected.pvalues) <- colnames(pvalues)
+    rownames(corrected.pvalues) <- rownames(pvalues)
+    res <- corrected.pvalues
+  }
+  return(res)
+}
+
+
 runPostHoc <- function (data, test, control, ...) {
   # Auxiliar function to conduct the post hoc test
   # Args:
@@ -107,7 +137,7 @@ runPostHoc <- function (data, test, control, ...) {
                                    control=control)
                        },
                        stop("Unknown test. Valid options in the current version ",
-                            "are 'Wilcoxon', 'Friedman', 'Aligned ranks', 'Quade', ",
+                            "are 'wilcoxon', 'friedman', 'aligned ranks', 'quade', ",
                             "and 't-test'. Alternatively, you can pass a function ",
                             "that performs a paired statistical texts which ",
                             "should have, at least, two parameters, 'x' and 'y' ",
@@ -250,7 +280,7 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
   # Use name for the control to avoid problems when filtering
   if (!is.null(control)) {
     if (is.character(correct) & (correct == "shaffer" | correct == "bergmann")) {
-      warning("Shaffer's and Bergman and Hommel's correction can only be used ",
+      stop("Shaffer's and Bergman and Hommel's correction can only be used ",
               "when all the pairs are compared. For comparisons with a control ",
               "use any of the other corrections that do not take into account ",
               "the particular nature of all pairwise comparisons.")
@@ -260,20 +290,49 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
     }
   }  
   
+  if (!is.null(group.by) & (correct == "shaffer" | correct == "bergmann")) {
+    stop("Shaffer's and Bergmann and Hommel's corrections cannot be used with grouped data.",
+         " Please select another correction method")
+  }
+  
   # Prepare the correction
   if(is.character(correct)) {
     correct.name <- correct
     correct <- switch (correct,
                        "shaffer"=adjustShaffer,
                        "bergmann"=adjustBergmannHommel,
-                       "holland"=adjustHolland,
-                       "finner"=adjustFinner,
-                       "rom"={
+                       "holland"={
                          function(pvalues) {
-                           return(adjustRom(pvalues=pvalues, alpha=alpha))
+                           fun <- adjustHolland
+                           return(correctPValues(pvalues=pvalues,
+                                                         correct=fun))
                          }
                        },
-                       "li"=adjustLi,
+                       "finner"={
+                         function(pvalues) {
+                           fun <- adjustFinner
+                           return(correctPValues(pvalues=pvalues,
+                                                         correct=fun))
+                         }
+                       },
+                       "rom"={
+                         function(pvalues) {
+                           
+                           fun <- function(pvalues) {
+                             adjustRom(pvalues=pvalues, alpha=alpha)
+                           }
+                           return(correctPValues(pvalues=pvalues,
+                                                         correct=fun))
+                         }
+                       },
+                       "li"={
+                         function(pvalues) {
+                           
+                           fun <- adjustLi
+                           return(correctPValues(pvalues=pvalues,
+                                                         correct=fun))
+                         }
+                       },
                        {
                          if (!(correct %in% p.adjust.methods)){
                            stop("Non valid method for p.adjust function. ",
@@ -282,8 +341,13 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
                                 ". Additionally, 'holland', 'finner', 'rom' and ",
                                 "'li' are also valid options")
                          }
-                         function(pvalues, ...) {
-                           p.adjust(p=pvalues, method=correct.name)
+                         function(pvalues) {
+                           fun <- function(pvalues) {
+                             p.adjust(p=pvalues, method=correct.name)
+                           }
+                           return(correctPValues(pvalues=pvalues,
+                                                         correct=fun))
+                         }
                        })
   } else {
     correct.name <- deparse(substitute(test))  
@@ -291,9 +355,9 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
 
   # Build the summary matrix
   if (is.null(group.by)){
-   if (use.rank) {
+   if (use.rank){
      aux <- rankMatrix(data=data[, algorithms], ...)
-   } else {
+   }else{
      aux <- data[, algorithms]
    }
    # Note that in aux the group.by columns are at the begining
@@ -353,7 +417,6 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
     }
     
     group.raw.pval <- unlist(lapply (1:nrow(groups), FUN=getRawPvalues))
-    group.corrected.pval <- correct(group.raw.pval)
     
     # Now we create either the arrays or the matrix, depending on whether we have
     # a control or not
@@ -361,7 +424,18 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
     p <- nrow(groups)
     if (is.null(control)){
       dim(group.raw.pval) <- c(k, k, p)
-      dim(group.corrected.pval) <- c(k, k, p)
+      # Now correct the pvalues. Note that we have to take only the upper part of each matrix
+      # We will create the index triplets we need for selecting the correct pvalues
+      pairs <- generatePairs(k, NULL)
+      triplets <- cbind(pairs[rep(1:nrow(pairs), p), ], 
+                        unlist(lapply(1:p,
+                                      FUN=function(i) {
+                                        return (rep(i, nrow(pairs)))
+                                      })))
+      corrected.pvalues <- correct(group.raw.pval[triplets])
+      group.corrected.pval <- group.raw.pval
+      group.corrected.pval[triplets] <- corrected.pvalues
+      group.corrected.pval[triplets[,c(2,1,3)]] <- corrected.pvalues
       
       # Name the dimensions
       group.names <- paste(names(groups)[1], groups[, 1], sep=": ")
@@ -385,6 +459,8 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
                                              names(data)[algorithms],
                                              group.names)
     } else {
+      ## Correct with all the values
+      group.corrected.pval <- correct(group.raw.pval)
       dim(group.raw.pval) <- c(k,p)
       dim(group.corrected.pval) <- c(k,p)
       group.raw.pval <- t(group.raw.pval)

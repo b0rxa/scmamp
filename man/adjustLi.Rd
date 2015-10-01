@@ -7,10 +7,10 @@
 adjustLi(pvalues)
 }
 \arguments{
-\item{pvalues}{Raw p-values in a matrix}
+\item{pvalues}{Raw p-values in either a vector or a matrix. Note that in case the p-values are in a matrix, all the values are used for the correction. Therefore, if the matrix contains repeated values (as those output by some methods in this package), the repetitions have to be removed.}
 }
 \value{
-A matrix with the corrected p-values
+A vector or matrix with the corrected p-values
 }
 \description{
 This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Li (2008).

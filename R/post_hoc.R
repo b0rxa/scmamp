@@ -684,8 +684,8 @@ adjustBergmannHommel <- function (raw.matrix){
 #' @title Holland correction of p-values.
 #'
 #' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Holland and Copenhaver (1987)
-#' @param pvalues Raw p-values in a matrix
-#' @return A matrix with the corrected p-values
+#' @param pvalues Raw p-values in either a vector or a matrix. Note that in case the p-values are in a matrix, all the values are used for the correction. Therefore, if the matrix contains repeated values (as those output by some methods in this package), the repetitions have to be removed.
+#' @return A vector or matrix with the corrected p-values
 #' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682.
 #' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera, F. (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @references B. S. Holland and M. D. Copenhaver (1987) An improved sequentially rejective Bonferroni test procedure \emph{Biometrics}, 43, 417-423.
@@ -726,8 +726,8 @@ adjustHolland <- function(pvalues) {
 #' @title Finner correction of p-values
 #'
 #' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Finner (1993)
-#' @param pvalues Raw p-values in a matrix
-#' @return A matrix with the corrected p-values
+#' @param pvalues Raw p-values in either a vector or a matrix. Note that in case the p-values are in a matrix, all the values are used for the correction. Therefore, if the matrix contains repeated values (as those output by some methods in this package), the repetitions have to be removed.
+#' @return A vector or matrix with the corrected p-values
 #' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682.
 #' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @references H. Finner (1993) On a monotocity problem in ste-down mulitple test procedures. \emph{Journal of the American Statistical Association}, 88, 920-923.
@@ -769,9 +769,9 @@ adjustFinner <- function(pvalues) {
 #' @title Rom correction of p-values
 #'
 #' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Rom (1990)
-#' @param pvalues Raw p-values in a matrix
+#' @param pvalues Raw p-values in either a vector or a matrix. Note that in case the p-values are in a matrix, all the values are used for the correction. Therefore, if the matrix contains repeated values (as those output by some methods in this package), the repetitions have to be removed.
 #' @param alpha value for the averall test
-#' @return A matrix with the corrected p-values
+#' @return A vector or matrix with the corrected p-values
 #' @details The test has been implemented according to the version in Garcia\emph{et al.} (2010), page 2680-2682.
 #' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @references D. M. Rom (1990) A sequentially rejective test procedure based on a modified Bonferroni inequality. \emph{Biometrika}, 77, 663-665.
@@ -827,8 +827,8 @@ adjustRom <- function(pvalues, alpha=0.05){
 #' @title Li correction of p-values.
 #'
 #' @description This function takes the particular list of possible hypthesis to correct for multiple testing, as defined in Li (2008).
-#' @param pvalues Raw p-values in a matrix
-#' @return A matrix with the corrected p-values
+#' @param pvalues Raw p-values in either a vector or a matrix. Note that in case the p-values are in a matrix, all the values are used for the correction. Therefore, if the matrix contains repeated values (as those output by some methods in this package), the repetitions have to be removed.
+#' @return A vector or matrix with the corrected p-values
 #' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682. This is a simple procedure that provides good results when the highest p-value corrected is below 0.5. However, When the highest p-value is close to 1 the correction is extremely conservative. Actually, when the highest p-value is 1, all the corrected p-values are set at 1. Therefore, it is not advisable to be used under these circumstances.
 #' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 #' @references J. Li (2008) A two-step rejection prcedure for testing mulitple hypotheses. \emph{Journal of Statistical Planning and Inference}, 138, 1521-1527.
