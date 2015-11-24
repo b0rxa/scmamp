@@ -371,14 +371,14 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
    colnames(sum.matrix) <- colnames(data)[algorithms]
   } else {
     if (use.rank) {
-      aux <- cbind(data[, group.by], rankMatrix(data=data[, algorithms]), ...)
+      aux <- cbind(data[, group.by], data.frame(rankMatrix(data=data[, algorithms])), ...)
     } else {
       aux <- cbind(data[, group.by], data[, algorithms])
     }
     # Note that in aux the group.by columns are at the begining
     sum.matrix <- summarizeData(data=aux, fun=sum.fun, group.by=1:length(group.by), ...)
     # Some operations may change the name of the algorithms (special characters)
-    colnames(sum.matrix) < names(data)[c(group.by, algorithms)]
+    colnames(sum.matrix) <- names(data)[c(group.by, algorithms)]
   }
   
   if (!is.null(group.by)){
