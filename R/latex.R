@@ -86,7 +86,6 @@ processTableRow <- function (row, bold, italic, format, digits,
 
 
 
-
 # EXPORTED FUNCTIONS -----------------------------------------------------------
 
 #' @title Write a table in LaTeX format
@@ -104,9 +103,15 @@ processTableRow <- function (row, bold, italic, format, digits,
 #' @param hrule A vector of positions for the horizontal lines in the tabular. All the lines are drawn after the indicated line. When the column names are included, 0 means drawing a line after the column names. The maximum value is the number of rows - 1 (for a line after the last line see parametr \code{bty})
 #' @param vrule Similar to \code{'hrule'} but for vertical lines. . The maximum value is the number of columns - 1 (for a line after the last columns see parametr \code{bty})
 #' @param bty Vector indicating which borders should be printed. The vector can contain any of subset of \code{c('l','r','t','b')}, which represent, respectively, left, right, top and bottom border. If the parameter is set to \code{NULL} no border is printed.
-#' @param print.col.names Local value indicating whether the column names have to be printed or not
-#' @param print.row.names Local value indicating whether the row names have to be printed or not
+#' @param print.col.names Logical value indicating whether the column names have to be printed or not
+#' @param print.row.names Logical value indicating whether the row names have to be printed or not
 #' @param digits A single number or a numeric vector with the number of digits in each column. Its size has to match the number of the final table, i.e., the colums in \code{'table'} if the row names are not included or the number of columns + 1 if the row names are printed in the final table
+#' @param wrap.as.table Logical value indicating whether the latex object has to be wrapped into a table enviroment
+#' @param table.position Character indicating the position of the table (\code{'h'}: here, \code{'t'}: top, or \code{'b'}: botton)
+#' @param caption Character string containing the caption of the table. If NULL, no caption is printed
+#' @param caption.position Character indicating the possition of the caption (\code{t}: top, the caption is printed over the table; \code{b}: botton, the caption is printed under the table)
+#' @param centering Logical value indicating whether the table should be centered in the page
+#' @param label Character string containing the label of the table for further references. If NULL, no label is used
 #' @return LaTeX code to print the table
 #' @seealso \code{\link{summarizeData}}, \code{\link{filterData}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", 
 #' package="scmamp")}
@@ -144,7 +149,9 @@ processTableRow <- function (row, bold, italic, format, digits,
 writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL, 
                           mark=NULL, mark.char="*", na.as="n/a", align="l", 
                           hrule=NULL, vrule=NULL, bty=c("t","b","l","r"), 
-                          print.col.names=TRUE, print.row.names=TRUE, digits=3) {
+                          print.col.names=TRUE, print.row.names=TRUE, digits=3,
+                          wrap.as.table=FALSE, table.position="h", caption=NULL,
+                          caption.position="b", centering=FALSE, label=NULL) {
   
   rows <- nrow(table)
   cols <- ncol(table)
@@ -155,7 +162,7 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
   if (length(digits) == 1) {
     digits <- rep(digits, ncol(table) + print.row.names)
   }
-
+  
   # Control of the digits
   if (length(digits) - print.row.names != cols) {
     stop("The number of elements in the digits vector is incorrect. The vector ",
@@ -210,8 +217,8 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
   # Include row and/or col names as additional info in the table
   if (print.row.names) {
     suppressWarnings(expr={
-                       table <- cbind(rownames(table), table)
-                     })
+      table <- cbind(rownames(table), table)
+    })
     bold <- cbind(rep(FALSE, rows), bold)
     italic <- cbind(rep(FALSE, rows), italic)
     mark <- cbind(rep(FALSE, rows), mark)
@@ -223,8 +230,8 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
   
   if (print.col.names) {
     suppressWarnings(expr={
-                       table <- rbind(colnames(table) , table)
-                     })
+      table <- rbind(colnames(table) , table)
+    })
     bold <- rbind(rep(FALSE, cols), bold)
     italic <- rbind(rep(FALSE, cols), italic)
     mark <- rbind(rep(FALSE, cols), mark)
@@ -241,6 +248,22 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
     out.file <- file(file, "w")
   }
   
+  # begin table enviroment if wrap.as.table
+  if(wrap.as.table){
+    l <- paste0("\\begin{table}[", table.position, "]")
+    cat(l, file=out.file, sep="\n")
+    # caption on top
+    if(caption.position=="t" & !is.null(caption)){
+      l <- paste0("\\caption{", caption, "}")
+      cat(l, file=out.file, sep="\n")
+    }
+    # centering
+    if(centering){
+      cat("\\centering", file=out.file, sep="\n")
+    }
+  }
+  
+  
   # Begin the tabular
   if ("l" %in% bty) {
     algn <- "|"
@@ -254,19 +277,19 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
     aux <- c(vrule[1], diff(c(vrule, cols)))
     aux2 <- sapply (aux[-1], 
                     FUN=function(x) {
-                          c("|", rep(align, x))
-                        })
+                      c("|", rep(align, x))
+                    })
     algn <- paste(algn, paste(c(rep(align, aux[1]), unlist(aux2)), collapse=""),
                   sep="")
   }
-
+  
   if ("r" %in% bty) {
     algn.end <- "|"  
   } else {
     algn.end <- ""
   }
   algn <- paste(algn, algn.end, sep = "")
-
+  
   l <- paste("\\begin{tabular}{", algn, "}", sep="")
   cat(l, file=out.file, sep="\n")
   
@@ -286,7 +309,7 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
     }
     current.row <- current.row+1
   }
-    
+  
   if ('b' %in% bty) {
     cat("\\hline", file=out.file, sep="\n")
   }
@@ -294,9 +317,24 @@ writeTabular <- function (table, file=NULL, format="g", bold=NULL, italic=NULL,
   # End of tabular
   cat("\\end{tabular}", file=out.file, sep="\n")
   
+  # end table enviroment if wrap.as.table
+  if(wrap.as.table){
+    # caption on botton
+    if(caption.position=="b" & !is.null(caption)){
+      l <- paste0("\\caption{", caption, "}")
+      cat(l, file=out.file, sep="\n")
+    }
+    # label
+    if(!is.null(label)){
+      l <- paste0("\\label{", label, "}")
+      cat(l, file=out.file, sep="\n")
+    }
+    # end of table
+    cat("\\end{table}", file=out.file, sep="\n")
+  }
+  
   # Bye bye
   if(!is.null(file)) {
     close(out.file)
   }
 }
-

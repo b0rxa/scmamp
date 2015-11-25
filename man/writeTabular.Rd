@@ -7,7 +7,9 @@
 writeTabular(table, file = NULL, format = "g", bold = NULL,
   italic = NULL, mark = NULL, mark.char = "*", na.as = "n/a",
   align = "l", hrule = NULL, vrule = NULL, bty = c("t", "b", "l", "r"),
-  print.col.names = TRUE, print.row.names = TRUE, digits = 3)
+  print.col.names = TRUE, print.row.names = TRUE, digits = 3,
+  wrap.as.table = FALSE, table.position = "h", caption = NULL,
+  caption.position = "b", centering = FALSE, label = NULL)
 }
 \arguments{
 \item{table}{A data frame with the information to write}
@@ -34,11 +36,23 @@ writeTabular(table, file = NULL, format = "g", bold = NULL,
 
 \item{bty}{Vector indicating which borders should be printed. The vector can contain any of subset of \code{c('l','r','t','b')}, which represent, respectively, left, right, top and bottom border. If the parameter is set to \code{NULL} no border is printed.}
 
-\item{print.col.names}{Local value indicating whether the column names have to be printed or not}
+\item{print.col.names}{Logical value indicating whether the column names have to be printed or not}
 
-\item{print.row.names}{Local value indicating whether the row names have to be printed or not}
+\item{print.row.names}{Logical value indicating whether the row names have to be printed or not}
 
 \item{digits}{A single number or a numeric vector with the number of digits in each column. Its size has to match the number of the final table, i.e., the colums in \code{'table'} if the row names are not included or the number of columns + 1 if the row names are printed in the final table}
+
+\item{wrap.as.table}{Logical value indicating whether the latex object has to be wrapped into a table enviroment}
+
+\item{table.position}{Character indicating the position of the table (\code{'h'}: here, \code{'t'}: top, or \code{'b'}: botton)}
+
+\item{caption}{Character string containing the caption of the table. If NULL, no caption is printed}
+
+\item{caption.position}{Character indicating the possition of the caption (\code{t}: top, the caption is printed over the table; \code{b}: botton, the caption is printed under the table)}
+
+\item{centering}{Logical value indicating whether the table should be centered in the page}
+
+\item{label}{Character string containing the label of the table for further references. If NULL, no label is used}
 }
 \value{
 LaTeX code to print the table

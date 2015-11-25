@@ -1,8 +1,8 @@
 Package: scmamp
 Type: Package
 Title: Statistical Comparison of Multiple Algorithms in Multiple Problems
-Version: 0.2.3
-Date: 2015-10-01
+Version: 0.2.4
+Date: 2015-11-25
 Authors@R:  c(person(given = "Borja", family = "Calvo", role = c("aut", "cre") , email ="borja.calvo@ehu.eus"), 
    person(given = "Guzman", family = "Santafe", role = c("aut"), email = "guzman.santafe@unavarra.es")) 
 LazyData: yes
