@@ -1,5 +1,7 @@
 ## ---- prompt=TRUE--------------------------------------------------------
 library("scmamp")
+library("ggplot2")
+library("Rgraphviz")
 data(data_blum_2015)
 data(data_gh_2008)
 head(data.blum.2015)

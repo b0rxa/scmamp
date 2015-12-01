@@ -1,14 +1,12 @@
-year <- sub("-.*", "", meta$Date)
-note <- sprintf("R package version %s", meta$Version)
+citHeader("To cite package 'scmamp' in publications use:")
 
-bibentry(bibtype = "Manual",
-         title = "{scmamp}: Statistical Comparison of Multiple Algorithms in Multiple Problems",
-         author = c(person("Borja", "Calvo"),
-                    person("Guzm\'an", "Santaf\'e")),
-         year = year,
-         note = note,
-         url = "https://github.com/b0rxa/scmamp")
-
-textVersion =
-         paste0("Borja Calvo and Guzman Santafe (", year,
-                "). scmamp: Statistical Comparison of Multiple Algorithms in Multiple Problems. ", note, ".")
+citEntry(entry="Article",
+         title = "scmamp: Statistical Comparison of Multiple Algorithms in Multiple Problems",
+         author = personList(as.person("Borja Calvo"),
+                             as.person("Guzman Santafe")),
+         year = 2015,
+         journal = "The R Journal",
+         volume = "Accepted for publication",
+         number = "",
+         pages = "",
+         textVersion = "Borja Calvo and Guzman Santafe (2015) scmamp: Statistical Comparison of Multiple Algorithms in Multiple Problems. The R Journal, accepted for publication.")

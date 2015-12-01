@@ -23,6 +23,8 @@ As a guiding examples, we will use the results included in @garcia2008 (Table 2)
 
 ```{r , prompt=TRUE}
 library("scmamp")
+library("ggplot2")
+library("Rgraphviz")
 data(data_blum_2015)
 data(data_gh_2008)
 head(data.blum.2015)

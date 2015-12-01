@@ -48,7 +48,7 @@ rm("data.raw")
 data.raw <- readExperimentFile (file=file, alg.col="Algorithm", value.col="Evaluation")
 head(data.raw)
 
-## ---- prompt=TRUE, cache=TRUE--------------------------------------------
+## ---- prompt=TRUE, cache=TRUE---------------------------------------------------------------------------------------
 rm("data.raw")
 dir <- paste(system.file("loading_tests", package="scmamp"), 
              "experiment_files", sep="/")
@@ -59,27 +59,27 @@ data.raw <- readExperimentDir (directory=dir, names=var.names, fname.pattern=pat
                                alg.var.name='Algorithm', value.col=1, col.names="Evaluation")
 head(data.raw)
 
-## ---- echo=-1------------------------------------------------------------
+## ---- echo=-1-------------------------------------------------------------------------------------------------------
 summarizeData(data=data.raw, fun=median, group.by=c("Size"), ignore=c("Radius"))
 
-## ------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------
 data.filtered <- filterData(data=data.raw, 
                             condition="Size == 100 & Rand1 <= Rand2", 
                             remove.cols="Size")
 dim(data.filtered)
 dim(data.raw)
 
-## ------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------
 summarizeData(data.filtered, group.by=c("Radius"))
 
-## ---- warning=FALSE , cache=TRUE , echo=-1-------------------------------
+## ---- warning=FALSE , cache=TRUE , echo=-1--------------------------------------------------------------------------
 test <- "wilcoxon"
 group.by <- c("Size","Radius")
 alg.cols <- 3:10
 result <- postHocTest(data=data.raw, algorithms=alg.cols, group.by=group.by,
                       test=test, control="max", correct="holland")
 
-## ------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------
 summ <- result$summary
 pval <- result$corrected.pval
 bold <- is.na(pval)

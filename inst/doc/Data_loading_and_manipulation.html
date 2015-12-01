@@ -292,28 +292,17 @@ dim(data.filtered)
 <pre><code class="r">summarizeData(data.filtered, group.by=c(&quot;Radius&quot;))
 </code></pre>
 
-<pre><code>##    groups  FrogCOL  FrogMIS FruitFly    Ikeda    Rand1    Rand2   Shukla
-## 1   0.140 30.82353 28.88235 27.76471 25.52941 25.29412 26.76471 25.47059
-## 2   0.143 30.55000 28.55000 26.65000 25.85000 24.90000 26.60000 25.35000
-## 3   0.146 29.83333 28.05556 26.22222 25.22222 24.38889 25.88889 24.77778
-## 4   0.149 29.35000 28.00000 26.25000 24.30000 23.85000 25.35000 24.75000
-## 5   0.152 28.42105 25.78947 25.10526 23.47368 23.21053 24.36842 23.68421
-## 6   0.155 27.50000 25.59091 24.04545 22.81818 22.31818 23.36364 23.36364
-## 7   0.158 27.35000 24.30000 24.10000 22.55000 21.60000 23.30000 22.35000
-## 8   0.161 26.11765 23.58824 22.94118 21.23529 21.41176 22.23529 22.11765
-## 9   0.164 25.85000 23.20000 22.50000 20.80000 20.65000 22.20000 21.05000
-## 10  0.169 24.66667 22.27778 22.00000 20.16667 19.61111 21.00000 21.00000
-##       Turau
-## 1  26.05882
-## 2  25.60000
-## 3  25.66667
-## 4  24.75000
-## 5  23.26316
-## 6  23.09091
-## 7  22.55000
-## 8  22.05882
-## 9  20.80000
-## 10 20.11111
+<pre><code>##    groups  FrogCOL  FrogMIS FruitFly    Ikeda    Rand1    Rand2   Shukla    Turau
+## 1   0.140 30.82353 28.88235 27.76471 25.52941 25.29412 26.76471 25.47059 26.05882
+## 2   0.143 30.55000 28.55000 26.65000 25.85000 24.90000 26.60000 25.35000 25.60000
+## 3   0.146 29.83333 28.05556 26.22222 25.22222 24.38889 25.88889 24.77778 25.66667
+## 4   0.149 29.35000 28.00000 26.25000 24.30000 23.85000 25.35000 24.75000 24.75000
+## 5   0.152 28.42105 25.78947 25.10526 23.47368 23.21053 24.36842 23.68421 23.26316
+## 6   0.155 27.50000 25.59091 24.04545 22.81818 22.31818 23.36364 23.36364 23.09091
+## 7   0.158 27.35000 24.30000 24.10000 22.55000 21.60000 23.30000 22.35000 22.55000
+## 8   0.161 26.11765 23.58824 22.94118 21.23529 21.41176 22.23529 22.11765 22.05882
+## 9   0.164 25.85000 23.20000 22.50000 20.80000 20.65000 22.20000 21.05000 20.80000
+## 10  0.169 24.66667 22.27778 22.00000 20.16667 19.61111 21.00000 21.00000 20.11111
 </code></pre>
 
 <h2>Formating the results</h2>
@@ -413,6 +402,8 @@ writeTabular(table=summ, format=&quot;f&quot;, bold=bold, mark=mark, mark.char=&
 <p>The first is a vector of strings that indicate which borders have to be printed. Valid elements for this parameter are <code>&#39;t&#39;</code>, for top border,  <code>&#39;b&#39;</code>, for bottom border,  <code>&#39;l&#39;</code>, for left border and  <code>&#39;r&#39;</code>, for right border. Any subset of these values can be used.</p>
 
 <p>Regarding the <code>hrule</code> and <code>vrule</code> arguments, they can be a list of numbers ranging between 0 and the number of rows/columns - 1, and they indicate after which row/column a line has to be drawn. The 0 value is used to indicate that there has to be a line after the row/column name. Note that the lines after the last row/column are set using the <code>bty</code> argument.</p>
+
+<p>Additionally, the <code>writeTabular</code> function allows us to include the tabular into a latex table environment. <code>writeTabular</code> has an extra set of parameters to control this option: <code>wrap.as.table</code>, <code>table.position</code>, <code>caption</code>,<code>caption.position</code>, <code>centering</code> and <code>label</code>. If <code>wrap.a.table</code> is <code>TRUE</code> (default value is <code>FALSE</code>) the resulting tabular is embedded into a table environment. <code>table.position</code> controls the position of the table in the latex document using the typical latex values (<code>h</code>, <code>t</code> or <code>b</code>). <code>caption</code> and <code>label</code> controls the caption and the label of the table, <code>caption.position</code> allows to write the caption over the table (<code>caption.position=&quot;t&quot;</code>) or under the table (<code>caption.position=&quot;b&quot;</code>). Finally, <code>centering</code> allows the use of the <code>\centering</code> latex command within the table environment in order to center the table in the page. Using this <code>writeTabular</code> facility, we can directly generate the corresponding latex code from Sweave or Knit (using the option <code>results=&#39;asis&#39;</code> in the corresponding R code chunk) and thus, include the table in the resulting pdf document.  </p>
 
       <div class="fleur">h</div>
     </div>
