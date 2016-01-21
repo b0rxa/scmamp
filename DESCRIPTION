@@ -1,22 +1,31 @@
 Package: scmamp
 Type: Package
 Title: Statistical Comparison of Multiple Algorithms in Multiple Problems
-Version: 0.2.4
-Date: 2015-12-01
-Authors@R:  c(person(given = "Borja", family = "Calvo", role = c("aut", "cre") , email ="borja.calvo@ehu.eus"), 
-   person(given = "Guzman", family = "Santafe", role = c("aut"), email = "guzman.santafe@unavarra.es")) 
+Version: 0.2.5
+Date: 2015-12-21
+Authors@R: c(person(given = "Borja", family = "Calvo", role = c("aut", "cre") , email ="borja.calvo@ehu.eus"), 
+   person(given = "Guzman", family = "Santafe", role = c("aut"), email = "guzman.santafe@unavarra.es"))
 LazyData: yes
-Imports: ggplot2, graph, reshape2, Rgraphviz, methods
-Suggests: knitr
-VignetteBuilder: knitr 
-Description: Given a matrix with results of different algorithms for different problems, the package uses statistical tests and corrections to assess the differences between algorithms.
+Imports:
+    ggplot2,
+    graph,
+    reshape2,
+    Rgraphviz,
+    methods
+Suggests:
+    knitr
+VignetteBuilder: knitr
+Description: Given a matrix with results of different algorithms for different
+    problems, the package uses statistical tests and corrections to assess the
+    differences between algorithms.
 License: GPL-2
 BugReports: https://github.com/b0rxa/scmamp/issues
-Collate: 
-  tests.R
-  post_hoc.R
-  plotting.R
-  scmamp.R
-  latex.R
-  loading_functions.R
-  data_manipulation.R
+Collate:
+    tests.R
+    post_hoc.R
+    plotting.R
+    scmamp.R
+    latex.R
+    loading_functions.R
+    data_manipulation.R
+RoxygenNote: 5.0.1

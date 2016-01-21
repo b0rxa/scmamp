@@ -4,7 +4,7 @@
 #'
 #' @description This function creates a quantile-quantile plot to assess the goodness of fit of a Gaussian distribution to a given sample.
 #' @param data List of data points to check
-#' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_point}} function used to plot the sample points.
+#' @param ... The plot is created using \code{ggplot2}. This special parameter can be used to pass additional parameters to the \code{\link{geom_point}} function used to plot the sample points.
 #' @return A \code{\link{ggplot}} object.
 #' @seealso \code{\link{plotDensities}}
 #' @examples
@@ -62,7 +62,7 @@ qqplotGaussian <- function (data, ...) {
 #'
 #' @description This function estimates and plots the densities of the results of each algorithm
 #' @param data A matrix where columns represent the algorithms
-#' @param ... The plot is created using \code{\link{ggplot2}}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points. It can also be used to pass additional arguments to the \code{density} function, which is used to eastimate the densities.
+#' @param ... The plot is created using \code{ggplot2}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points. It can also be used to pass additional arguments to the \code{density} function, which is used to eastimate the densities.
 #' @return A \code{\link{ggplot}} object.
 #' @seealso \code{\link{qqplotGaussian}}
 #' @examples

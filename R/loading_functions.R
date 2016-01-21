@@ -267,8 +267,8 @@ readExperimentFile <- function (file, alg.col, value.col, col.names=NULL, ...) {
 #' @seealso \code{\link{readExperimentFile}}, \code{\link{readComparisonFile}}, \code{\link{readComparisonDir}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", package="scmamp")}
 #' @examples
 #' dir <- paste(system.file("loading_tests",package="scmamp"), "experiment_files", sep="/")
-#' # The format of the files is rgg_size_SIZE_r_RADIUS_ALGORITHM.out, where variables to extract are in 
-#' # capital letters. 
+#' # The format of the files is rgg_size_SIZE_r_RADIUS_ALGORITHM.out, where variables 
+#' # to extract are in capital letters. 
 #' list.files(dir)[1:5]
 #' # The regular expresion can be as simple as substituting each variable name in the expression
 #' # above by ([XXX]*), where XXX is the list of symbols that appear in the name.
