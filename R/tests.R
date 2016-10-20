@@ -40,9 +40,9 @@ wilcoxonSignedTest <- function (x, y, ...) {
   # Compute the statistic based on the ordering of the differences. 
   # We need to assign the highest rank to the biggest value, so we change the 
   # sign of the absolute difference.
-  o  <- rank(-abs(d), ties.method="average")
-  rp <- sum(o[d>0]) + sum(o[d == 0])
-  rn <- sum(o[d<0]) + sum(o[d == 0])
+  o  <- rank(abs(d), ties.method="average")
+  rp <- sum(o[d>0]) + 0.5*sum(o[d == 0])
+  rn <- sum(o[d<0]) + 0.5*sum(o[d == 0])
   t  <- min(rp, rn)
   
   num    <- t - 0.25 * (N * (N + 1))

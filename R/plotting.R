@@ -16,10 +16,15 @@
 #' qqplotGaussian(sample)
 
 qqplotGaussian <- function (data, ...) {
-#   if(!require(ggplot2)) {
-#     stop("This function requires the package ggplot2, which is not ",
-#          "installed. You can install it typing install.packages('ggplot2')")
-#   }
+  
+  # Rquired packages
+  if (!require("ggplot2")) {
+    message("This function requires the ggplot2 package. It can be installed running the command install.packages('ggplot2').")
+    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
+    if (ans=="y" | ans=="Y") {
+      install.packages("ggplot2")
+    }
+  }
   
   processVector <- function (sample) {
     # Auxiliar function to get the points for a single qqplot
@@ -71,11 +76,14 @@ qqplotGaussian <- function (data, ...) {
 #' 
 
 plotDensities <- function (data, ...) {
-#   if(!require(ggplot2)) {
-#     stop("This function requires the package ggplot2, which is not installed. ",
-#          "You can install it typing install.packages('ggplot2')")
-#   }
-  
+  # Rquired packages
+  if (!require("ggplot2")) {
+    message("This function requires the ggplot2 package. It can be installed running the command install.packages('ggplot2').")
+    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
+    if (ans=="y" | ans=="Y") {
+      install.packages("ggplot2")
+    }
+  }
   if (is.vector(data)){
     d  <- density(data)
     df <- data.frame(Value=d$x, Density=d$y)
@@ -115,16 +123,22 @@ plotDensities <- function (data, ...) {
 #' 
  
 plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.size=5) {
-#   if(!require(reshape2)) {
-#     stop("This function requires the package reshape2, which is not installed. ",
-#          "You can install it typing install.packages('reshape2')")
-#   }
-  
-#   if(!require(ggplot2)) {
-#     stop("This function requires the package ggplot2, which is not installed. ",
-#          "You can install it typing install.packages('ggplot2')")
-#   }
-  
+
+  # Rquired packages
+  if (!require("ggplot2")) {
+    message("This function requires the ggplot2 package. It can be installed running the command install.packages('ggplot2').")
+    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
+    if (ans=="y" | ans=="Y") {
+      install.packages("ggplot2")
+    }
+  }
+  if (!require("reshape2")) {
+    message("This function requires the reshape2 package. It can be installed running the command install.packages('reshape2').")
+    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
+    if (ans=="y" | ans=="Y") {
+      install.packages("reshape2")
+    }
+  }
   # Convert the matrix into a data frame and order the algorithms according to 
   # the desired order.
   df <- melt(pvalue.matrix)
@@ -461,12 +475,18 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
                                 highlight.color="chartreuse3", node.color="gray30", 
                                 font.color="white", digits=2, 
                                 node.width=5, node.height=2) {
-#   if(!require(Rgraphviz)) {
-#     stop("This function requires the package Rgraphviz, which is not installed. ",
-#          "You can install it typing\n\n ",
-#          "source('http://www.bioconductor.org/biocLite.R')\n\n and then\n\n ",
-#          "biocLite('Rgraphviz')\n\n")
-#   }
+
+  
+  # Rquired packages
+  if (!require("Rgraphviz")) {
+    message("This function requires the Rgraphviz package. It can be installed running the commands:\n source('http://www.bioconductor.org/biocLite.R')\n\n biocLite('Rgraphviz')")
+    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
+    if (ans=="y" | ans=="Y") {
+      source("http://www.bioconductor.org/biocLite.R")
+      biocLite(c("graph","Rgraphviz"))
+    }
+  }
+  
   # Just in case we have a matrix ...
   if (is.matrix(mean.value)) {
     mean.value <- mean.value[1, ]
