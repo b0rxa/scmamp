@@ -1,4 +1,5 @@
 importFrom("graphics", "text")
+importFrom("reshape2", "melt")
 importFrom("methods", "new")
 importFrom("stats", "density", "median", "p.adjust",
            "p.adjust.methods", "pchisq", "pf", "pnorm", "ptukey",
@@ -7,7 +8,6 @@ importFrom("utils", "read.csv")
   
 import(ggplot2,
        graph,
-       reshape2,
        Rgraphviz)
 
 export(

@@ -6,7 +6,7 @@ citEntry(entry="Article",
                              as.person("Guzman Santafe")),
          year = 2015,
          journal = "The R Journal",
-         volume = "Accepted for publication",
-         number = "",
-         pages = "",
-         textVersion = "Borja Calvo and Guzman Santafe (2015) scmamp: Statistical Comparison of Multiple Algorithms in Multiple Problems. The R Journal, accepted for publication.")
+         volume = "8",
+         number = "1",
+         pages = "248--256",
+         textVersion = "Borja Calvo and Guzman Santafe (2015) scmamp: Statistical Comparison of Multiple Algorithms in Multiple Problems. The R Journal. 8(1) 248-256.")

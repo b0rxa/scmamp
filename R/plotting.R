@@ -16,14 +16,8 @@
 #' qqplotGaussian(sample)
 
 qqplotGaussian <- function (data, ...) {
-  
-  # Rquired packages
-  if (!require("ggplot2")) {
-    message("This function requires the ggplot2 package. It can be installed running the command install.packages('ggplot2').")
-    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
-    if (ans=="y" | ans=="Y") {
-      install.packages("ggplot2")
-    }
+  if (!requireNamespace("ggplot2", quietly=TRUE)) {
+    stop("This function requires the ggplot2 package. Please install it.", call.=FALSE)
   }
   
   processVector <- function (sample) {
@@ -76,14 +70,10 @@ qqplotGaussian <- function (data, ...) {
 #' 
 
 plotDensities <- function (data, ...) {
-  # Rquired packages
-  if (!require("ggplot2")) {
-    message("This function requires the ggplot2 package. It can be installed running the command install.packages('ggplot2').")
-    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
-    if (ans=="y" | ans=="Y") {
-      install.packages("ggplot2")
-    }
+  if (!requireNamespace("ggplot2", quietly=TRUE)) {
+    stop("This function requires the ggplot2 package. Please install it.", call.=FALSE)
   }
+  
   if (is.vector(data)){
     d  <- density(data)
     df <- data.frame(Value=d$x, Density=d$y)
@@ -123,22 +113,11 @@ plotDensities <- function (data, ...) {
 #' 
  
 plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.size=5) {
-
-  # Rquired packages
-  if (!require("ggplot2")) {
-    message("This function requires the ggplot2 package. It can be installed running the command install.packages('ggplot2').")
-    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
-    if (ans=="y" | ans=="Y") {
-      install.packages("ggplot2")
-    }
+  
+  if (!requireNamespace("ggplot2", quietly=TRUE)) {
+    stop("This function requires the ggplot2 package. Please install it.", call.=FALSE)
   }
-  if (!require("reshape2")) {
-    message("This function requires the reshape2 package. It can be installed running the command install.packages('reshape2').")
-    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
-    if (ans=="y" | ans=="Y") {
-      install.packages("reshape2")
-    }
-  }
+  
   # Convert the matrix into a data frame and order the algorithms according to 
   # the desired order.
   df <- melt(pvalue.matrix)
@@ -175,6 +154,10 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
 #' plotCD(data.gh.2008, alpha=0.01)
 #' 
 plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
+  
+  old.par <- par()
+  par(mai=c(0, 0, 0, 0))
+  
   k <- dim(results.matrix)[2]
   N <- dim(results.matrix)[1]
   cd <- getNemenyiCD(alpha=alpha, num.alg=k, num.problems=N)
@@ -200,7 +183,7 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   # The 2 extra spaces are for the lines that join algorithms
   tick.h       <- 0.25 * line.spacing
   
-  label.displacement <- 0.1    # Displacement of the label with respect to the axis
+  label.displacement <- 0.25    # Displacement of the label with respect to the axis
   line.displacement  <- 0.025  # Displacement for the lines that join algorithms
   
   # Background of the plot
@@ -229,7 +212,7 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
                   line.h <- -line.spacing * (x + 2)
                   text(x=m - label.displacement, y=line.h, 
                        labels=names(left.algs)[x], cex=cex, adj=1)
-                  lines(c(m, left.algs[x]), c(line.h, line.h))
+                  lines(c(m - label.displacement*0.75, left.algs[x]), c(line.h, line.h))
                   lines(c(left.algs[x], left.algs[x]), c(line.h, 0))
                 })
   
@@ -239,7 +222,7 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
                   line.h <- -line.spacing * (x + 2)
                   text(x=M + label.displacement, y=line.h, 
                        labels=names(right.algs)[x], cex=cex, adj=0)
-                  lines(c(M, right.algs[x]), c(line.h, line.h))
+                  lines(c(M + label.displacement*0.75, right.algs[x]), c(line.h, line.h))
                   lines(c(right.algs[x], right.algs[x]), c(line.h, 0))
                 })
   
@@ -293,6 +276,7 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
                           to.join[x, 2] + line.displacement), 
                         c(y, y), lwd=3)
                 })
+  par(old.par)
 }
 
 
@@ -312,6 +296,10 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
 #' plotRanking(pvalues=test$corrected.pval, summary=test$summary, alpha=0.05)
 #' 
 plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALSE) {
+  
+  old.par <- par()
+  par(mai=c(0, 0, 0, 0))
+  
   k <- length(summary)
 
   if (is.matrix(summary)) {
@@ -353,7 +341,7 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
   # The 2 extra spaces are for the lines that join algorithms
   tick.h       <- 0.25 * line.spacing
   
-  label.displacement <- 0.1    # Displacement of the label with respect to the axis
+  label.displacement <- 0.25   # Displacement of the label with respect to the axis
   line.displacement  <- 0.025  # Displacement for the lines that join algorithms
   
   # Background of the plot
@@ -375,7 +363,7 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
                   line.h <- -line.spacing * (x + 2)
                   text(x=m - label.displacement, y=line.h, 
                        labels=names(left.algs)[x], cex=cex, adj=1)
-                  lines(c(m, left.algs[x]), c(line.h, line.h))
+                  lines(c(m - label.displacement*0.75, left.algs[x]), c(line.h, line.h))
                   lines(c(left.algs[x], left.algs[x]), c(line.h, 0))
                 })
   
@@ -385,19 +373,23 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
                   line.h <- -line.spacing * (x + 2)
                   text(x=M + label.displacement, y=line.h, 
                        labels=names(right.algs)[x], cex=cex, adj=0)
-                  lines(c(M, right.algs[x]), c(line.h, line.h))
+                  lines(c(M + label.displacement*0.75, right.algs[x]), c(line.h, line.h))
                   lines(c(right.algs[x], right.algs[x]), c(line.h, 0))
                 })
   
   # Draw the lines to join algorithms
   getInterval <- function (x) {
     ls <- which(pvalues[x, ] > alpha)
+    # Only retail those to the right in the matrix
+    ls <- ls[ls > x]
+    res <- NULL
     if (length(ls) > 0) {
-      c(summary[x], summary[max(ls)])
+      res <- c(as.numeric(summary[x]), as.numeric(summary[max(ls)]))
     }
+    return(res)
   }
   
-  intervals <- mapply (1:k, FUN=getInterval)
+  intervals <- mapply (1:(k-1), FUN=getInterval)
   
   # Under some circumstances the function does not return a matrix ...
   if (is.matrix(intervals)) {
@@ -406,43 +398,47 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
     aux <- do.call(rbind, intervals)
   }
   
-  # With this strategy, there can be intervals included into bigger ones
-  # We remove them in a sequential way
-  to.join <- aux[1,]
-  if(nrow(aux) > 1) {  
-    for (r in 2:nrow(aux)) {
-      if (aux[r - 1, 2] < aux[r, 2]) {
-        to.join <- rbind(to.join, aux[r, ])
+  # First, chech that there are lines to draw!
+  if (length(aux) > 0) {
+    # With this strategy, there can be intervals included into bigger ones
+    # We remove them in a sequential way
+    to.join <- aux[1,]
+    if(nrow(aux) > 1) {
+      for (r in 2:nrow(aux)) {
+        if (aux[r - 1, 2] < aux[r, 2]) {
+          to.join <- rbind(to.join, aux[r, ])
+        }
       }
     }
-  }
   
-  row <- c(1)
-  # Determine each line in which row will be displayed
-  if (!is.matrix(to.join)) {  # To avoid treating vector separately
-    to.join <- t(as.matrix(to.join))
-  }
-  nlines <- dim(to.join)[1]
-  
-  for(r in 1:nlines) {
-    id <- which(to.join[r, 1] > to.join[, 2])
-    if(length(id) == 0) {
-      row <- c(row, tail(row, 1) + 1)
-    } else {
-      row <- c(row, min(row[id]))
+    row <- c(1)
+    # Determine each line in which row will be displayed
+    if (!is.matrix(to.join)) {  # To avoid treating vector separately
+      to.join <- t(as.matrix(to.join))
     }
+    nlines <- dim(to.join)[1]
+  
+    for(r in 1:nlines) {
+      id <- which(to.join[r, 1] > to.join[, 2])
+      if(length(id) == 0) {
+        row <- c(row, tail(row, 1) + 1)
+      } else {
+        row <- c(row, min(row[id]))
+      }
+    }
+  
+    step <- max(row) / 2
+  
+    # Draw the line
+    dk <- sapply (1:nlines, 
+                  FUN = function(x) {
+                    y <- -line.spacing * (0.5 + row[x] / step)
+                    lines(c(to.join[x, 1] - line.displacement, 
+                            to.join[x, 2] + line.displacement), 
+                          c(y, y), lwd=3)
+                  })
   }
-  
-  step <- max(row) / 2
-  
-  # Draw the line
-  dk <- sapply (1:nlines, 
-                FUN = function(x) {
-                  y <- -line.spacing * (0.5 + row[x] / step)
-                  lines(c(to.join[x, 1] - line.displacement, 
-                          to.join[x, 2] + line.displacement), 
-                        c(y, y), lwd=3)
-                })
+  par(old.par)
 }
 
 
@@ -467,7 +463,8 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
 #' data(data_blum_2015)
 #' data <- filterData(data.blum.2015, condition="Size == 1000", remove.cols=1:2)
 #' res <- postHocTest(data, test = "friedman", use.rank=TRUE, correct="bergmann")
-#' drawAlgorithmGraph(res$corrected.pval, res$summary)
+#' ## This function requieres the package Rgraphviz
+#' # drawAlgorithmGraph(res$corrected.pval, res$summary)
 #' 
 
 drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ..., 
@@ -476,15 +473,8 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
                                 font.color="white", digits=2, 
                                 node.width=5, node.height=2) {
 
-  
-  # Rquired packages
-  if (!require("Rgraphviz")) {
-    message("This function requires the Rgraphviz package. It can be installed running the commands:\n source('http://www.bioconductor.org/biocLite.R')\n\n biocLite('Rgraphviz')")
-    ans <- readline(prompt="Do you want me to install it now (Y/N, default N)?")
-    if (ans=="y" | ans=="Y") {
-      source("http://www.bioconductor.org/biocLite.R")
-      biocLite(c("graph","Rgraphviz"))
-    }
+  if (!requireNamespace("Rgraphviz", quietly=TRUE)) {
+    stop("This function requires the Rgraphviz package. Please install it. Note that the packages is currently available at Bioconductor", call.=FALSE)
   }
   
   # Just in case we have a matrix ...

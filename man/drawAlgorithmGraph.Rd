@@ -41,7 +41,8 @@ This function can be used to plot a graph where algorithms are nodes and  algori
 data(data_blum_2015)
 data <- filterData(data.blum.2015, condition="Size == 1000", remove.cols=1:2)
 res <- postHocTest(data, test = "friedman", use.rank=TRUE, correct="bergmann")
-drawAlgorithmGraph(res$corrected.pval, res$summary)
+## This function requieres the package Rgraphviz
+# drawAlgorithmGraph(res$corrected.pval, res$summary)
 
 }
 \seealso{

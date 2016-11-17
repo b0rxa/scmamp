@@ -6,7 +6,7 @@ output: rmarkdown::html_vignette
 bibliography: refs.bib
 vignette: >
   %\VignetteIndexEntry{Statistical Assessment of the Differences}
-  %\VignetteEngine{knitr::docco_linear}
+  %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 # Statistical Assessment of the Differences
