@@ -155,8 +155,8 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
 #' 
 plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   
-  old.par <- par()
-  par(mai=c(0, 0, 0, 0))
+  opar <- par(mai = c(0,0,0,0))
+  on.exit(par(opar))
   
   k <- dim(results.matrix)[2]
   N <- dim(results.matrix)[1]
@@ -276,7 +276,6 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
                           to.join[x, 2] + line.displacement), 
                         c(y, y), lwd=3)
                 })
-  par(old.par)
 }
 
 
@@ -297,8 +296,8 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
 #' 
 plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALSE) {
   
-  old.par <- par()
-  par(mai=c(0, 0, 0, 0))
+  opar <- par(mai=c(0, 0, 0, 0), mgp=c(0, 0, 0))
+  on.exit(par(opar))
   
   k <- length(summary)
 
@@ -336,7 +335,7 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
   max.char     <- max(sapply(colnames(pvalues), FUN = nchar))  # Longest length of a label
   text.width   <- (max.char + 4) * char.size
   w            <- (M-m) + 2 * text.width
-  h.up         <- 2.5 * line.spacing  # The upper part is fixed. Extra space is for the CD
+  h.up         <- line.spacing  # The upper part is fixed.
   h.down       <- (max.rows + 2.25) * line.spacing # The lower part depends on the no. of algorithms. 
   # The 2 extra spaces are for the lines that join algorithms
   tick.h       <- 0.25 * line.spacing
@@ -438,7 +437,6 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
                           c(y, y), lwd=3)
                   })
   }
-  par(old.par)
 }
 
 
