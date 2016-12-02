@@ -5,10 +5,6 @@ importFrom("stats", "density", "median", "p.adjust",
            "p.adjust.methods", "pchisq", "pf", "pnorm", "ptukey",
            "qnorm", "qtukey", "t.test", "var")
 importFrom("utils", "read.csv")
-  
-import(ggplot2,
-       graph,
-       Rgraphviz)
 
 export(
   wilcoxonSignedTest,

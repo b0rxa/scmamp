@@ -46,12 +46,12 @@ qqplotGaussian <- function (data, ...) {
                     return(cbind(alg.pts, Algorithm=alg.name))
                   })
     df <- do.call(rbind, aux)
-    facet <- facet_wrap(~Algorithm, scales="free")
+    facet <- ggplot2::facet_wrap(~Algorithm, scales="free")
   }
   
-  gplot <- ggplot(df, aes_string(x="Empirical", y="Gaussian")) +
-           geom_abline(slope=1, intercept=0, col="darkgray", size=1.1) +  
-           geom_point(...) + facet
+  gplot <- ggplot2::ggplot(df, aes(x="Empirical", y="Gaussian")) +
+    ggplot2::geom_abline(slope=1, intercept=0, col="darkgray", size=1.1) +  
+    ggplot2::geom_point(...) + facet
   
   return(gplot)
 }
@@ -77,7 +77,7 @@ plotDensities <- function (data, ...) {
   if (is.vector(data)){
     d  <- density(data)
     df <- data.frame(Value=d$x, Density=d$y)
-    mapping <- aes_string(x="Value", y="Density")
+    mapping <- ggplot2::aes(x="Value", y="Density")
   } else {
     k <- dim(data)[2]
     aux <- lapply(1:k, 
@@ -88,9 +88,9 @@ plotDensities <- function (data, ...) {
                     return(df)
     })
     df <- do.call(rbind, aux)
-    mapping <- aes_string(x="Value", y="Density", col="Algorithm")
+    mapping <- ggplot2::aes(x="Value", y="Density", col="Algorithm")
   }
-  gplot <- ggplot(df, mapping) + geom_line(...)
+  gplot <- ggplot2::ggplot(df, mapping) + ggplot2::geom_line(...)
   return(gplot)
 }
 
@@ -128,12 +128,12 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
     df$Y <- factor(df$Y, levels=l)
   }
   
-  gplot <- ggplot(df, aes_string(x="X", y="Y", fill="p.value")) + geom_tile(col="white") +
-          scale_fill_continuous("p-value") + labs(x="Algorithm" , y="Algorithm")
+  gplot <- ggplot2::ggplot(df, ggplot2::aes(x="X", y="Y", fill="p.value")) + ggplot2::geom_tile(col="white") +
+    ggplot2::scale_fill_continuous("p-value") + ggplot2::labs(x="Algorithm" , y="Algorithm")
   
   if (show.pvalue) {
     p.value <- df$p.value
-    gplot <- gplot + geom_text(aes_string(label="round(p.value, 2)"), 
+    gplot <- gplot + ggplot2::geom_text(ggplot2::aes(label="round(p.value, 2)"), 
                                size=font.size, col="white")
   }
   return(gplot)
@@ -315,10 +315,21 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
     stop("The column names of 'pvalues' and the names of 'summary' have to contain the same names")
   }
   
+  # In case we have a vector of p-values (all vs. control), identify the control
+  control <- NULL
+  if (nrow(pvalues)==1) {
+    control <- colnames(pvalues)[is.na(pvalues)]
+  }
+  
   # Reorder the pvalues and mean ranks
   o <- order(summary, decreasing=decreasing)
   summary <- summary[o]
-  pvalues <- pvalues[names(summary),names(summary)]
+  if (nrow(pvalues)>1) {
+    pvalues <- pvalues[names(summary), names(summary)]
+  }else{
+    pvalues <- matrix(pvalues[1,names(summary)], nrow=1)
+    colnames(pvalues) <- names(summary)
+  }
   
   
   # Separate the algorithms in left and right parts
@@ -332,7 +343,7 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
   line.spacing <- 0.25   # Line spacing for the algorithm name
   m            <- floor(min(summary))
   M            <- ceiling(max(summary))
-  max.char     <- max(sapply(colnames(pvalues), FUN = nchar))  # Longest length of a label
+  max.char     <- max(sapply(colnames(pvalues), FUN=nchar))  # Longest length of a label
   text.width   <- (max.char + 4) * char.size
   w            <- (M-m) + 2 * text.width
   h.up         <- line.spacing  # The upper part is fixed.
@@ -360,8 +371,14 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
   dk <- sapply (1:length(left.algs), 
                 FUN=function(x) {
                   line.h <- -line.spacing * (x + 2)
+                  name <- names(left.algs)[x]
+                  if (!is.null(control) && name==control) {
+                    font = 4
+                  }else{
+                    font = 1
+                  }
                   text(x=m - label.displacement, y=line.h, 
-                       labels=names(left.algs)[x], cex=cex, adj=1)
+                       labels=name, cex=cex, adj=1, font=font)
                   lines(c(m - label.displacement*0.75, left.algs[x]), c(line.h, line.h))
                   lines(c(left.algs[x], left.algs[x]), c(line.h, 0))
                 })
@@ -370,72 +387,86 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
   dk <- sapply (1:length(right.algs), 
                 FUN=function(x) {
                   line.h <- -line.spacing * (x + 2)
+                  name <- names(right.algs)[x]
+                  if (!is.null(control) && name==control) {
+                    font = 4
+                  }else{
+                    font = 1
+                  }
                   text(x=M + label.displacement, y=line.h, 
-                       labels=names(right.algs)[x], cex=cex, adj=0)
+                       labels=name, cex=cex, adj=0, font=font)
                   lines(c(M + label.displacement*0.75, right.algs[x]), c(line.h, line.h))
                   lines(c(right.algs[x], right.algs[x]), c(line.h, 0))
                 })
   
   # Draw the lines to join algorithms
-  getInterval <- function (x) {
-    ls <- which(pvalues[x, ] > alpha)
-    # Only retail those to the right in the matrix
-    ls <- ls[ls > x]
-    res <- NULL
-    if (length(ls) > 0) {
-      res <- c(as.numeric(summary[x]), as.numeric(summary[max(ls)]))
+  if (nrow(pvalues)==1) {
+    to.join <- summary[which(is.na(pvalues) |  pvalues > alpha)]
+    if (length(to.join)>1) {
+      lines (c(min(to.join), max(to.join)) , c(0,0), lwd=3)
     }
-    return(res)
-  }
-  
-  intervals <- mapply (1:(k-1), FUN=getInterval)
-  
-  # Under some circumstances the function does not return a matrix ...
-  if (is.matrix(intervals)) {
-    aux <- t(intervals)
-  } else {
-    aux <- do.call(rbind, intervals)
-  }
-  
-  # First, chech that there are lines to draw!
-  if (length(aux) > 0) {
-    # With this strategy, there can be intervals included into bigger ones
-    # We remove them in a sequential way
-    to.join <- aux[1,]
-    if(nrow(aux) > 1) {
-      for (r in 2:nrow(aux)) {
-        if (aux[r - 1, 2] < aux[r, 2]) {
-          to.join <- rbind(to.join, aux[r, ])
+    
+  }else{
+    getInterval <- function (x) {
+      ls <- which(pvalues[x, ] > alpha)
+      # Only retail those to the right in the matrix
+      ls <- ls[ls > x]
+      res <- NULL
+      if (length(ls) > 0) {
+        res <- c(as.numeric(summary[x]), as.numeric(summary[max(ls)]))
+      }
+      return(res)
+    }
+    
+    intervals <- mapply (1:(k-1), FUN=getInterval)
+    
+    # Under some circumstances the function does not return a matrix ...
+    if (is.matrix(intervals)) {
+      aux <- t(intervals)
+    } else {
+      aux <- do.call(rbind, intervals)
+    }
+    
+    # First, chech that there are lines to draw!
+    if (length(aux) > 0) {
+      # With this strategy, there can be intervals included into bigger ones
+      # We remove them in a sequential way
+      to.join <- aux[1,]
+      if(nrow(aux) > 1) {
+        for (r in 2:nrow(aux)) {
+          if (aux[r - 1, 2] < aux[r, 2]) {
+            to.join <- rbind(to.join, aux[r, ])
+          }
         }
       }
-    }
-  
-    row <- c(1)
-    # Determine each line in which row will be displayed
-    if (!is.matrix(to.join)) {  # To avoid treating vector separately
-      to.join <- t(as.matrix(to.join))
-    }
-    nlines <- dim(to.join)[1]
-  
-    for(r in 1:nlines) {
-      id <- which(to.join[r, 1] > to.join[, 2])
-      if(length(id) == 0) {
-        row <- c(row, tail(row, 1) + 1)
-      } else {
-        row <- c(row, min(row[id]))
+      
+      row <- c(1)
+      # Determine each line in which row will be displayed
+      if (!is.matrix(to.join)) {  # To avoid treating vector separately
+        to.join <- t(as.matrix(to.join))
       }
+      nlines <- dim(to.join)[1]
+      
+      for(r in 1:nlines) {
+        id <- which(to.join[r, 1] > to.join[, 2])
+        if(length(id) == 0) {
+          row <- c(row, tail(row, 1) + 1)
+        } else {
+          row <- c(row, min(row[id]))
+        }
+      }
+      
+      step <- max(row) / 2
+      
+      # Draw the line
+      dk <- sapply (1:nlines, 
+                    FUN = function(x) {
+                      y <- -line.spacing * (0.5 + row[x] / step)
+                      lines(c(to.join[x, 1] - line.displacement, 
+                              to.join[x, 2] + line.displacement), 
+                            c(y, y), lwd=3)
+                    })
     }
-  
-    step <- max(row) / 2
-  
-    # Draw the line
-    dk <- sapply (1:nlines, 
-                  FUN = function(x) {
-                    y <- -line.spacing * (0.5 + row[x] / step)
-                    lines(c(to.join[x, 1] - line.displacement, 
-                            to.join[x, 2] + line.displacement), 
-                          c(y, y), lwd=3)
-                  })
   }
 }
 
