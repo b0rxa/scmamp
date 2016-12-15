@@ -238,44 +238,45 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   
   intervals <- mapply (1:k, FUN=getInterval)
   aux <- do.call(rbind, intervals)
-  
-  # With this strategy, there can be intervals included into bigger ones
-  # We remove them in a sequential way
-  to.join <- aux[1,]
-  if(nrow(aux) > 1) {  
-    for (r in 2:nrow(aux)) {
-      if (aux[r - 1, 2] < aux[r, 2]) {
-        to.join <- rbind(to.join, aux[r, ])
+  if(NROW(aux) > 0) {
+    # With this strategy, there can be intervals included into bigger ones
+    # We remove them in a sequential way
+    to.join <- aux[1,]
+    if(nrow(aux) > 1) {  
+      for (r in 2:nrow(aux)) {
+        if (aux[r - 1, 2] < aux[r, 2]) {
+          to.join <- rbind(to.join, aux[r, ])
+        }
       }
     }
-  }
-  
-  row <- c(1)
-  # Determine each line in which row will be displayed
-  if (!is.matrix(to.join)) {  # To avoid treating vector separately
-    to.join <- t(as.matrix(to.join))
-  }
-  nlines <- dim(to.join)[1]
-  
-  for(r in 1:nlines) {
-    id <- which(to.join[r, 1] > to.join[, 2])
-    if(length(id) == 0) {
-      row <- c(row, tail(row, 1) + 1)
-    } else {
-      row <- c(row, min(row[id]))
+
+    row <- c(1)
+    # Determine each line in which row will be displayed
+    if (!is.matrix(to.join)) {  # To avoid treating vector separately
+      to.join <- t(as.matrix(to.join))
     }
+    nlines <- dim(to.join)[1]
+
+    for(r in 1:nlines) {
+      id <- which(to.join[r, 1] > to.join[, 2])
+      if(length(id) == 0) {
+        row <- c(row, tail(row, 1) + 1)
+      } else {
+        row <- c(row, min(row[id]))
+      }
+    }
+
+    step <- max(row) / 2
+
+    # Draw the line
+    dk <- sapply (1:nlines, 
+                  FUN = function(x) {
+                    y <- -line.spacing * (0.5 + row[x] / step)
+                    lines(c(to.join[x, 1] - line.displacement, 
+                            to.join[x, 2] + line.displacement), 
+                          c(y, y), lwd=3)
+                  })
   }
-  
-  step <- max(row) / 2
-  
-  # Draw the line
-  dk <- sapply (1:nlines, 
-                FUN = function(x) {
-                  y <- -line.spacing * (0.5 + row[x] / step)
-                  lines(c(to.join[x, 1] - line.displacement, 
-                          to.join[x, 2] + line.displacement), 
-                        c(y, y), lwd=3)
-                })
 }
 
 
