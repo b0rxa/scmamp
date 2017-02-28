@@ -84,7 +84,7 @@ summarizeData <- function (data, fun=mean, group.by=NULL, ignore=NULL, ... ) {
     warning ("Only numeric columns can be summarized. Character and factor ",
              "columns should be either in the 'group.by' or the 'ignore' list. ",
              "Non numeric columns will be ignored")
-    ignore <- unique(c(ignore, non.numeric))
+    ignore <- unique(c(ignore, non.numeric[!(non.numeric %in% group.by)]))
   }
   
   # Remove any index out of bounds

@@ -162,6 +162,11 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   N <- dim(results.matrix)[1]
   cd <- getNemenyiCD(alpha=alpha, num.alg=k, num.problems=N)
   
+  control <- NULL
+  if (nrow(pvalues)==1) {
+    control <- colnames(pvalues)[is.na(pvalues)]
+  }
+  
   mean.rank <- sort(colMeans(rankMatrix(results.matrix, ...)))
   
   # Separate the algorithms in left and right parts

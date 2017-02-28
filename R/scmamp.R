@@ -371,7 +371,7 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
    colnames(sum.matrix) <- colnames(data)[algorithms]
   } else {
     if (use.rank) {
-      aux <- cbind(data[, group.by], data.frame(rankMatrix(data=data[, algorithms])), ...)
+      aux <- cbind(data[, group.by], data.frame(rankMatrix(data=data[, algorithms], ...)))
     } else {
       aux <- cbind(data[, group.by], data[, algorithms])
     }
