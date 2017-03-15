@@ -49,7 +49,7 @@ qqplotGaussian <- function (data, ...) {
     facet <- ggplot2::facet_wrap(~Algorithm, scales="free")
   }
   
-  gplot <- ggplot2::ggplot(df, aes(x="Empirical", y="Gaussian")) +
+  gplot <- ggplot2::ggplot(df, ggplot2::aes(x=Empirical, y=Gaussian)) +
     ggplot2::geom_abline(slope=1, intercept=0, col="darkgray", size=1.1) +  
     ggplot2::geom_point(...) + facet
   
@@ -77,7 +77,7 @@ plotDensities <- function (data, ...) {
   if (is.vector(data)){
     d  <- density(data)
     df <- data.frame(Value=d$x, Density=d$y)
-    mapping <- ggplot2::aes(x="Value", y="Density")
+    mapping <- ggplot2::aes(x=Value, y=Density)
   } else {
     k <- dim(data)[2]
     aux <- lapply(1:k, 
@@ -88,7 +88,7 @@ plotDensities <- function (data, ...) {
                     return(df)
     })
     df <- do.call(rbind, aux)
-    mapping <- ggplot2::aes(x="Value", y="Density", col="Algorithm")
+    mapping <- ggplot2::aes(x=Value, y=Density, col=Algorithm)
   }
   gplot <- ggplot2::ggplot(df, mapping) + ggplot2::geom_line(...)
   return(gplot)
@@ -128,12 +128,12 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
     df$Y <- factor(df$Y, levels=l)
   }
   
-  gplot <- ggplot2::ggplot(df, ggplot2::aes(x="X", y="Y", fill="p.value")) + ggplot2::geom_tile(col="white") +
+  gplot <- ggplot2::ggplot(df, ggplot2::aes(x=X, y=Y, fill=p.value)) + ggplot2::geom_tile(col="white") +
     ggplot2::scale_fill_continuous("p-value") + ggplot2::labs(x="Algorithm" , y="Algorithm")
   
   if (show.pvalue) {
     p.value <- df$p.value
-    gplot <- gplot + ggplot2::geom_text(ggplot2::aes(label="round(p.value, 2)"), 
+    gplot <- gplot + ggplot2::geom_text(ggplot2::aes(label=round(p.value, 2)), 
                                size=font.size, col="white")
   }
   return(gplot)
@@ -161,11 +161,6 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   k <- dim(results.matrix)[2]
   N <- dim(results.matrix)[1]
   cd <- getNemenyiCD(alpha=alpha, num.alg=k, num.problems=N)
-  
-  control <- NULL
-  if (nrow(pvalues)==1) {
-    control <- colnames(pvalues)[is.na(pvalues)]
-  }
   
   mean.rank <- sort(colMeans(rankMatrix(results.matrix, ...)))
   
