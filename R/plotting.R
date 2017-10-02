@@ -86,7 +86,7 @@ plotDensities <- function (data, ...) {
                     df <- data.frame(Algorithm=colnames(data)[x], 
                                      Value=d$x, Density=d$y)
                     return(df)
-    })
+                  })
     df <- do.call(rbind, aux)
     mapping <- ggplot2::aes(x=Value, y=Density, col=Algorithm)
   }
@@ -111,7 +111,7 @@ plotDensities <- function (data, ...) {
 #' ordering <- order(summarizeData(data.gh.2008))
 #' plotPvalues(pvalues, alg.order=ordering)
 #' 
- 
+
 plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.size=5) {
   
   if (!requireNamespace("ggplot2", quietly=TRUE)) {
@@ -133,8 +133,8 @@ plotPvalues <- function(pvalue.matrix, alg.order=NULL, show.pvalue=TRUE, font.si
   
   if (show.pvalue) {
     p.value <- df$p.value
-    gplot <- gplot + ggplot2::geom_text(ggplot2::aes(label=round(p.value, 2)), 
-                               size=font.size, col="white")
+    gplot <- gplot + ggplot2::geom_text(ggplot2::aes(label=round(p.value, 2)),
+                                        size=font.size, col="white")
   }
   return(gplot)
 } 
@@ -238,44 +238,45 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
   
   intervals <- mapply (1:k, FUN=getInterval)
   aux <- do.call(rbind, intervals)
-  
-  # With this strategy, there can be intervals included into bigger ones
-  # We remove them in a sequential way
-  to.join <- aux[1,]
-  if(nrow(aux) > 1) {  
-    for (r in 2:nrow(aux)) {
-      if (aux[r - 1, 2] < aux[r, 2]) {
-        to.join <- rbind(to.join, aux[r, ])
+  if(NROW(aux) > 0) {
+    # With this strategy, there can be intervals included into bigger ones
+    # We remove them in a sequential way
+    to.join <- aux[1,]
+    if(nrow(aux) > 1) {  
+      for (r in 2:nrow(aux)) {
+        if (aux[r - 1, 2] < aux[r, 2]) {
+          to.join <- rbind(to.join, aux[r, ])
+        }
       }
     }
-  }
-  
-  row <- c(1)
-  # Determine each line in which row will be displayed
-  if (!is.matrix(to.join)) {  # To avoid treating vector separately
-    to.join <- t(as.matrix(to.join))
-  }
-  nlines <- dim(to.join)[1]
-  
-  for(r in 1:nlines) {
-    id <- which(to.join[r, 1] > to.join[, 2])
-    if(length(id) == 0) {
-      row <- c(row, tail(row, 1) + 1)
-    } else {
-      row <- c(row, min(row[id]))
+    
+    row <- c(1)
+    # Determine each line in which row will be displayed
+    if (!is.matrix(to.join)) {  # To avoid treating vector separately
+      to.join <- t(as.matrix(to.join))
     }
+    nlines <- dim(to.join)[1]
+    
+    for(r in 1:nlines) {
+      id <- which(to.join[r, 1] > to.join[, 2])
+      if(length(id) == 0) {
+        row <- c(row, tail(row, 1) + 1)
+      } else {
+        row <- c(row, min(row[id]))
+      }
+    }
+    
+    step <- max(row) / 2
+    
+    # Draw the line
+    dk <- sapply (1:nlines, 
+                  FUN = function(x) {
+                    y <- -line.spacing * (0.5 + row[x] / step)
+                    lines(c(to.join[x, 1] - line.displacement, 
+                            to.join[x, 2] + line.displacement), 
+                          c(y, y), lwd=3)
+                  })
   }
-  
-  step <- max(row) / 2
-  
-  # Draw the line
-  dk <- sapply (1:nlines, 
-                FUN = function(x) {
-                  y <- -line.spacing * (0.5 + row[x] / step)
-                  lines(c(to.join[x, 1] - line.displacement, 
-                          to.join[x, 2] + line.displacement), 
-                        c(y, y), lwd=3)
-                })
 }
 
 
@@ -300,7 +301,7 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
   on.exit(par(opar))
   
   k <- length(summary)
-
+  
   if (is.matrix(summary)) {
     if (ncol(summary) == 1) {
       summary <- summary[, 1]    
@@ -501,7 +502,7 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
                                 highlight.color="chartreuse3", node.color="gray30", 
                                 font.color="white", digits=2, 
                                 node.width=5, node.height=2) {
-
+  
   if (!requireNamespace("Rgraphviz", quietly=TRUE)) {
     stop("This function requires the Rgraphviz package. Please install it. Note that the packages is currently available at Bioconductor", call.=FALSE)
   }
@@ -524,7 +525,7 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
   } else if(highlight == "max") {
     nc[which.max(mean.value)] <- highlight.color
   }
-    
+  
   hypothesis.matrix[is.na(hypothesis.matrix)]<-FALSE
   adj.matrix <- hypothesis.matrix
   colnames(adj.matrix) <- names(mean.value)
@@ -541,6 +542,6 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
   nAttrs$fillcolor  <- nc
   
   attrs <- list(node=list(shape="rectangle", width=node.width, height=node.height,
-                            fontcolor=font.color, fontsize=font.size))
+                          fontcolor=font.color, fontsize=font.size))
   plot(am.graph, ... , nodeAttrs=nAttrs, attrs=attrs)
 }
