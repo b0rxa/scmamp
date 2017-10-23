@@ -249,22 +249,14 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
         }
       }
     }
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> a890ed0644823b35aad336d6af5d62d58525a016
     row <- c(1)
     # Determine each line in which row will be displayed
     if (!is.matrix(to.join)) {  # To avoid treating vector separately
       to.join <- t(as.matrix(to.join))
     }
     nlines <- dim(to.join)[1]
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> a890ed0644823b35aad336d6af5d62d58525a016
     for(r in 1:nlines) {
       id <- which(to.join[r, 1] > to.join[, 2])
       if(length(id) == 0) {
@@ -273,15 +265,9 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
         row <- c(row, min(row[id]))
       }
     }
-<<<<<<< HEAD
-    
-    step <- max(row) / 2
-    
-=======
 
     step <- max(row) / 2
 
->>>>>>> a890ed0644823b35aad336d6af5d62d58525a016
     # Draw the line
     dk <- sapply (1:nlines, 
                   FUN = function(x) {
