@@ -28,4 +28,3 @@ S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric 
 
 J. Li (2008) A two-step rejection prcedure for testing mulitple hypotheses. \emph{Journal of Statistical Planning and Inference}, 138, 1521-1527.
 }
-

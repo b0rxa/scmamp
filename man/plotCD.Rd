@@ -29,4 +29,3 @@ Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets
 \seealso{
 \code{\link{drawAlgorithmGraph}},   \code{\link{plotRanking}}, \code{\link{plotPvalues}}
 }
-

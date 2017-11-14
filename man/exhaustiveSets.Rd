@@ -22,4 +22,3 @@ The algorithm makes use of `exhaustive.sets`, a structure provided with the paca
 exhaustiveSets(c("A","B","C","D"))
 
 }
-

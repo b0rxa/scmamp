@@ -29,4 +29,3 @@ filterData(data.gh.2008, condition="CN2 > 0.7 & Kernel < 0.7", remove.cols=1:2)
 \code{\link{summarizeData}}, \code{\link{writeTabular}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", 
 package="scmamp")}
 }
-

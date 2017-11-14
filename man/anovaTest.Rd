@@ -28,4 +28,3 @@ anovaTest(data.gh.2008)
 \references{
 Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 }
-

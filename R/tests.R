@@ -403,3 +403,62 @@ tukeyTest <- function (data, alpha=0.05) {
   class(htest.results)<-"htest"
   return(htest.results)
 }
+
+
+#' @title Correlated t-test 
+#'
+#' @description This function performs the correlated version of the t-test for 
+#' paired samples
+#' @param x First sample
+#' @param y Second sample (if not provided, x is tested aginst 0)
+#' @param rho Correlation factor (see details)
+#' @param alternative a character string specifying the alternative hypothesis, 
+#' must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.
+#' @return A list with class "htest" containing the following components: \code{statistic}, the value of the statistic used in the test; \code{method}, a character string indicating what type of test was performed; \code{data.name}, a character string giving the name of the data and \code{diff.matirx}, a matrix with all the pairwise absolute difference of average values.
+#' @details This version of the t-test takes into account the correlation between samples.
+#' for the particular case of cross validated results, the heuristic to set the correlation is
+#' size of test set divided by total size of the dataset.
+#' @references C. Nadeau and Y. Bengio (2003) Inference for the Generalization Error. \emph{Machine Learning}, 52(3), 239-281.
+#' @examples
+#' sample1 <- rnorm(25, 1, 1)
+#' sample2 <- rnorm(25, 1.2, 1)
+#' correlatedTtest (x=sample1, y=sample2, rho=0.1, alternative="less")
+
+correlatedTtest <- function (x, y=NULL, rho, alternative="two.sided") {
+  if (length(x) != length(y)) {
+    stop("This is a paired test, so the two vectors have to have the same length")
+  }
+  if (!is.null(y)){
+    diff <- x-y
+  }else{
+    diff <- x
+  }
+  
+  sample.m <- mean(diff)
+  sample.sd <- sd(diff)
+  sample.n <- length(diff)
+  df <- sample.n-1
+  names(df) <- "df"
+  
+  statistic <- sample.m / sqrt(sample.sd^2 * (1/sample.n + rho/(1-rho)))
+  names(statistic) <- "t"
+  prob <- switch(alternative,
+                 "two.sided"={
+                   # Use the lower part to avoid numerical differences with
+                   # R's implementation of t-test
+                   pt(-abs(statistic), df=df)*2
+                 },
+                 "less"={
+                   pt(statistic, df=df)
+                 },
+                 "greater"={
+                   1 - pt(statistic, df=df)
+                 })
+  
+  data.name <- deparse(substitute(data))
+
+  res <- list(statistic=statistic, parameters=df, p.value=prob, method="Correlated t-test", data.name=data.name )
+  class(res) <- "htest"
+  return(res)
+}
+

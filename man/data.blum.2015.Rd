@@ -15,4 +15,3 @@ set problem (a graph). The first two are descriptors of the problem in each
 row (size and radius used to create random geometric graphs) and the other 8
 contain the results obtained by 8 algorithms for the MIS problem instance.
 }
-

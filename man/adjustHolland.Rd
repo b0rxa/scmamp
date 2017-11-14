@@ -30,4 +30,3 @@ S. Garcia, A. Fernandez, J. Luengo and F. Herrera, F. (2010) Advanced nonparamet
 
 B. S. Holland and M. D. Copenhaver (1987) An improved sequentially rejective Bonferroni test procedure \emph{Biometrics}, 43, 417-423.
 }
-

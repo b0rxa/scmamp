@@ -32,4 +32,3 @@ plotPvalues(pvalues, alg.order=ordering)
 \seealso{
 \code{\link{drawAlgorithmGraph}}, \code{\link{plotCD}}
 }
-

@@ -25,4 +25,3 @@ plotDensities(data.gh.2010)
 \seealso{
 \code{\link{qqplotGaussian}}
 }
-

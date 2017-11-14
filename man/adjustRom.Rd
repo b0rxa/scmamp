@@ -31,4 +31,3 @@ S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric 
 
 D. M. Rom (1990) A sequentially rejective test procedure based on a modified Bonferroni inequality. \emph{Biometrika}, 77, 663-665.
 }
-

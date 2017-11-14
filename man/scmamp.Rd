@@ -4,15 +4,10 @@
 \name{scmamp}
 \alias{scmamp}
 \alias{scmamp-package}
+\alias{scmamp-package}
 \title{Statistical comparison of multiple algorithms}
 \description{
 This package has been develop to simplify the statistical assessment of algorithms when tested in different problems. It includes statistical tests, as well as some plotting functions.
-}
-\author{
-Borja Calvo \email{borja.calvo@ehu.eus},
-Guzman Santafe \email{guzman.santafe@unavarra.es}
-
-Maintainer: Borja Calvo \email{borja.calvo@ehu.es}
 }
 \seealso{
 For an overview of the use see #' \code{vignette(topic=
@@ -20,4 +15,9 @@ For an overview of the use see #' \code{vignette(topic=
 package="scmamp")} and \code{vignette(topic="Data_loading_and_manipulation", 
 package="scmamp")}
 }
+\author{
+Borja Calvo \email{borja.calvo@ehu.eus},
+Guzman Santafe \email{guzman.santafe@unavarra.es}
 
+Maintainer: Borja Calvo \email{borja.calvo@ehu.es}
+}

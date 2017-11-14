@@ -24,4 +24,3 @@ data(data_gh_2008)
 rankMatrix(data.gh.2008)
 
 }
-

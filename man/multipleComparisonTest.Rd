@@ -64,4 +64,3 @@ S. Garcia and F. Herrera (2010) Advanced nonparametric tests for multiple compar
 
 Kanji, G. K. (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 }
-

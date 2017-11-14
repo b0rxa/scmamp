@@ -30,4 +30,3 @@ S. Garcia and F. Herrera (2008) An Extension on "Statistical Comparisons of Clas
 
 J.P. Shaffer (1986) Modified sequentially rejective multiple test procedures. \emph{Journal of the American Statistical Association}, 81(395), 826-831.
 }
-

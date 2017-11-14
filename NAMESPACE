@@ -15,6 +15,7 @@ export(
   anovaTest,
   nemenyiTest,
   tukeyTest,
+  correlatedTtest,
   customPost,
   friedmanPost,
   tukeyPost,

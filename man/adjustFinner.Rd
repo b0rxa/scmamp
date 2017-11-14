@@ -30,4 +30,3 @@ S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric 
 
 H. Finner (1993) On a monotocity problem in ste-down mulitple test procedures. \emph{Journal of the American Statistical Association}, 88, 920-923.
 }
-

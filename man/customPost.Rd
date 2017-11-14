@@ -29,4 +29,3 @@ test <- function(x, y, ...) {
 customPost(data.gh.2008, control=1, test=test)
 customPost(data.gh.2008, test=test)
 }
-

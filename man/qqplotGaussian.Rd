@@ -28,4 +28,3 @@ qqplotGaussian(sample)
 \seealso{
 \code{\link{plotDensities}}
 }
-

@@ -95,4 +95,3 @@ do.call(writeTabular, args)
 \code{\link{summarizeData}}, \code{\link{filterData}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", 
 package="scmamp")}
 }
-

@@ -96,4 +96,3 @@ Demsar, J. (2006) Statistical Comparisons of Classifiers over Multiple Data Sets
 \seealso{
 \code{\link{friedmanPost}}, \code{\link{friedmanAlignedRanksPost}}, \code{\link{quadePost}}, \code{\link{tukeyPost}}, \code{\link{adjustShaffer}}, \code{\link{adjustBergmannHommel}}, \code{\link{adjustHolland}}, \code{\link{adjustFinner}}, \code{\link{adjustRom}}, \code{\link{adjustLi}}
 }
-

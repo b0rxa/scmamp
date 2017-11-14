@@ -32,4 +32,3 @@ head(data)
 \seealso{
 \code{\link{readExperimentFile}}, \code{\link{readExperimentDir}}, \code{\link{readComparisonDir}} and the vignette \code{vignette(topic="Data_loading_and_manipulation", package="scmamp")}
 }
-

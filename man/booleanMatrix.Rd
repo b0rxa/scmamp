@@ -36,4 +36,3 @@ booleanMatrix(data.gh.2008, find='min', by='row')
 booleanMatrix(data.gh.2008, find='ge',  th=0.5)
 
 }
-

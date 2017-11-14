@@ -48,4 +48,3 @@ res <- postHocTest(data, test = "friedman", use.rank=TRUE, correct="bergmann")
 \seealso{
 \code{\link{plotPvalues}}, \code{\link{plotRanking}}, \code{\link{plotCD}}
 }
-

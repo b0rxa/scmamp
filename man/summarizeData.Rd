@@ -35,4 +35,3 @@ summarizeData (data.blum.2015, group.by=c("Radius","Size"), ignore=3:8,
                fun=sd, na.rm=TRUE)
 
 }
-

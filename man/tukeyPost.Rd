@@ -30,4 +30,3 @@ tukeyPost(data.gh.2008, control=1)
 \references{
 G. K. Kanji (2006) \emph{100 Statistical Tests}. SAGE Publications Ltd, 3rd edition.
 }
-

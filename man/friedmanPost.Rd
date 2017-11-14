@@ -30,4 +30,3 @@ friedmanPost(data.gh.2008, control=1)
 \references{
 J. Demsar (2006) Statistical Comparisons of Classifiers over Multiple Data Sets. \emph{Journal of Machine Learning Research}, 7, 1-30.
 }
-

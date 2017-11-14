@@ -30,4 +30,3 @@ plotRanking(pvalues=test$corrected.pval, summary=test$summary, alpha=0.05)
 \seealso{
 \code{\link{drawAlgorithmGraph}}, \code{\link{plotCD}}, \code{\link{plotPvalues}}
 }
-

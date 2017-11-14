@@ -14,4 +14,3 @@ Dataset corresponding to the accuracy of 5 classifiers in 30 datasets.
 Each algorithm is in a column. This is the dataset used as example in 
 Garcia and Herrera (2008).
 }
-

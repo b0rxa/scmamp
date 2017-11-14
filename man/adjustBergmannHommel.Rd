@@ -30,4 +30,3 @@ S. Garcia and F. Herrera (2008) An Extension on "Statistical Comparisons of Clas
 
 G. Bergmann and G. Hommel (1988) Improvements of general multiple test procedures for redundant systems of hypogheses. In P. Bauer, G. Hommel and E. Sonnemann, editors, \emph{Multiple Hypotheses Testing}, 100-115, Springer, Berlin.
 }
-

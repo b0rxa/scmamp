@@ -28,4 +28,3 @@ quadeTest(data.gh.2008)
 \references{
 S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and ata mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
 }
-
