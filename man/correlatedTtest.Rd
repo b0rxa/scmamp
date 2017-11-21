@@ -4,12 +4,12 @@
 \alias{correlatedTtest}
 \title{Correlated t-test}
 \usage{
-correlatedTtest(x, y, rho, alternative = "two.sided")
+correlatedTtest(x, y = NULL, rho, alternative = "two.sided")
 }
 \arguments{
 \item{x}{First sample}
 
-\item{y}{Second sample}
+\item{y}{Second sample (if not provided, x is tested aginst 0)}
 
 \item{rho}{Correlation factor (see details)}
 

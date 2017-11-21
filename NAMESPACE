@@ -35,6 +35,8 @@ export(
   plotCD,
   plotRanking,
   drawAlgorithmGraph,
+  plotPosterior,
+  plotSimplex,
   writeTabular,
   booleanMatrix,
   readExperimentFile,
@@ -45,5 +47,8 @@ export(
   filterData,
   multipleComparisonTest,
   postHocTest,
-  contrastEstimationMatrix
+  contrastEstimationMatrix,
+  bCorrelatedTtest,
+  bSignedRankTest,
+  bHierarchicalTest
 )

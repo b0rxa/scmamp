@@ -12,7 +12,7 @@ qqplotGaussian(data, ...)
 \item{...}{The plot is created using \code{ggplot2}. This special parameter can be used to pass additional parameters to the \code{\link{geom_point}} function used to plot the sample points.}
 }
 \value{
-A \code{\link{ggplot}} object.
+A \code{\linkS4class{ggplot}} object.
 }
 \description{
 This function creates a quantile-quantile plot to assess the goodness of fit of a Gaussian distribution to a given sample.

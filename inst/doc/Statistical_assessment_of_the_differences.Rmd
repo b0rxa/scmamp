@@ -43,7 +43,7 @@ For this reason, in this package we have included a couple of functions to visua
 
 The first plot we can crate is a density plot, using the function `plotDensities`. This function uses a kernel density estimation (KDE) of the distribution of the samples to visualize it.
 
-```{r,prompt=TRUE , fig.width=10, fig.height=5}
+```{r,prompt=TRUE , fig.width=7, fig.height=5, warning=FALSE}
 plotDensities (data=data.gh.2008, size=1.1)
 ```
 
@@ -53,7 +53,7 @@ In this plot we can see that most of the samples can be hardly regarded as norma
 
 An additional kind of plot we can use to visually check the goodness of fit of the samples is the classical quantile-quantile plot, which represents the empirical and theoretical quantiles---assuming a Gaussian distribution. When all the points lay in the diagonal of the plot, both theoretical and empirical quantiles are equal and, thus, we can assume that the data can be approached with a Gaussian distribution. We can create these plots for each column using the `qqplotGaussian` function.
 
-```{r,prompt=TRUE , fig.width=10, fig.height=5}
+```{r,prompt=TRUE , fig.width=7, fig.height=5}
 qqplot <- qqplotGaussian (data.gh.2008[,"k-NN(k=1)"], size=5 , col="orchid")
 qqplot + theme_classic()
 ```
@@ -101,7 +101,7 @@ As the code above shows, with a significance of $\alpha = 0.05$ any two algorith
 
 In @demsar2006 the author proposes a plot to visually check the differences, the _critical differece plot_. This kind of plot can be created using the `plotCD` function, which has two parameters, the data. matrix and the significance level. In the plot, those algorithms that are not joined by a line can be regarded as different.
 
-```{r,prompt=TRUE,fig.width=12 , fig.height=4}
+```{r,prompt=TRUE,fig.width=7 , fig.height=3}
 plotCD (data.gh.2008, alpha=0.05, cex=1.25)
 plotCD (data.gh.2008, alpha=0.01, cex=1.25)
 ```
@@ -156,7 +156,7 @@ biocLite("Rgraphviz")
 
 The plot can incorporate information about each algorithm. In this case we will print the average ranking, in a similar way as in the critical difference plot. 
 
-```{r,prompt=TRUE,fig.width=10 , fig.height=5}
+```{r,prompt=TRUE,fig.width=7 , fig.height=5}
 r.means <- colMeans(rankMatrix(data.gh.2008))
 drawAlgorithmGraph(pvalue.matrix=pv.adj, mean.value=r.means, alpha=0.05,
                  font.size=10, node.width=3, node.height=1)
@@ -175,7 +175,7 @@ In the code above we can see that there is a parameter called `font.size`, that 
 
 The `Rgraphviz` package has a number of layouts that can be used to plot graphs (called `'dot'`, the one used by default, `'twopi'`, `'neato'`, `'circo'` and `'fdp'`). These layouts can be used including them right after the two first parameters.
 
-```{r,prompt=TRUE,fig.width=10 , fig.height=5}
+```{r,prompt=TRUE,fig.width=7 , fig.height=5}
 r.means <- colMeans (rankMatrix(data.gh.2008))
 drawAlgorithmGraph (pvalue.matrix=pv.adj, mean.value=r.means, alpha=0.05, 'fdp',
                     highlight.color="red", node.color="white", font.color="black",
@@ -186,7 +186,7 @@ This graph is the one corresponding to Bergmann and Hommel dynamic procedure. Fr
 
 The second plot can be used to directly visualize the p-value matrix generated when doing all the pairwise comparisons. The function that creates such a plot is `plotPvalues`.
 
-```{r,prompt=TRUE,fig.width=10 , fig.height=6, warning=FALSE}
+```{r,prompt=TRUE, fig.width=7 , fig.height=7, warning=FALSE}
 plt <- plotPvalues(pvalue.matrix=pv.adj, 
                    alg.order=order(r.means, decreasing=FALSE))
 plt + 
@@ -273,7 +273,7 @@ multipleComparisonTest(data=data, test="iman")
 
 Provided that the p-value obtained is below $\alpha$, if we have no control method then we can proceed with all the pairwise comparisons using the `postHocTest` wrapper function ---alternatively you can use directly the functions that implement all the tests and corrections. In this case we can select any test for the comparisons. For the p-value correction, any method can be used, but in this particular case it is advisable using Bergman Hommel's procedure if the number of algorithms to compare is 9 or less and Shaffer's method in case they are 10 or more. The reason is that these methods include the particularities of the pairwise comparisons in order to perform a less conservative correction, leading to statistically more powerfull methods.
 
-```{r,full_process_3, prompt=TRUE , fig.width=10 , fig.height=5}
+```{r,full_process_3, prompt=TRUE , fig.width=7 , fig.height=5}
 post.results <- postHocTest(data=data, test="aligned ranks", correct="bergmann", 
                             use.rank=TRUE)
 post.results
@@ -320,7 +320,7 @@ writeTabular(table=avg.val, format='f', bold=best, italic=no.diff,
 
 As an alternative analysis, we will compare, for each graph size, all the algorithms. Note that, in this case, as the data contains the `Radius` column that should not be included in the comparison, we have to specify the columns that contain the algorithms---or, alterantively, remove the column from the data.
 
-```{r,full_process_6, prompt=TRUE, fig.width=10 , fig.height=5}
+```{r,full_process_6, prompt=TRUE, fig.width=7 , fig.height=5}
 control <- NULL
 group.by <- "Size"
 post.results <- postHocTest(data=data, algorithms=3:10, group.by=group.by, 

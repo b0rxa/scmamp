@@ -7,10 +7,10 @@ data(data_gh_2008)
 head(data.blum.2015)
 head(data.gh.2008)
 
-## ----prompt=TRUE , fig.width=10, fig.height=5----------------------------
+## ----prompt=TRUE , fig.width=7, fig.height=5, warning=FALSE--------------
 plotDensities (data=data.gh.2008, size=1.1)
 
-## ----prompt=TRUE , fig.width=10, fig.height=5----------------------------
+## ----prompt=TRUE , fig.width=7, fig.height=5-----------------------------
 qqplot <- qqplotGaussian (data.gh.2008[,"k-NN(k=1)"], size=5 , col="orchid")
 qqplot + theme_classic()
 
@@ -26,7 +26,7 @@ test
 test$diff.matrix
 abs(test$diff.matrix) > test$statistic
 
-## ----prompt=TRUE,fig.width=12 , fig.height=4-----------------------------
+## ----prompt=TRUE,fig.width=7 , fig.height=3------------------------------
 plotCD (data.gh.2008, alpha=0.05, cex=1.25)
 plotCD (data.gh.2008, alpha=0.01, cex=1.25)
 
@@ -45,18 +45,18 @@ pv.adj
 #  source("http://www.bioconductor.org/biocLite.R")
 #  biocLite("Rgraphviz")
 
-## ----prompt=TRUE,fig.width=10 , fig.height=5-----------------------------
+## ----prompt=TRUE,fig.width=7 , fig.height=5------------------------------
 r.means <- colMeans(rankMatrix(data.gh.2008))
 drawAlgorithmGraph(pvalue.matrix=pv.adj, mean.value=r.means, alpha=0.05,
                  font.size=10, node.width=3, node.height=1)
 
-## ----prompt=TRUE,fig.width=10 , fig.height=5-----------------------------
+## ----prompt=TRUE,fig.width=7 , fig.height=5------------------------------
 r.means <- colMeans (rankMatrix(data.gh.2008))
 drawAlgorithmGraph (pvalue.matrix=pv.adj, mean.value=r.means, alpha=0.05, 'fdp',
                     highlight.color="red", node.color="white", font.color="black",
                     font.size=10, node.width=2, node.height=1)
 
-## ----prompt=TRUE,fig.width=10 , fig.height=6, warning=FALSE--------------
+## ----prompt=TRUE, fig.width=7 , fig.height=7, warning=FALSE--------------
 plt <- plotPvalues(pvalue.matrix=pv.adj, 
                    alg.order=order(r.means, decreasing=FALSE))
 plt + 
@@ -82,7 +82,7 @@ friedmanTest(data)
 ## ----full_process_2, prompt=TRUE-----------------------------------------
 multipleComparisonTest(data=data, test="iman")
 
-## ----full_process_3, prompt=TRUE , fig.width=10 , fig.height=5-----------
+## ----full_process_3, prompt=TRUE , fig.width=7 , fig.height=5------------
 post.results <- postHocTest(data=data, test="aligned ranks", correct="bergmann", 
                             use.rank=TRUE)
 post.results
@@ -119,7 +119,7 @@ writeTabular(table=avg.val, format='f', bold=best, italic=no.diff,
              hrule=c(0, 10, 20, 30), vrule=2, digits=c(0, 3, rep(2, 8)), 
              print.row.names = FALSE)
 
-## ----full_process_6, prompt=TRUE, fig.width=10 , fig.height=5------------
+## ----full_process_6, prompt=TRUE, fig.width=7 , fig.height=5-------------
 control <- NULL
 group.by <- "Size"
 post.results <- postHocTest(data=data, algorithms=3:10, group.by=group.by, 

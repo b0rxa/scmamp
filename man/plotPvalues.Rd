@@ -17,7 +17,7 @@ plotPvalues(pvalue.matrix, alg.order = NULL, show.pvalue = TRUE,
 \item{font.size}{Size of the p-values, if printed}
 }
 \value{
-A \code{\link{ggplot}} object.
+A \code{\linkS4class{ggplot}} object.
 }
 \description{
 This function plots the p-value matrix as a tile plot.

@@ -5,7 +5,7 @@
 #' @description This function creates a quantile-quantile plot to assess the goodness of fit of a Gaussian distribution to a given sample.
 #' @param data List of data points to check
 #' @param ... The plot is created using \code{ggplot2}. This special parameter can be used to pass additional parameters to the \code{\link{geom_point}} function used to plot the sample points.
-#' @return A \code{\link{ggplot}} object.
+#' @return A \code{\linkS4class{ggplot}} object.
 #' @seealso \code{\link{plotDensities}}
 #' @examples
 #' ## Skewed distribution
@@ -62,7 +62,7 @@ qqplotGaussian <- function (data, ...) {
 #' @description This function estimates and plots the densities of the results of each algorithm
 #' @param data A matrix where columns represent the algorithms
 #' @param ... The plot is created using \code{ggplot2}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points. It can also be used to pass additional arguments to the \code{density} function, which is used to eastimate the densities.
-#' @return A \code{\link{ggplot}} object.
+#' @return A \code{\linkS4class{ggplot}} object.
 #' @seealso \code{\link{qqplotGaussian}}
 #' @examples
 #' data(data_gh_2010)
@@ -103,7 +103,7 @@ plotDensities <- function (data, ...) {
 #' @param alg.order A permutation indicating the reordering of the algorithms
 #' @param show.pvalue Logical value indicating whether the numerical values have to be printed
 #' @param font.size Size of the p-values, if printed
-#' @return A \code{\link{ggplot}} object.
+#' @return A \code{\linkS4class{ggplot}} object.
 #' @seealso \code{\link{drawAlgorithmGraph}}, \code{\link{plotCD}}
 #' @examples
 #' data(data_gh_2008)
@@ -545,3 +545,208 @@ drawAlgorithmGraph <- function (pvalue.matrix, mean.value, ...,
                           fontcolor=font.color, fontsize=font.size))
   plot(am.graph, ... , nodeAttrs=nAttrs, attrs=attrs)
 }
+
+
+
+#' @title Plotting the (marginal) posterior densities in Bayesian analyses
+#'
+#' @description This function plots, univariately, the posterior densities obtained
+#' in Bayesian analyses. 
+#' @param results A list containing, at least three elements, one named \code{approximate}, which is
+#' a logical value indicating whether the posterior is a function or a sample, \code{rope}, a two dimensional
+#' vector with the minimum and maximum values of the rope and \code{posterior}, either a one parameter function or
+#' a matrix (or data.frame) where each row is a sample and each column a sampled parameter
+#' @param parameter Either a string or a number indicating, in case the posterior is approximated, the parameter
+#' to be ploted (i.e., the name or the index of a column in the sample matrix)
+#' @param ... Additional parameters to the Rgraphviz function. This is mainly to change the layout of the graph
+#' @param plot.rope  A logical value indicating whether the rope has to be plotted or not. Note that not for all
+#' parameter the rope makes sense
+#' @param num.points Number of points used to plot the functions
+#' @param plot.samples A logical value. If true, the samples are plotted (only when the posterior is approximate)
+#' @param alpha Numeric value for the transparency of the points, only applicable if \code{plot.samples} is true
+#' @return An object of class \linkS4class{ggplot} with the plot
+#' @details 
+#' Note that if the methods are exact (not simulated), the true density can be plotted but,
+#' for those cases where the posterior is approximated through sampling, the function will
+#' plot a kernel density estimation of the posterior and, thus, the probabilities computed
+#' by other functions are not directly the areas under the densities.
+#' @examples
+#' x <- rnorm(25, 1, 2)
+#' y <- rnorm(25, 1.1, 2)
+#' results <- bCorrelatedTtest(x=x, y=y, rho=0, rope=c(-0.05, 0.05))
+#' plotPosterior(results)
+#' 
+
+plotPosterior <- function(results, parameter=1, num.points=1000, plot.rope=TRUE, plot.samples=TRUE, alpha=NULL, ...) {
+  
+  if (!requireNamespace("ggplot2", quietly=TRUE)) {
+    stop("This function requires the ggplot2 package. Please install it.", call.=FALSE)
+  }
+  
+  if (results$approximate){
+    if (is.character(parameter) & !any(names(results$posterior)==parameter)){
+      stop("The parameter ", parameter, " is not contained in the sample of the posterior distribution")
+    } else if(parameter <= 0 | parameter > ncol(results$posterior)){
+      stop("The parameter argument has to be either a valid column name ", 
+           "or a valid column index for the posterior sample matrix")
+    }
+    sample <- data.frame (Sample=results$posterior[, parameter])
+    aux <- density(results$posterior[, parameter], ...)
+    dens <- data.frame(Difference=aux$x, Posterior=aux$y)
+    
+    if (is.null(alpha)) {
+      alpha <- min(1, 250/nrow(sample))
+    }
+    
+    gplot <- ggplot(dens, aes(x=Difference, y=Posterior)) + geom_line() 
+    
+    if(plot.samples) {
+      gplot <- gplot + geom_point(data=sample, aes(x=Sample, y=0), 
+                                  position=position_jitter(height=0.05*max(dens$Posterior)), alpha=alpha) 
+    }
+  } else {
+    qpos <- results$additional$qposterior
+    dpos <- results$posterior
+    rope <- results$parameters$rope
+    
+    # Get the data ready
+    x <- seq(min(qpos(0.0005),rope[1]), max(qpos(0.9995), rope[2]), length.out=num.points)
+    df <- data.frame(Difference=x, Posterior=dpos(x))
+    
+    gplot <- ggplot(df, aes(x=Difference, y=Posterior)) + geom_line() 
+  }
+  
+  if (plot.rope) {
+    gplot <- gplot + geom_vline(xintercept=rope[1], linetype=2, col="darkgreen") +
+      geom_vline(xintercept=rope[2], linetype=2, col="darkgreen")
+  }
+  
+  gplot <- gplot + labs(x="Sample", y="Posterior density")
+  return(gplot)
+}
+
+
+
+
+#' @title Plotting the (marginal) posterior densities in Bayesian analyses
+#'
+#' @description This function plots, univariately, the posterior densities obtained
+#' in Bayesian analyses. 
+#' @param results A list containing, at least three elements, one named \code{approximate}, which is
+#' a logical value indicating whether the posterior is a function or a sample, \code{rope}, a two dimensional
+#' vector with the minimum and maximum values of the rope and \code{posterior}, either a one parameter function or
+#' a matrix (or data.frame) where each row is a sample and each column a sampled parameter
+#' @param parameter Either a string or a number indicating, in case the posterior is approximated, the parameter
+#' to be ploted (i.e., the name or the index of a column in the sample matrix)
+#' @param ... Additional parameters to the Rgraphviz function. This is mainly to change the layout of the graph
+#' @param plot.rope  A logical value indicating whether the rope has to be plotted or not. Note that not for all
+#' parameter the rope makes sense
+#' @param num.points Number of points used to plot the functions
+#' @param plot.samples A logical value. If true, the samples are plotted (only when the posterior is approximate)
+#' @param alpha Numeric value for the transparency of the points, only applicable if \code{plot.samples} is true
+#' @return An object of class \linkS4class{ggplot} with the plot
+#' @details 
+#' Note that if the methods are exact (not simulated), the true density can be plotted but,
+#' for those cases where the posterior is approximated through sampling, the function will
+#' plot a kernel density estimation of the posterior and, thus, the probabilities computed
+#' by other functions are not directly the areas under the densities.
+#' @examples
+#' x <- rnorm(150, 1, 0.5)
+#' y <- rnorm(150, 1, 0.05)
+#' results <- bSignedRankTest(x=x, y=y, rope=c(-0.15, 0.15))
+#' plotSimplex(results, posterior.label=TRUE)
+#' 
+
+plotSimplex <- function(results, A="Alg. A", B="Alg. B", plot.density=TRUE, plot.points=TRUE,
+                        palette=c("green", "darkgray", "red"), point.size=1,
+                        font.size=5, alpha=NULL, posterior.label=FALSE) {
+  
+  if (!requireNamespace("ggplot2", quietly=TRUE)) {
+    stop("This function requires the ggplot2 package. Please install it.", call.=FALSE)
+  }
+  if (!require("geometry", quietly=TRUE)) {
+    stop("This function requires the geometry package. Please install it and try again.")
+  }
+  
+  post.sample <- results$posterior
+  post.sample <- post.sample[, c("Left","Rope","Right")]
+  
+  # Get the winner for the color of the points
+  aux <- apply(post.sample, MARGIN=1, FUN=which.max)
+  aux[aux==1] <- names(post.sample)[1]
+  aux[aux==2] <- names(post.sample)[2]
+  aux[aux==3] <- names(post.sample)[3]
+  colors <- factor(aux, names(post.sample))
+  
+  # Coordinates of the eges of the Simplex
+  simplex.coords <- rbind(c(2, 0), c(1,1), c(0, 0))
+  
+  # Auxiliar info to draw the triangle
+  center <- c(1, 0.3333333)
+  ab <- c(0.5, 0.5)
+  bc <- c(1.5, 0.5)
+  ac <- c(1, 0)
+  
+  #Convert from barycentric coords to cartesians and add the winner
+  points <- data.frame(Color=colors, bary2cart(simplex.coords, as.matrix(post.sample)))
+  names(points) <- c("Colors", "X", "Y")
+  
+  # Additional info for the plot (triangle and lines)
+  triangle <- data.frame(simplex.coords[c(1, 2, 3), ])
+  names(triangle) <- c("X", "Y")
+  
+  divisors1 <- data.frame(rbind(center, ab))
+  names(divisors1) <- c("X", "Y")
+  divisors2 <- data.frame(rbind(center, bc))
+  names(divisors2) <- c("X", "Y")
+  divisors3 <- data.frame(rbind(center, ac))
+  names(divisors3) <- c("X", "Y")
+
+  p.right <- results$posterior.probabilities["Right"]
+  p.rope <- results$posterior.probabilities["Rope"]
+  p.left <- results$posterior.probabilities["Left"]
+  
+  if (is.null(alpha)) {
+    alpha <- min(1, 250/nrow(points))
+  }
+  
+  # Create the plot, layer by layer
+  g <- ggplot(points, aes(x=X, y=Y))
+  
+  # Optionally, add the points
+  if (plot.points) {
+    g <- g + geom_point(aes(color=Colors), alpha=alpha, shape=19, size=point.size) +
+      scale_color_manual(values=c("Left"=palette[3], "Rope"=palette[2], "Right"=palette[1]), guide="none")
+  }
+  
+  # Optionally, add the density
+  if (plot.density) {
+    g <- g + stat_density2d(aes(fill=..level..,alpha=..level..),geom="polygon", show.legend=FALSE) +
+      scale_fill_gradient2(low="#ffffff", mid="#78c679", high="#005a32", guide="none") + 
+      geom_polygon(data=data.frame(X=c(-0.1,1.1,-0.1), Y=c(-0.1,1.1,1.1)), fill="white") + 
+      geom_polygon(data=data.frame(X=c(0.9,2.1,2.1), Y=c(1.1,1.1,-0.1)), fill="white") + 
+      geom_polygon(data=data.frame(X=c(-0.1,2.1,2.1,-0.1), Y=c(0,0,-0.1,-0.1)), fill="white")
+  }
+  
+  # Add the triagle and annotations
+  g <- g + geom_polygon(data=triangle, color="black", fill=NA) + 
+    geom_line(data=divisors1, color="black", linetype=2) + 
+    geom_line(data=divisors2, color="black", linetype=2) + 
+    geom_line(data=divisors3, color="black", linetype=2) + 
+    annotate("text", x=0, y=-0.05, label=A, hjust=0, size=font.size) + 
+    annotate("text", x=2, y=-0.05, label=B, hjust=1, size=font.size) + 
+    annotate("text", x=1, y=1.05, label="Rope", hjust=0.5, size=font.size) +
+    scale_y_continuous(limits=c(-0.1, 1.1)) + theme_void() + theme(panel.background=element_rect(fill="white"))
+  
+  
+  # And, optionally, add the probabilities
+  if (posterior.label) {
+    g <- g + annotate("text", x=0, y=1, vjust=1, hjust=0, size=font.size,
+                      label=paste0("P(", A, " Win)= ", round(p.right, 3), "\n",
+                                   "P(", B, " Win)= ", round(p.left, 3), "\n",
+                                   "P(Rope Win)= ", round(p.rope, 3), "\n"))
+  } 
+  
+  return(g)
+}
+

@@ -349,7 +349,6 @@ readExperimentDir <- function(directory, names, fname.pattern, alg.var.name,
 
 #' @title Read data from a comparison file
 #'
-#' @export
 #' @description This function reads the data from a files where two or more algorithms are compared in different problems. The file can have some columns that characterize the problem and one column per algorithm. If each row contain only the result obtained by one algorithm, use the \code{\link{readExperimentFile}} function.
 #' @param file Path of the file to load
 #' @param alg.cols A vector column names or indices inicating which columns contain the results. The rest are assumed as descriptors of the problems
@@ -402,7 +401,6 @@ readComparisonFile <- function(file, alg.cols, col.names=NULL, ...) {
 
 #' @title Read data from a directory of comparison-like files
 #'
-#' @export
 #' @description This function reads the data from all files in a directory. Each file is expected to to be formated as a comparison file, i.e., the file can have some columns that characterize the problem and one column per algorithm. If each row contain only the result obtained by one algorithm, use the \code{\link{readExperimentDir}} function.
 #' @param directory Directory where the files are located.
 #' @param alg.cols A vector column names or indices inicating which columns contain the results. The rest are assumed as descriptors of the problems

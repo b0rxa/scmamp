@@ -1,17 +1,20 @@
 Package: scmamp
 Type: Package
 Title: Statistical Comparison of Multiple Algorithms in Multiple Problems
-Version: 0.2.6
-Date: 2016-02-14
+Version: 0.3.1
+Date: 2017-11-21
 Authors@R: c(person(given = "Borja", family = "Calvo", role = c("aut", "cre") , email ="borja.calvo@ehu.eus"), 
    person(given = "Guzman", family = "Santafe", role = c("aut"), email = "guzman.santafe@unavarra.es"))
-LazyData: yes
+LazyData: no
 Suggests:
     knitr,
     rmarkdown,
     ggplot2,
     Rgraphviz,
     graph,
+    rstan,
+    metRology,
+    geometry
 Imports:
     utils,
     methods,
@@ -26,6 +29,7 @@ BugReports: https://github.com/b0rxa/scmamp/issues
 Collate:
     tests.R
     post_hoc.R
+    bayesian.R
     plotting.R
     scmamp.R
     latex.R

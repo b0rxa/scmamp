@@ -1,6 +1,5 @@
 #' @title Expression based row filtering
 #'
-#' @export
 #' @description This is a simple function to filter data based on an expression defined using the colum names
 #' @param data A NAMED matrix or data frame to be filtered (column names are required).
 #' @param condition A string indicating the condition that the row have to fulfill to be retained. The column names are used as variables in the condition (see examples bellow).
@@ -46,7 +45,6 @@ filterData <- function (data, condition="TRUE", remove.cols=NULL) {
 
 #' @title Summarization of data
 #'
-#' @export
 #' @description This is a simple function to apply a summarization function to a matrix or data frame.
 #' @param data A matrix or data frame to be summarized.
 #' @param fun Function to be used in the summarization. It can be any function that, taking as first argument a numeric vector, otuputs a numeric value. Typical examples are \code{\link{mean}}, \code{\link{median}}, \code{\link{min}}, \code{\link{max}} or \code{\link{sd}}.
@@ -133,7 +131,6 @@ summarizeData <- function (data, fun=mean, group.by=NULL, ignore=NULL, ... ) {
 
 #' @title Creation of boolean matrices for highlighting results
 #'
-#' @export
 #' @description A simple function to create boolean matrices to be used when constructing LaTeX tables.
 #' @param data It can be a data frame, a matrix or a vector.
 #' @param find A string indicating what has to be detected. Possible values are:

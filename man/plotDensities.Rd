@@ -12,7 +12,7 @@ plotDensities(data, ...)
 \item{...}{The plot is created using \code{ggplot2}. This special parameter can be used to pass additional parameters to the \code{\link{geom_line}} function used to plot the sample points. It can also be used to pass additional arguments to the \code{density} function, which is used to eastimate the densities.}
 }
 \value{
-A \code{\link{ggplot}} object.
+A \code{\linkS4class{ggplot}} object.
 }
 \description{
 This function estimates and plots the densities of the results of each algorithm

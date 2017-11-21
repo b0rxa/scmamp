@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Borja Calvo and Guzmán Santafé" />
 
-<meta name="date" content="2016-10-21" />
+<meta name="date" content="2017-11-21" />
 
 <title>Data loading and manipulation with scmamp</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Data loading and manipulation with scmamp</h1>
 <h4 class="author"><em>Borja Calvo and Guzmán Santafé</em></h4>
-<h4 class="date"><em>2016-10-21</em></h4>
+<h4 class="date"><em>2017-11-21</em></h4>
 
 
 
@@ -139,16 +139,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">&gt;<span class="st"> </span>dir &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">system.file</span>(<span class="st">&quot;loading_tests&quot;</span>,<span class="dt">package=</span><span class="st">&quot;scmamp&quot;</span>), 
 +<span class="st">              &quot;comparison_files&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;/&quot;</span>)
 &gt;<span class="st"> </span><span class="kw">list.files</span>(dir)</code></pre></div>
-<pre><code>##  [1] &quot;rgg_size_1000_r_0.049.out&quot; &quot;rgg_size_1000_r_0.058.out&quot;
-##  [3] &quot;rgg_size_1000_r_0.067.out&quot; &quot;rgg_size_1000_r_0.076.out&quot;
-##  [5] &quot;rgg_size_1000_r_0.085.out&quot; &quot;rgg_size_1000_r_0.094.out&quot;
-##  [7] &quot;rgg_size_1000_r_0.103.out&quot; &quot;rgg_size_1000_r_0.112.out&quot;
-##  [9] &quot;rgg_size_1000_r_0.121.out&quot; &quot;rgg_size_1000_r_0.134.out&quot;
-## [11] &quot;rgg_size_100_r_0.140.out&quot;  &quot;rgg_size_100_r_0.143.out&quot; 
-## [13] &quot;rgg_size_100_r_0.146.out&quot;  &quot;rgg_size_100_r_0.149.out&quot; 
-## [15] &quot;rgg_size_100_r_0.152.out&quot;  &quot;rgg_size_100_r_0.155.out&quot; 
-## [17] &quot;rgg_size_100_r_0.158.out&quot;  &quot;rgg_size_100_r_0.161.out&quot; 
-## [19] &quot;rgg_size_100_r_0.164.out&quot;  &quot;rgg_size_100_r_0.169.out&quot; 
+<pre><code>##  [1] &quot;rgg_size_100_r_0.140.out&quot;  &quot;rgg_size_100_r_0.143.out&quot; 
+##  [3] &quot;rgg_size_100_r_0.146.out&quot;  &quot;rgg_size_100_r_0.149.out&quot; 
+##  [5] &quot;rgg_size_100_r_0.152.out&quot;  &quot;rgg_size_100_r_0.155.out&quot; 
+##  [7] &quot;rgg_size_100_r_0.158.out&quot;  &quot;rgg_size_100_r_0.161.out&quot; 
+##  [9] &quot;rgg_size_100_r_0.164.out&quot;  &quot;rgg_size_100_r_0.169.out&quot; 
+## [11] &quot;rgg_size_1000_r_0.049.out&quot; &quot;rgg_size_1000_r_0.058.out&quot;
+## [13] &quot;rgg_size_1000_r_0.067.out&quot; &quot;rgg_size_1000_r_0.076.out&quot;
+## [15] &quot;rgg_size_1000_r_0.085.out&quot; &quot;rgg_size_1000_r_0.094.out&quot;
+## [17] &quot;rgg_size_1000_r_0.103.out&quot; &quot;rgg_size_1000_r_0.112.out&quot;
+## [19] &quot;rgg_size_1000_r_0.121.out&quot; &quot;rgg_size_1000_r_0.134.out&quot;
 ## [21] &quot;rgg_size_5000_r_0.024.out&quot; &quot;rgg_size_5000_r_0.036.out&quot;
 ## [23] &quot;rgg_size_5000_r_0.048.out&quot; &quot;rgg_size_5000_r_0.060.out&quot;
 ## [25] &quot;rgg_size_5000_r_0.072.out&quot; &quot;rgg_size_5000_r_0.084.out&quot;
@@ -173,12 +173,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 +<span class="st">                            </span><span class="dt">names=</span>var.names, <span class="dt">fname.pattern=</span>fname.pattern)
 &gt;<span class="st"> </span><span class="kw">head</span>(data.raw)</code></pre></div>
 <pre><code>##   Size Radius FruitFly Shukla Ikeda Turau Rand1 Rand2 FrogCOL FrogMIS
-## 1 1000  0.049      223    213   214   214   214   212     246     226
-## 2 1000  0.049      224    207   209   216   205   211     241     219
-## 3 1000  0.049      219    206   215   214   209   213     243     221
-## 4 1000  0.049      227    208   218   218   215   219     251     230
-## 5 1000  0.049      231    218   210   212   211   217     243     239
-## 6 1000  0.049      230    214   214   208   211   206     246     229</code></pre>
+## 1  100  0.140       31     28    25    27    26    28      33      28
+## 2  100  0.140       32     28    27    28    27    24      33      30
+## 3  100  0.140       25     25    24    27    23    23      28      24
+## 4  100  0.140       28     26    27    26    28    27      31      30
+## 5  100  0.140       29     24    24    24    25    26      31      30
+## 6  100  0.140       29     29    28    28    29    27      35      32</code></pre>
 <p>As we can see above, besides the content of files (the last four columns), the resulting matrix includes the information extracted from the name of the files, named according to <code>names</code>. Note that, when <code>alg.cols</code> contains the column indices, these are refered to the columns inside the file. In other words, we do not expect to have the name of the algorithm in the file name.</p>
 <p>However, in some situations, the results for each algorithm may be in a different file. Such kind of files contain the results of only one of the algorithms per line. We will name this structure <em>experiment format</em>, to distinguish it from the previous structure. There are two functions to handle this kind of files, <code>readExperimentFile</code> and <code>readExperimentDir</code>. These functions are similar to the previous two, but have some differences that have to do with the format of the files.</p>
 <p>Each row of these files will have the result of applying one algorithm to one problem. Therefore, the experiment is characterized using descriptors for the problem, a column indicating the algorithm used and a column containing the result to be compared. The package includes one example of this kind of file that contains all the results in <code>data.blum.2015</code>:</p>
@@ -209,28 +209,28 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 &gt;<span class="st"> </span>dir &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">system.file</span>(<span class="st">&quot;loading_tests&quot;</span>, <span class="dt">package=</span><span class="st">&quot;scmamp&quot;</span>), 
 +<span class="st">              &quot;experiment_files&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;/&quot;</span>)
 &gt;<span class="st"> </span><span class="kw">list.files</span>(dir)[<span class="dv">1</span>:<span class="dv">10</span>]</code></pre></div>
-<pre><code>##  [1] &quot;rgg_size_1000_r_0.049_FrogCOL.out&quot; 
-##  [2] &quot;rgg_size_1000_r_0.049_FrogMIS.out&quot; 
-##  [3] &quot;rgg_size_1000_r_0.049_FruitFly.out&quot;
-##  [4] &quot;rgg_size_1000_r_0.049_Ikeda.out&quot;   
-##  [5] &quot;rgg_size_1000_r_0.049_Rand1.out&quot;   
-##  [6] &quot;rgg_size_1000_r_0.049_Rand2.out&quot;   
-##  [7] &quot;rgg_size_1000_r_0.049_Shukla.out&quot;  
-##  [8] &quot;rgg_size_1000_r_0.049_Turau.out&quot;   
-##  [9] &quot;rgg_size_1000_r_0.058_FrogCOL.out&quot; 
-## [10] &quot;rgg_size_1000_r_0.058_FrogMIS.out&quot;</code></pre>
+<pre><code>##  [1] &quot;rgg_size_100_r_0.140_FrogCOL.out&quot; 
+##  [2] &quot;rgg_size_100_r_0.140_FrogMIS.out&quot; 
+##  [3] &quot;rgg_size_100_r_0.140_FruitFly.out&quot;
+##  [4] &quot;rgg_size_100_r_0.140_Ikeda.out&quot;   
+##  [5] &quot;rgg_size_100_r_0.140_Rand1.out&quot;   
+##  [6] &quot;rgg_size_100_r_0.140_Rand2.out&quot;   
+##  [7] &quot;rgg_size_100_r_0.140_Shukla.out&quot;  
+##  [8] &quot;rgg_size_100_r_0.140_Turau.out&quot;   
+##  [9] &quot;rgg_size_100_r_0.143_FrogCOL.out&quot; 
+## [10] &quot;rgg_size_100_r_0.143_FrogMIS.out&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">&gt;<span class="st"> </span>pattern &lt;-<span class="st"> &quot;rgg_size_([0-9]*)_r_(0.[0-9]*)_([a-z, A-Z, 1, 2]*).out&quot;</span>
 &gt;<span class="st"> </span>var.names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Size&quot;</span>, <span class="st">&quot;Radius&quot;</span>, <span class="st">&quot;Algorithm&quot;</span>)
 &gt;<span class="st"> </span>data.raw &lt;-<span class="st"> </span><span class="kw">readExperimentDir</span> (<span class="dt">directory=</span>dir, <span class="dt">names=</span>var.names, <span class="dt">fname.pattern=</span>pattern,
 +<span class="st">                                </span><span class="dt">alg.var.name=</span><span class="st">'Algorithm'</span>, <span class="dt">value.col=</span><span class="dv">1</span>, <span class="dt">col.names=</span><span class="st">&quot;Evaluation&quot;</span>)
 &gt;<span class="st"> </span><span class="kw">head</span>(data.raw)</code></pre></div>
 <pre><code>##   Size Radius FrogCOL FrogMIS FruitFly Ikeda Rand1 Rand2 Shukla Turau
-## 1 1000  0.049     246     226      223   214   214   212    213   214
-## 2 1000  0.049     241     219      224   209   205   211    207   216
-## 3 1000  0.049     243     221      219   215   209   213    206   214
-## 4 1000  0.049     251     230      227   218   215   219    208   218
-## 5 1000  0.049     243     239      231   210   211   217    218   212
-## 6 1000  0.049     246     229      230   214   211   206    214   208</code></pre>
+## 1  100  0.140      33      28       31    25    26    28     28    27
+## 2  100  0.140      33      30       32    27    27    24     28    28
+## 3  100  0.140      28      24       25    24    23    23     25    27
+## 4  100  0.140      31      30       28    27    28    27     26    26
+## 5  100  0.140      31      30       29    24    25    26     24    24
+## 6  100  0.140      35      32       29    28    29    27     29    28</code></pre>
 <p>In this case, the format of the file names is similar, but it includes the name of the estimator, so in this case the information about the algorithm used is in the file name itself. Actually, the files contain one single column with the results of 30 repetitions.</p>
 </div>
 <div id="filtering-and-summarizing-results" class="section level2">
@@ -238,8 +238,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The package includes functions that can be used perform two basic operations with data matrices, summarizing and filtering.</p>
 <p>The summarization can be achieved easily with the function <code>summarizeData</code>. For example, we can get the median value obtained, for each graph size, by the each algorithm:</p>
 <pre><code>##   groups FrogCOL FrogMIS FruitFly Ikeda Rand1 Rand2 Shukla Turau
-## 1   1000    93.5    87.0       93  79.5  81.5  79.5   81.0  79.5
-## 2    100    28.0    26.0       25  23.0  23.0  23.0   23.0  23.0
+## 1    100    28.0    26.0       25  23.0  23.0  23.0   23.0  23.0
+## 2   1000    93.5    87.0       93  79.5  81.5  79.5   81.0  79.5
 ## 3   5000   135.5   122.5        1 117.5 115.0 115.5  117.5 115.5</code></pre>
 <p>The function <code>filterData</code> can be used to remove rows and columns in a simple way. For example, to reduce the data matrix to the results where the size was 100 and Rand2 has a value higher than Rand1, retaining all the columns except the size, we can run:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data.filtered &lt;-<span class="st"> </span><span class="kw">filterData</span>(<span class="dt">data=</span>data.raw, 
@@ -301,17 +301,6 @@ digits &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">
 ## \hline
 ## Size &amp; Radius &amp; FrogCOL &amp; FrogMIS &amp; FruitFly &amp; Ikeda &amp; Rand1 &amp; Rand2 &amp; Shukla &amp; Turau \\
 ## \hline
-## 1000 &amp; 0.049 &amp; {\bf 247.67} &amp; 227.60 &amp; 226.27 &amp; 213.20 &amp; 212.70 &amp; 214.53 &amp; 212.40 &amp; 211.90 \\
-## 1000 &amp; 0.058 &amp; {\bf 189.90} &amp; 176.93 &amp; 174.90 &amp; 162.00 &amp; 161.47 &amp; 163.47 &amp; 162.87 &amp; 162.70 \\
-## 1000 &amp; 0.067 &amp; {\bf 151.93} &amp; 140.57 &amp; 142.23 &amp; 130.37 &amp; 129.83 &amp; 129.60 &amp; 130.83 &amp; 129.87 \\
-## 1000 &amp; 0.076 &amp; {\bf 122.87} &amp; 114.13 &amp; 117.80 &amp; 104.60 &amp; 105.30 &amp; 104.90 &amp; 105.30 &amp; 105.30 \\
-## 1000 &amp; 0.085 &amp; {\bf 102.37} &amp; 94.33 &amp; 99.43 &amp; 85.87 &amp; 86.73 &amp; 87.07 &amp; 87.43 &amp; 86.70 \\
-## 1000 &amp; 0.094 &amp; 85.47$^+$ &amp; 79.33 &amp; {\bf 85.80} &amp; 72.87 &amp; 72.63 &amp; 72.30 &amp; 74.20 &amp; 72.90 \\
-## 1000 &amp; 0.103 &amp; 74.20 &amp; 68.13 &amp; {\bf 75.57} &amp; 62.77 &amp; 63.23 &amp; 62.30 &amp; 63.17 &amp; 62.13 \\
-## 1000 &amp; 0.112 &amp; 64.37 &amp; 58.20 &amp; {\bf 66.90} &amp; 54.07 &amp; 54.17 &amp; 54.37 &amp; 54.50 &amp; 54.83 \\
-## 1000 &amp; 0.121 &amp; 56.50 &amp; 51.30 &amp; {\bf 59.53} &amp; 47.43 &amp; 47.03 &amp; 47.60 &amp; 47.97 &amp; 47.17 \\
-## 1000 &amp; 0.134 &amp; {\bf 47.53} &amp; 43.10 &amp; 24.27 &amp; 40.07 &amp; 39.93 &amp; 40.10 &amp; 40.77 &amp; 40.10 \\
-## \hline
 ## 100 &amp; 0.140 &amp; {\bf 31.07} &amp; 29.10 &amp; 27.80 &amp; 25.70 &amp; 26.17 &amp; 26.10 &amp; 25.63 &amp; 25.90 \\
 ## 100 &amp; 0.143 &amp; {\bf 30.53} &amp; 28.57 &amp; 26.80 &amp; 25.60 &amp; 25.17 &amp; 25.73 &amp; 25.43 &amp; 25.53 \\
 ## 100 &amp; 0.146 &amp; {\bf 29.93} &amp; 28.03 &amp; 26.57 &amp; 25.37 &amp; 25.07 &amp; 25.30 &amp; 24.90 &amp; 25.80 \\
@@ -322,6 +311,17 @@ digits &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">
 ## 100 &amp; 0.161 &amp; {\bf 25.83} &amp; 23.40 &amp; 22.80 &amp; 21.03 &amp; 21.57 &amp; 21.40 &amp; 21.70 &amp; 21.93 \\
 ## 100 &amp; 0.164 &amp; {\bf 25.57} &amp; 22.93 &amp; 22.40 &amp; 20.67 &amp; 20.93 &amp; 21.43 &amp; 20.80 &amp; 20.90 \\
 ## 100 &amp; 0.169 &amp; {\bf 24.50} &amp; 22.20 &amp; 21.73 &amp; 20.10 &amp; 20.13 &amp; 20.17 &amp; 20.57 &amp; 20.03 \\
+## \hline
+## 1000 &amp; 0.049 &amp; {\bf 247.67} &amp; 227.60 &amp; 226.27 &amp; 213.20 &amp; 212.70 &amp; 214.53 &amp; 212.40 &amp; 211.90 \\
+## 1000 &amp; 0.058 &amp; {\bf 189.90} &amp; 176.93 &amp; 174.90 &amp; 162.00 &amp; 161.47 &amp; 163.47 &amp; 162.87 &amp; 162.70 \\
+## 1000 &amp; 0.067 &amp; {\bf 151.93} &amp; 140.57 &amp; 142.23 &amp; 130.37 &amp; 129.83 &amp; 129.60 &amp; 130.83 &amp; 129.87 \\
+## 1000 &amp; 0.076 &amp; {\bf 122.87} &amp; 114.13 &amp; 117.80 &amp; 104.60 &amp; 105.30 &amp; 104.90 &amp; 105.30 &amp; 105.30 \\
+## 1000 &amp; 0.085 &amp; {\bf 102.37} &amp; 94.33 &amp; 99.43 &amp; 85.87 &amp; 86.73 &amp; 87.07 &amp; 87.43 &amp; 86.70 \\
+## 1000 &amp; 0.094 &amp; 85.47$^+$ &amp; 79.33 &amp; {\bf 85.80} &amp; 72.87 &amp; 72.63 &amp; 72.30 &amp; 74.20 &amp; 72.90 \\
+## 1000 &amp; 0.103 &amp; 74.20 &amp; 68.13 &amp; {\bf 75.57} &amp; 62.77 &amp; 63.23 &amp; 62.30 &amp; 63.17 &amp; 62.13 \\
+## 1000 &amp; 0.112 &amp; 64.37 &amp; 58.20 &amp; {\bf 66.90} &amp; 54.07 &amp; 54.17 &amp; 54.37 &amp; 54.50 &amp; 54.83 \\
+## 1000 &amp; 0.121 &amp; 56.50 &amp; 51.30 &amp; {\bf 59.53} &amp; 47.43 &amp; 47.03 &amp; 47.60 &amp; 47.97 &amp; 47.17 \\
+## 1000 &amp; 0.134 &amp; {\bf 47.53} &amp; 43.10 &amp; 24.27 &amp; 40.07 &amp; 39.93 &amp; 40.10 &amp; 40.77 &amp; 40.10 \\
 ## \hline
 ## 5000 &amp; 0.024 &amp; {\bf 975.90} &amp; 972.40$^+$ &amp; 964.53 &amp; 899.60 &amp; 897.83 &amp; 905.30 &amp; 898.23 &amp; 902.50 \\
 ## 5000 &amp; 0.036 &amp; 502.00 &amp; 495.30 &amp; {\bf 515.83} &amp; 453.87 &amp; 455.57 &amp; 456.60 &amp; 459.30 &amp; 452.97 \\
@@ -360,7 +360,7 @@ digits &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
