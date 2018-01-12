@@ -8,7 +8,7 @@ bHierarchicalTest(x.matrix, y.matrix = NULL, rho, std.upper = 1000,
   d0.lower = NULL, d0.upper = NULL, alpha.lower = 0.5, alpha.upper = 5,
   beta.lower = 0.05, beta.upper = 0.15, rope = c(-0.01, 0.01),
   nsim = 2000, nchains = 8, parallel = TRUE, stan.output.file = NULL,
-  seed = as.numeric(Sys.time()))
+  seed = as.numeric(Sys.time()), ...)
 }
 \arguments{
 \item{x.matrix}{First sample, a matrix with the results obtained by the first algorithm (each dataset in a row)}
@@ -37,6 +37,8 @@ bHierarchicalTest(x.matrix, y.matrix = NULL, rho, std.upper = 1000,
 
 \item{seed}{Optional parameter used to fix the random seed}
 
+\item{...}{Additional arguments for the rstan::stan function that runs the analysis}
+
 \item{beta.lower}{Upper bound for the (uniform) prior for the beta hyperparameter (see Benavoli \emph{et al.} 2017 for more details). Default value set at 0.15, as in the original paper}
 
 \item{z0}{Position of the pseudo-observation associated to the prior Dirichlet Process. The default value is set to 0 (inside the rope)}
@@ -46,9 +48,9 @@ bHierarchicalTest(x.matrix, y.matrix = NULL, rho, std.upper = 1000,
 \value{
 A list with the following elements: 
 \item{\code{method}}{a string with the name of the method used}
+\item{\code{parameters}}{parameters used by the method}
 \item{\code{posterior.probabilities}}{a vector with the left, rope and right probabilities}
 \item{\code{approximated}}{a logical value, \code{TRUE} if the posterior distribution is approximated (sampled) and \code{FALSE} if it is exact}
-\item{\code{parameters}}{parameters used by the method}
 \item{\code{posterior}}{Sampled probabilities (see details)}
 \item{\code{additional}}{Additional information provided by the model. This includes:\code{per.dataset}, the results per dataset (left, rope and right probabilities together with the expected mean value); \code{global.sin} sampled probabilities of mu_0 being positive or negative and \code{stan.results}, the complete set of results produced by Stan program}
 }

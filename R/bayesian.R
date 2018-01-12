@@ -246,9 +246,9 @@ bSignedRankTest <- function(x, y=NULL, s=0.5, z0=0, rope=c(-0.01, 0.01), nsim=10
 #' @param ... Additional arguments for the rstan::stan function that runs the analysis 
 #' @return A list with the following elements: 
 #' \item{\code{method}}{a string with the name of the method used}
+#' \item{\code{parameters}}{parameters used by the method}
 #' \item{\code{posterior.probabilities}}{a vector with the left, rope and right probabilities}
 #' \item{\code{approximated}}{a logical value, \code{TRUE} if the posterior distribution is approximated (sampled) and \code{FALSE} if it is exact}
-#' \item{\code{parameters}}{parameters used by the method}
 #' \item{\code{posterior}}{Sampled probabilities (see details)}
 #' \item{\code{additional}}{Additional information provided by the model. This includes:\code{per.dataset}, the results per dataset (left, rope and right probabilities together with the expected mean value); \code{global.sin} sampled probabilities of mu_0 being positive or negative and \code{stan.results}, the complete set of results produced by Stan program}
 #' @details The results includes the typical information relative to the three 
@@ -264,23 +264,22 @@ bSignedRankTest <- function(x, y=NULL, s=0.5, z0=0, rope=c(-0.01, 0.01), nsim=10
 #' res$posterior.probabilities
 #' 
 
-
 bHierarchicalTest <- function(x.matrix, y.matrix=NULL, rho, std.upper=1000, d0.lower=NULL, d0.upper=NULL, 
                               alpha.lower=0.5, alpha.upper=5, beta.lower=0.05, beta.upper=0.15, 
                               rope=c(-0.01, 0.01), nsim=2000, nchains=8, parallel=TRUE, stan.output.file=NULL,
                               seed=as.numeric(Sys.time()), ...) {
   
-
+  
   
   if (!require(rstan)) {
     stop("This function requires the rstan package. Please install it and try again.")
   }  
   
   if (!require(metRology)) {
-    stop("This function requires the ggplot2 package. Please install it and try again.")
+    stop("This function requires the metRology package. Please install it and try again.")
   }
   
-
+  
   if (parallel) {
     rstan_options(auto_write = TRUE)
     options(mc.cores = parallel::detectCores())
@@ -301,13 +300,13 @@ bHierarchicalTest <- function(x.matrix, y.matrix=NULL, rho, std.upper=1000, d0.l
     
     rope <- sort(rope)
   }
-
+  
   if (is.null(y.matrix)) {
     sample.matrix <- x.matrix
   } else {
     sample.matrix <- x.matrix - y.matrix
   }
-    
+  
   # Check the input data (we need a matrix or a data.frame)
   if (class(sample.matrix) == "numeric") {
     sample.matrix <- matrix(sample.matrix, nrow=1)
@@ -397,7 +396,7 @@ bHierarchicalTest <- function(x.matrix, y.matrix=NULL, rho, std.upper=1000, d0.l
   stan.fit <-  stan(file=stan.program, data=data, iter=nsim, chains=nchains,
                     seed=seed, sample_file=stan.output.file, ...)
   
-  stan.results<- extract(stan.fit, permuted = TRUE)
+  stan.results<- extract(stan.fit, permuted=TRUE)
   
   # Remove irrelevant variables
   stan.results$diff<-NULL
@@ -458,7 +457,7 @@ bHierarchicalTest <- function(x.matrix, y.matrix=NULL, rho, std.upper=1000, d0.l
                      alpha.lower=alpha.lower, alpha.upper=alpha.upper, 
                      beta.lower=beta.lower, beta.upper=beta.upper,
                      rope=rope, nsim=nsim, nchains=nchains)
- 
+  
   additional <- list(per.dataset=per.dataset, global.sign=global.sign, stan.results=stan.results)
   
   
@@ -470,6 +469,134 @@ bHierarchicalTest <- function(x.matrix, y.matrix=NULL, rho, std.upper=1000, d0.l
   results$posterior               <- posterior.distribution
   results$additional              <- additional
   
+  
+  return(results)
+}
+
+
+
+
+#' @title Bayesian Plackett-Luce model for ranking analysis
+#'
+#' @description Bayesian model based on the Plackett-Luce distribution over rankings to analyse multiple algorithms in multiple problems
+#' @param x.matrix Sample of performance of the algorithms. Each column is an algorithm and each row is a problem
+#' @param min      Logical value indicating which values should be ranked in first postion. If \code{TRUE}, the smallest value will be the first ranked and if \code{FALSE} the first will be the one with the highest value
+#' @param prior  Hyperparameters of the prior distribution of the weights. It should be a vector of size equal to the number of algorithms of real valued numbers greater than 0By default, all equal to 1
+#' @param nchain Number of MC chains to be simulated. As half the simulations are used for the warm-up, the total number of simulations will be \code{nchain}*\code{nsim}/2
+#' @param parallel Logical value. If \code{true}, Stan code is executed in parallel
+#' @param stan.output.file String containing the base name for the output files produced by Stan. If \code{NULL}, no files are stored.
+#' @param seed Optional parameter used to fix the random seed
+#' @param ... Additional arguments for the rstan::stan function that runs the analysis 
+#' @return A list with the following elements: 
+#' \item{\code{method}}{a string with the name of the method used}
+#' \item{\code{parameters}}{parameters used by the method}
+#' \item{\code{posterior.weights}}{a vector with the weights sampled from the posterior distribution}
+#' \item{\code{expected.win.prob}}{for each algorithm, the expected posterior probability of being the best}
+#' \item{\code{expceted.mode.rank}}{for each algorithm the expected rank in the most probable ranking}
+#' \item{\code{additional}}{complete results produced by the Stan program}
+#' 
+#' @examples
+#' n.alg  <- 5
+#' n.inst <- 25
+#' x.matrix <- matrix(runif(n.alg*n.inst), ncol=n.alg)
+#' colnames(x.matrix) <- paste("Alg", 1:n.alg, sep="")
+#' rownames(x.matrix) <- paste("Inst", 1:n.inst, sep="")
+#' 
+#' res <- bPlackettLuceModel(x.matrix, min=FALSE, nsim=2000, nchains=3)
+#' 
+#' res$expected.win.prob
+#' res$expected.mode.rank
+
+bPlackettLuceModel <- function(x.matrix,  min=TRUE, prior=rep(1, ncol(x.matrix)), 
+                               nsim=2000, nchains=8, parallel=TRUE, stan.output.file=NULL,
+                               seed=as.numeric(Sys.time()), ...) {
+  
+  
+  
+  if (!require(rstan)) {
+    stop("This function requires the rstan package. Please install it and try again.")
+  }  
+  
+  if (length(prior)!=ncol(x.matrix)) {
+    stop("The length of the prior vector has to be equal to the number of colums of x.matrix.")
+  }
+  
+  if (parallel) {
+    rstan_options(auto_write = TRUE)
+    options(mc.cores = parallel::detectCores())
+  }
+  
+  if (!is.null(stan.output.file)) {
+    rstan_options(auto_write = TRUE)
+    if (!dir.exists("./stan_out")) {
+      dir.create("./stan_out")
+    }
+    stan.output.file <- paste0("./stan_out/",stan.output.file,".StanOut")
+  }
+  
+  # Check the input data (we need a matrix or a data.frame)
+  if (class(x.matrix) == "numeric") {
+    x.matrix <- matrix(x.matrix, nrow=1)
+  }
+  
+  # Create the ranking matrix
+  
+  if (min) {
+    aux <- x.matrix
+  }else{
+    aux <- -1*x.matrix
+  }
+  
+  ranking.matrix <- t(apply(aux, MARGIN=1, 
+                            FUN=function(i) 
+                            {
+                              r <- rank(i, ties.method='random')
+                              return(r)
+                            }))
+  
+  colnames(ranking.matrix) <- colnames(x.matrix)
+  rownames(ranking.matrix) <- rownames(x.matrix)
+  
+  # Function to sample the posterior distribution of weights
+  data <- list()
+  data$n       <- nrow(ranking.matrix)
+  data$m       <- ncol(ranking.matrix)
+  data$ranks   <- ranking.matrix
+  data$alpha   <- rep(1, data$m)
+  data$weights <- rep(1, data$n)
+  
+  stan.program <- system.file("stan/pl_model.stan", package="scmamp")
+  
+  stan.fit <-  stan(file=stan.program, data=data, iter=nsim, chains=nchains,
+                    seed=seed, sample_file=stan.output.file, ...)
+  
+  stan.results <- extract(stan.fit, permuted=TRUE)
+  
+  posterior <- stan.results$ratings
+  
+  colnames(posterior) <- colnames(ranking.matrix)
+  
+  # Get the most probable ranks for each posterior sample
+  posterior.mode <- t(apply(posterior, MARGIN=1, 
+                            FUN=function(i) {
+                              return(rank(-i))
+                            }))
+  
+  expected.mode.rank <- colMeans(posterior.mode)
+  names(expected.mode.rank) <- colnames(ranking.matrix)
+  
+  expected.win.prob <- colMeans(posterior)
+  names(expected.win.prob) <- colnames(ranking.matrix)
+  
+  parameters <- list(prior=prior, nchains=nchains, nsim=nsim)
+  
+  results <- list()
+  results$method                  <- "Bayesian Plackett-Luce model"
+  results$parameters              <- parameters
+  results$posterior.weights       <- posterior
+  results$expected.win.prob       <- expected.win.prob
+  results$expected.mode.rank      <- expected.mode.rank
+  results$additional              <- stan.results
   
   return(results)
 }
