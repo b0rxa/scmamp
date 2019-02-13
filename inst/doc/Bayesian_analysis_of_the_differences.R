@@ -63,18 +63,21 @@ plotSimplex(results, plot.density=FALSE, A="Algorithm C", B="Algorithm D",
 ## ---- prompt=TRUE--------------------------------------------------------
 summarized.data <- aggregate(data.kcv.example[, algorithms], 
                              by=data.frame(DB=data.kcv.example[, 1]), FUN=mean)
-sample.a <- summarized.data[summarized.data$DB==db, "AlgC"]
-sample.b <- summarized.data[summarized.data$DB==db, "AlgD"]
+sample.a <- summarized.data[, "AlgC"]
+sample.b <- summarized.data[, "AlgD"]
 
 ## ---- prompt=TRUE, message=FALSE-----------------------------------------
 results <- bSignedRankTest(x=sample.a, y=sample.b,rope=c(-0.01, 0.01))
 results$posterior.probabilities
 
+## ----prompt=TRUE , fig.width=7, fig.height=7-----------------------------
+plotSimplex(results, A="Algorithm C", B="Algorithm D", plot.density=FALSE, alpha=0.5)
+
 ## ---- prompt=TRUE--------------------------------------------------------
 summarized.data <- aggregate(data.kcv.example[, algorithms], 
                              by=data.frame(DB=data.kcv.example[, 1]), FUN=mean)
-sample.a <- summarized.data[summarized.data$DB==db, "AlgA"]
-sample.b <- summarized.data[summarized.data$DB==db, "AlgB"]
+sample.a <- summarized.data[, "AlgA"]
+sample.b <- summarized.data[, "AlgB"]
 results <- bSignedRankTest(x=sample.a, y=sample.b,rope=c(-0.01, 0.01))
 results$posterior.probabilities
 

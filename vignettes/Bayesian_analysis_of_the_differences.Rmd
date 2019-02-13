@@ -187,8 +187,8 @@ First, we produce the summaries of the data:
 ```{r , prompt=TRUE}
 summarized.data <- aggregate(data.kcv.example[, algorithms], 
                              by=data.frame(DB=data.kcv.example[, 1]), FUN=mean)
-sample.a <- summarized.data[summarized.data$DB==db, "AlgC"]
-sample.b <- summarized.data[summarized.data$DB==db, "AlgD"]
+sample.a <- summarized.data[, "AlgC"]
+sample.b <- summarized.data[, "AlgD"]
 ```
 
 Now we can proceed with the analysis using the function `bSignedRankTest`:
@@ -199,13 +199,20 @@ results <- bSignedRankTest(x=sample.a, y=sample.b,rope=c(-0.01, 0.01))
 results$posterior.probabilities
 ```
 
-From the results we can see that, with high confidence, we can conclude that Algorithms C and D are practically equivalent according to the 10 datasets in our data. Conversely, if we compare algorithms A and B, the conclusion is not that clear.
+From the results we can see that, according to the 10 datasets in our data, either algorithms C and D are equivalent or C is better than D, but certainly it is very unlikely that algorithm D outperforms algorithm C. However, there is too much uncertainty to be sure that C outperforms D. We can see this graphically:
+
+
+```{r,prompt=TRUE , fig.width=7, fig.height=7}
+plotSimplex(results, A="Algorithm C", B="Algorithm D", plot.density=FALSE, alpha=0.5)
+```
+
+Conversely, if we compare algorithms A and B, the conclusion is quite clear.
 
 ```{r , prompt=TRUE}
 summarized.data <- aggregate(data.kcv.example[, algorithms], 
                              by=data.frame(DB=data.kcv.example[, 1]), FUN=mean)
-sample.a <- summarized.data[summarized.data$DB==db, "AlgA"]
-sample.b <- summarized.data[summarized.data$DB==db, "AlgB"]
+sample.a <- summarized.data[, "AlgA"]
+sample.b <- summarized.data[, "AlgB"]
 results <- bSignedRankTest(x=sample.a, y=sample.b,rope=c(-0.01, 0.01))
 results$posterior.probabilities
 ```
@@ -217,7 +224,7 @@ We can visually assess the uncertainty using the Simplex plot:
 plotSimplex(results, A="Algorithm A", B="Algorithm B", plot.density=FALSE, alpha=0.5)
 ```
 
-In the plot we can clearly see that, although there is quite uncertainty about A being better or equal to B, we can be very certain that it is not worse. Moreover, the samples are concentrated in the Algorithm A-Rope line, meaning that the probability of being bellow the rope is virtually zero. We can assess this with the expected probabilities as calculated in the previous section:
+In the plot we can clearly see that algorithm A is better than algorithm B. Moreover, all the points are in the rope-A line, meaning that the probability of algorithm B being better than A is very small. We can assess this with the expected probabilities as calculated in the previous section:
 
 ```{r , prompt=TRUE, message=FALSE}
 colMeans(results$posterior)
