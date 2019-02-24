@@ -270,4 +270,3 @@ The results shown in the table above are similar to those obtained with the Baye
 
 
 ## References
-

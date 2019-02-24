@@ -750,3 +750,57 @@ plotSimplex <- function(results, A="Alg. A", B="Alg. B", plot.density=TRUE, plot
   return(g)
 }
 
+
+
+
+#' @title Plotting barycentric plots
+#'
+#' @description This function plots tuples of vectors that sum 1 in barycentric coordinates 
+#' @param data.matrix a matrix or dataframe where each row is an n-dimension data point (whose sum is 1)
+#' @return An object of class \linkS4class{ggplot} with the plot
+#' @details 
+#' @examples
+#' data <- matrix(runif(100*5), ncol=5)
+#' data <- data / rowSums(data)
+#' plotBarycentric(data)
+#' 
+
+
+plotBarycentric <- function (data.matrix) {
+  
+  if (!require("ggplot2", quietly=TRUE)) {
+    stop("This function requires the ggplot2 package. Please install it running\n\n     install.packages('ggplot2')")
+  }
+  if (!require("geometry", quietly=TRUE)) {
+    stop("This function requires the geometry package. Please install it running\n\n     install.packages('ggplot2')")
+  }
+  
+  
+  if (is.null(colnames(data.matrix))) {
+    colnames(data.matrix) <- paste("A", 1:ncol(data.matrix), sep="")
+  }
+  
+  ## Beyond three dimensions the plot may be hard to interpret. To ease the interpretation we order the dimensions 
+  ## according to the average value
+  expected.val <- colMeans(data.matrix)
+  o <- order(expected.val, decreasing=TRUE)
+  
+  data.matrix <- data.matrix[, o]
+  
+  ## For the coloring we collect the winners
+  winner <- factor(apply(data.matrix, MARGIN=1, FUN=which.max), levels=1:ncol(data.matrix))
+  levels(data.matrix) <- colnames(data.matrix)
+  
+  ## Build the plot
+  card <- ncol(data.matrix)
+  alpha.step <- 2*pi/card
+  angle.seq <- seq(0, 2*pi-alpha.step, alpha.step)
+  vertices.coords <- data.frame(X=sin(angle.seq), Y=cos(angle.seq), Angle=angle.seq, Algorithm=colnames(data.matrix))
+  
+  coords <- data.frame(Winner=winner, bary2cart(as.matrix(vertices.coords[, 1:2]), as.matrix(data.matrix)))
+  
+  g <- ggplot(vertices.coords, aes(x=X, y=Y))+ geom_polygon(fill="gray90", color="orange") +
+    geom_point(data=coords, aes(col=Winner, fill=Winner), alpha=0.5, shape=16) + theme_void() +
+    geom_label(data=vertices.coords, aes(label=Algorithm))
+  return(g)
+}
