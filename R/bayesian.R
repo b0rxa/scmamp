@@ -562,7 +562,7 @@ bPlackettLuceModel <- function(x.matrix,  min=TRUE, prior=rep(1, ncol(x.matrix))
   data$n       <- nrow(ranking.matrix)
   data$m       <- ncol(ranking.matrix)
   data$ranks   <- ranking.matrix
-  data$alpha   <- rep(1, data$m)
+  data$alpha   <- prior
   data$weights <- rep(1, data$n)
   
   stan.program <- system.file("stan/pl_model.stan", package="scmamp")
