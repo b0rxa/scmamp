@@ -302,6 +302,13 @@ plotRanking <- function (pvalues, summary, alpha=0.05, cex=0.75, decreasing=FALS
   
   k <- length(summary)
   
+  # dirty patch to for decreasing=TRUE case
+  if(decreasing)
+  {
+   summary <- k - summary + 1
+   decreasing = FALSE
+  }
+  
   if (is.matrix(summary)) {
     if (ncol(summary) == 1) {
       summary <- summary[, 1]    
