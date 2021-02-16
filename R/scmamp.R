@@ -507,10 +507,11 @@ postHocTest <- function (data, algorithms=NULL, group.by=NULL, test="friedman",
 #' @param group.by Vector with either the names or the indices of the columns to be used to group the data. Each group is tested independently. If \code{NULL}, all the data is used for a single comparison.
 #' @param test Parameter that indicates the statistical test to be used. It can be either a string indicating one of the available test or a function. As a string, it can take the following values:
 #'  \itemize{
-#'    \item {\code{'friedman'} - Friedman test, as in Garcia and Herrera (2010)}
 #'    \item {\code{'aligned ranks'} Friedman's Aligned Ranks test, as in Garcia and Herrera (2010)}
-#'    \item {\code{'quade'} - Quade test, as in Garcia and Herrera (2010)} 
 #'    \item {\code{'anova'} - ANOVA test, as in Test 22 in Kanji (2006).}
+#'    \item {\code{'friedman'} - Friedman test, as in Garcia and Herrera (2010)}
+#'    \item {\code{'iman'} - Iman Davenport’s modification of Friedman’s test, as in Demsar (2006)} 
+#'    \item {\code{'quade'} - Quade test, as in Garcia and Herrera (2010)} 
 #'  }
 #'  
 #'  If a function is provided, then it has to have as first argument a matrix containing the columns to be compared. The function has to return a  list with, at least, an element named \code{p.value} (as the \code{htest} objects that are usually returned by R's test implementations).
@@ -604,7 +605,7 @@ multipleComparisonTest <- function (data, algorithms=NULL, group.by=NULL,
                     "anova"=anovaTest,
                     {
                       stop("Unknown test. Valid options are 'friedman', ",
-                           "'aligned ranks', 'quade', 'anova' or a function that ",
+                           "'aligned ranks', 'quade', 'anova', 'iman', or a function that ",
                            "gets as input a data.frame or matrix where each ",
                            "algorithm is in a column")
                     })
