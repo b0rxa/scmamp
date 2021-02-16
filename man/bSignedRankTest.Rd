@@ -4,8 +4,15 @@
 \alias{bSignedRankTest}
 \title{Bayesian equivalent to Wilcoxon's signed-rank test}
 \usage{
-bSignedRankTest(x, y = NULL, s = 0.5, z0 = 0, rope = c(-0.01, 0.01),
-  nsim = 1000, seed = as.numeric(Sys.time()))
+bSignedRankTest(
+  x,
+  y = NULL,
+  s = 0.5,
+  z0 = 0,
+  rope = c(-0.01, 0.01),
+  nsim = 1000,
+  seed = as.numeric(Sys.time())
+)
 }
 \arguments{
 \item{x}{First sample}

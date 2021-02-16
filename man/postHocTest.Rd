@@ -4,9 +4,18 @@
 \alias{postHocTest}
 \title{Post hoc tests for multiple comparison analises}
 \usage{
-postHocTest(data, algorithms = NULL, group.by = NULL, test = "friedman",
-  control = NULL, use.rank = FALSE, sum.fun = mean, correct = "finner",
-  alpha = 0.05, ...)
+postHocTest(
+  data,
+  algorithms = NULL,
+  group.by = NULL,
+  test = "friedman",
+  control = NULL,
+  use.rank = FALSE,
+  sum.fun = mean,
+  correct = "finner",
+  alpha = 0.05,
+  ...
+)
 }
 \arguments{
 \item{data}{A matrix or data frame containing the results obtained by the algorithms (columns) in each problem (rows). It can contain additional columns, but if any of the column has to be discarderd (not used neither to group the problems nor to be part of the comparison), then it is mandatory to indicate, in the \code{algorithms} parameter, which columns contain the algorithm information.}

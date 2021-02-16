@@ -1,4 +1,4 @@
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 library("scmamp")
 library("ggplot2")
 library("Rgraphviz")
@@ -7,82 +7,82 @@ data(data_gh_2008)
 head(data.blum.2015)
 head(data.gh.2008)
 
-## ----prompt=TRUE , fig.width=7, fig.height=5, warning=FALSE--------------
+## ----prompt=TRUE , fig.width=7, fig.height=5, warning=FALSE-------------------
 plotDensities (data=data.gh.2008, size=1.1)
 
-## ----prompt=TRUE , fig.width=7, fig.height=5-----------------------------
+## ----prompt=TRUE , fig.width=7, fig.height=5----------------------------------
 qqplot <- qqplotGaussian (data.gh.2008[,"k-NN(k=1)"], size=5 , col="orchid")
 qqplot + theme_classic()
 
-## ----prompt=TRUE---------------------------------------------------------
+## ----prompt=TRUE--------------------------------------------------------------
 friedmanTest(data.gh.2008)
 imanDavenportTest(data.gh.2008)
 friedmanAlignedRanksTest(data.gh.2008)
 quadeTest(data.gh.2008)
 
-## ----prompt=TRUE---------------------------------------------------------
+## ----prompt=TRUE--------------------------------------------------------------
 test <- nemenyiTest (data.gh.2008, alpha=0.05)
 test
 test$diff.matrix
 abs(test$diff.matrix) > test$statistic
 
-## ----prompt=TRUE,fig.width=7 , fig.height=3------------------------------
+## ----prompt=TRUE,fig.width=7 , fig.height=3-----------------------------------
 plotCD (data.gh.2008, alpha=0.05, cex=1.25)
 plotCD (data.gh.2008, alpha=0.01, cex=1.25)
 
-## ----prompt=TRUE---------------------------------------------------------
+## ----prompt=TRUE--------------------------------------------------------------
 friedmanPost(data=data.gh.2008, control=NULL)
 quadePost(data=data.gh.2008, control=NULL)
 pv.matrix <- friedmanAlignedRanksPost(data=data.gh.2008, control=NULL)
 
-## ----prompt=TRUE , warning=FALSE-----------------------------------------
+## ----prompt=TRUE , warning=FALSE----------------------------------------------
 pv.matrix
 adjustShaffer(pv.matrix)
 pv.adj <- adjustBergmannHommel(pv.matrix)
 pv.adj
 
-## ----prompt=TRUE,eval=FALSE----------------------------------------------
+## ----prompt=TRUE,eval=FALSE---------------------------------------------------
 #  source("http://www.bioconductor.org/biocLite.R")
 #  biocLite("Rgraphviz")
 
-## ----prompt=TRUE,fig.width=7 , fig.height=5------------------------------
+## ----prompt=TRUE,fig.width=7 , fig.height=5-----------------------------------
 r.means <- colMeans(rankMatrix(data.gh.2008))
 drawAlgorithmGraph(pvalue.matrix=pv.adj, mean.value=r.means, alpha=0.05,
                  font.size=10, node.width=3, node.height=1)
 
-## ----prompt=TRUE,fig.width=7 , fig.height=5------------------------------
+## ----prompt=TRUE,fig.width=7 , fig.height=5-----------------------------------
 r.means <- colMeans (rankMatrix(data.gh.2008))
 drawAlgorithmGraph (pvalue.matrix=pv.adj, mean.value=r.means, alpha=0.05, 'fdp',
                     highlight.color="red", node.color="white", font.color="black",
                     font.size=10, node.width=2, node.height=1)
 
-## ----prompt=TRUE, fig.width=7 , fig.height=7, warning=FALSE--------------
+## ----prompt=TRUE, fig.width=7 , fig.height=7, warning=FALSE-------------------
 plt <- plotPvalues(pvalue.matrix=pv.adj, 
                    alg.order=order(r.means, decreasing=FALSE))
 plt + 
   labs(title="Corrected p-values using Bergmann and Hommel procedure") + 
   scale_fill_gradientn("Corrected p-values" , colours = c("skyblue4" , "orange"))
 
-## ----prompt=TRUE---------------------------------------------------------
+## ----prompt=TRUE--------------------------------------------------------------
 friedmanAlignedRanksPost(data.gh.2008, control = "NaiveBayes")
 pv <- quadePost(data.gh.2008, control = 2)
 
-## ----prompt=TRUE---------------------------------------------------------
+## ----prompt=TRUE--------------------------------------------------------------
 adjustHolland(pvalues=pv)
 adjustFinner(pvalues=pv)
 adjustRom(pvalues=pv, alpha=0.05)
 adjustLi(pvalues=pv)
 
-## ----full_process_1, prompt=TRUE-----------------------------------------
+## ----full_process_1, prompt=TRUE----------------------------------------------
 alpha <- 0.05
 data <- data.gh.2008
 
 friedmanTest(data)
 
-## ----full_process_2, prompt=TRUE-----------------------------------------
+## ----full_process_2, prompt=TRUE----------------------------------------------
 multipleComparisonTest(data=data, test="iman")
 
-## ----full_process_3, prompt=TRUE , fig.width=7 , fig.height=5------------
+## ----full_process_3, prompt=TRUE , fig.width=7 , fig.height=5-----------------
 post.results <- postHocTest(data=data, test="aligned ranks", correct="bergmann", 
                             use.rank=TRUE)
 post.results
@@ -93,7 +93,7 @@ plt + labs(title=paste("Corrected p-values using Bergmann and Hommel procedure",
 drawAlgorithmGraph(post.results$corrected.pval, mean.value=post.results$summary, 
                    alpha=alpha,  font.size=10)
 
-## ----full_process_4, prompt=TRUE-----------------------------------------
+## ----full_process_4, prompt=TRUE----------------------------------------------
 data <- data.blum.2015
 group.by <- c("Size","Radius")
 multipleComparisonTest(data=data, group.by=group.by, 
@@ -103,7 +103,7 @@ control <- "FrogCOL"
 post.results <- postHocTest(data=data, group.by=group.by, control=control, 
                             test="aligned ranks", correct="rom", use.rank=FALSE)
 
-## ----full_process_5, prompt=TRUE-----------------------------------------
+## ----full_process_5, prompt=TRUE----------------------------------------------
 avg.val <- post.results$summary
 best <- apply(avg.val, MARGIN=1, 
               FUN=function(x){
@@ -119,7 +119,7 @@ writeTabular(table=avg.val, format='f', bold=best, italic=no.diff,
              hrule=c(0, 10, 20, 30), vrule=2, digits=c(0, 3, rep(2, 8)), 
              print.row.names = FALSE)
 
-## ----full_process_6, prompt=TRUE, fig.width=7 , fig.height=5-------------
+## ----full_process_6, prompt=TRUE, fig.width=7 , fig.height=5------------------
 control <- NULL
 group.by <- "Size"
 post.results <- postHocTest(data=data, algorithms=3:10, group.by=group.by, 

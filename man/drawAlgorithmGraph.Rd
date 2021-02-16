@@ -4,10 +4,20 @@
 \alias{drawAlgorithmGraph}
 \title{Hypotheses represented as a graph}
 \usage{
-drawAlgorithmGraph(pvalue.matrix, mean.value, ..., alpha = 0.05,
-  font.size = 15, highlight = "min", highlight.color = "chartreuse3",
-  node.color = "gray30", font.color = "white", digits = 2,
-  node.width = 5, node.height = 2)
+drawAlgorithmGraph(
+  pvalue.matrix,
+  mean.value,
+  ...,
+  alpha = 0.05,
+  font.size = 15,
+  highlight = "min",
+  highlight.color = "chartreuse3",
+  node.color = "gray30",
+  font.color = "white",
+  digits = 2,
+  node.width = 5,
+  node.height = 2
+)
 }
 \arguments{
 \item{pvalue.matrix}{Matrix with the p-values}

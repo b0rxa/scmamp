@@ -4,8 +4,7 @@
 \alias{plotRanking}
 \title{Ranking Plots}
 \usage{
-plotRanking(pvalues, summary, alpha = 0.05, cex = 0.75,
-  decreasing = FALSE)
+plotRanking(pvalues, summary, alpha = 0.05, cex = 0.75, decreasing = FALSE)
 }
 \arguments{
 \item{pvalues}{Matrix or data frame with the p-values used to determine the differences}

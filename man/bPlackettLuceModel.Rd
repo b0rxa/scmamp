@@ -4,9 +4,17 @@
 \alias{bPlackettLuceModel}
 \title{Bayesian Plackett-Luce model for ranking analysis}
 \usage{
-bPlackettLuceModel(x.matrix, min = TRUE, prior = rep(1, ncol(x.matrix)),
-  nsim = 2000, nchains = 8, parallel = TRUE, stan.output.file = NULL,
-  seed = as.numeric(Sys.time()), ...)
+bPlackettLuceModel(
+  x.matrix,
+  min = TRUE,
+  prior = rep(1, ncol(x.matrix)),
+  nsim = 2000,
+  nchains = 8,
+  parallel = TRUE,
+  stan.output.file = NULL,
+  seed = as.numeric(Sys.time()),
+  ...
+)
 }
 \arguments{
 \item{x.matrix}{Sample of performance of the algorithms. Each column is an algorithm and each row is a problem}

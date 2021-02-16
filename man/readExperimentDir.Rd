@@ -4,8 +4,15 @@
 \alias{readExperimentDir}
 \title{Read data from an experiment-like files in a directory}
 \usage{
-readExperimentDir(directory, names, fname.pattern, alg.var.name, value.col,
-  col.names = NULL, ...)
+readExperimentDir(
+  directory,
+  names,
+  fname.pattern,
+  alg.var.name,
+  value.col,
+  col.names = NULL,
+  ...
+)
 }
 \arguments{
 \item{directory}{Directory with the files to load. It should only contain files to load, no other kind of file.}

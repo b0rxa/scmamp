@@ -141,7 +141,7 @@ pv.adj
 
 The package also includes other correction methods, as we will see in the comparisons with a control algorithm. However, as these do not take into account the particular interactions between hypothesis, they are more restrictive approaches.
 
-Bergmann and Hommel's correction is extremely expensive method---in computational terms. However, the structures required to perform the correction are stored in the disk and, thus, it is computationally tracktable up to 9 algorithms.
+Bergmann and Hommel's correction is extremely expensive method---in computational terms. However, the structures required to perform the correction are stored in the disk and, thus, it is computationally feasible up to 9 algorithms.
 
 ### Graphical representations
 
@@ -150,8 +150,8 @@ Conversely to what happen with Nemenyi test, it makes no sense to draw a critica
 The first function is `drawAlgorithmGraph`, which plots a graph where the algorithms are the nodes and two nodes are linked in the null hypothesis of being equal cannot be rejected. This function makes use of the `Rgraphviz` package, so it has to be installed in order to use this function. The package is currently in [Bioconductor](www.bioconductor.org), so it can be installed as follows.
 
 ```{r,prompt=TRUE,eval=FALSE}
-source("http://www.bioconductor.org/biocLite.R")
-biocLite("Rgraphviz")
+install.packages("BiocManager")
+BiocManager::install("Rgraphviz")
 ```
 
 The plot can incorporate information about each algorithm. In this case we will print the average ranking, in a similar way as in the critical difference plot. 

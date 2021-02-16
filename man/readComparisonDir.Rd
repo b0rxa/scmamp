@@ -4,8 +4,14 @@
 \alias{readComparisonDir}
 \title{Read data from a directory of comparison-like files}
 \usage{
-readComparisonDir(directory, alg.cols, names, fname.pattern, col.names = NULL,
-  ...)
+readComparisonDir(
+  directory,
+  alg.cols,
+  names,
+  fname.pattern,
+  col.names = NULL,
+  ...
+)
 }
 \arguments{
 \item{directory}{Directory where the files are located.}

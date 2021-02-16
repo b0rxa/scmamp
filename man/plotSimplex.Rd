@@ -4,9 +4,18 @@
 \alias{plotSimplex}
 \title{Plotting the (marginal) posterior densities in Bayesian analyses}
 \usage{
-plotSimplex(results, A = "Alg. A", B = "Alg. B", plot.density = TRUE,
-  plot.points = TRUE, palette = c("green", "darkgray", "red"),
-  point.size = 1, font.size = 5, alpha = NULL, posterior.label = FALSE)
+plotSimplex(
+  results,
+  A = "Alg. A",
+  B = "Alg. B",
+  plot.density = TRUE,
+  plot.points = TRUE,
+  palette = c("green", "darkgray", "red"),
+  point.size = 1,
+  font.size = 5,
+  alpha = NULL,
+  posterior.label = FALSE
+)
 }
 \arguments{
 \item{results}{A list containing, at least three elements, one named \code{approximate}, which is

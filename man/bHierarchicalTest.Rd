@@ -4,11 +4,25 @@
 \alias{bHierarchicalTest}
 \title{Bayesian hierarchical model for the analysis of two algorithms in multiple datasets}
 \usage{
-bHierarchicalTest(x.matrix, y.matrix = NULL, rho, std.upper = 1000,
-  d0.lower = NULL, d0.upper = NULL, alpha.lower = 0.5, alpha.upper = 5,
-  beta.lower = 0.05, beta.upper = 0.15, rope = c(-0.01, 0.01),
-  nsim = 2000, nchains = 8, parallel = TRUE, stan.output.file = NULL,
-  seed = as.numeric(Sys.time()), ...)
+bHierarchicalTest(
+  x.matrix,
+  y.matrix = NULL,
+  rho,
+  std.upper = 1000,
+  d0.lower = NULL,
+  d0.upper = NULL,
+  alpha.lower = 0.5,
+  alpha.upper = 5,
+  beta.lower = 0.05,
+  beta.upper = 0.15,
+  rope = c(-0.01, 0.01),
+  nsim = 2000,
+  nchains = 8,
+  parallel = TRUE,
+  stan.output.file = NULL,
+  seed = as.numeric(Sys.time()),
+  ...
+)
 }
 \arguments{
 \item{x.matrix}{First sample, a matrix with the results obtained by the first algorithm (each dataset in a row)}
@@ -25,7 +39,7 @@ bHierarchicalTest(x.matrix, y.matrix = NULL, rho, std.upper = 1000,
 
 \item{alpha.upper}{Upper bound for the (uniform) prior for the alpha hyperparameter (see Benavoli \emph{et al.} 2017 for more details). Default value set at 5, as in the original paper}
 
-\item{beta.lower}{Lower bound for the (uniform) prior for the beta hyperparameter (see Benavoli \emph{et al.} 2017 for more details). Default value set at 0.05, as in the original paper}
+\item{beta.lower}{Upper bound for the (uniform) prior for the beta hyperparameter (see Benavoli \emph{et al.} 2017 for more details). Default value set at 0.15, as in the original paper}
 
 \item{rope}{Interval for the difference considered as "irrelevant"}
 
@@ -38,8 +52,6 @@ bHierarchicalTest(x.matrix, y.matrix = NULL, rho, std.upper = 1000,
 \item{seed}{Optional parameter used to fix the random seed}
 
 \item{...}{Additional arguments for the rstan::stan function that runs the analysis}
-
-\item{beta.lower}{Upper bound for the (uniform) prior for the beta hyperparameter (see Benavoli \emph{et al.} 2017 for more details). Default value set at 0.15, as in the original paper}
 
 \item{z0}{Position of the pseudo-observation associated to the prior Dirichlet Process. The default value is set to 0 (inside the rope)}
 

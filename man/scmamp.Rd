@@ -4,7 +4,6 @@
 \name{scmamp}
 \alias{scmamp}
 \alias{scmamp-package}
-\alias{scmamp-package}
 \title{Statistical comparison of multiple algorithms}
 \description{
 This package has been develop to simplify the statistical assessment of algorithms when tested in different problems. It includes statistical tests, as well as some plotting functions.

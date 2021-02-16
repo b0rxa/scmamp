@@ -1,4 +1,4 @@
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 library(scmamp)
 data(data_gh_2008)
 head(data.gh.2008)
@@ -7,48 +7,48 @@ head(data.gh.2010)
 data(data_blum_2015)
 head(data.blum.2015)
 
-## ---- eval=FALSE, prompt=TRUE--------------------------------------------
+## ---- eval=FALSE, prompt=TRUE-------------------------------------------------
 #  data.raw <- readComparisonFile(file="results.dat", alg.cols=c('Alg_1', 'Alg_2', 'Alg_3'),
 #                                 skip=5, sep=";")
 
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 data.dir <- system.file("loading_tests",package="scmamp")
 file.path <- paste(data.dir, "rgg_complete_comparison.out", sep="/")
 data.raw <- readComparisonFile(file=file.path, alg.cols=3:10, col.names=NULL)
 head(data.raw)
 
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 dir <- paste(system.file("loading_tests",package="scmamp"), 
              "comparison_files", sep="/")
 list.files(dir)
 
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 fname.pattern <- "rgg_size_([0-9]*)_r_([0-9]*.[0-9]*)\\.out"
 
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 var.names <- c("Size", "Radius")
 
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 alg.names <- c("FruitFly", "Shukla", "Ikeda", "Turau", "Rand1", "Rand2", "FrogCOL", "FrogMIS")
 
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 rm("data.raw")
 data.raw <- readComparisonDir (directory=dir, alg.cols=alg.names, col.names=NULL,
                            names=var.names, fname.pattern=fname.pattern)
 head(data.raw)
 
-## ---- prompt=TRUE--------------------------------------------------------
+## ---- prompt=TRUE-------------------------------------------------------------
 dir <- system.file("loading_tests", package="scmamp")
 file <- paste(dir, "rgg_complete_experiment.out", sep="/")
 content <- read.csv(file)
 content[c(1,901,181),]
 
-## ---- prompt=TRUE, cache=TRUE--------------------------------------------
+## ---- prompt=TRUE, cache=TRUE-------------------------------------------------
 rm("data.raw")
 data.raw <- readExperimentFile (file=file, alg.col="Algorithm", value.col="Evaluation")
 head(data.raw)
 
-## ---- prompt=TRUE, cache=TRUE--------------------------------------------
+## ---- prompt=TRUE, cache=TRUE-------------------------------------------------
 rm("data.raw")
 dir <- paste(system.file("loading_tests", package="scmamp"), 
              "experiment_files", sep="/")
@@ -59,27 +59,27 @@ data.raw <- readExperimentDir (directory=dir, names=var.names, fname.pattern=pat
                                alg.var.name='Algorithm', value.col=1, col.names="Evaluation")
 head(data.raw)
 
-## ---- echo=-1------------------------------------------------------------
+## ---- echo=-1-----------------------------------------------------------------
 summarizeData(data=data.raw, fun=median, group.by=c("Size"), ignore=c("Radius"))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 data.filtered <- filterData(data=data.raw, 
                             condition="Size == 100 & Rand1 <= Rand2", 
                             remove.cols="Size")
 dim(data.filtered)
 dim(data.raw)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 summarizeData(data.filtered, group.by=c("Radius"))
 
-## ---- warning=FALSE , cache=TRUE , echo=-1-------------------------------
+## ---- warning=FALSE , cache=TRUE , echo=-1------------------------------------
 test <- "wilcoxon"
 group.by <- c("Size","Radius")
 alg.cols <- 3:10
 result <- postHocTest(data=data.raw, algorithms=alg.cols, group.by=group.by,
                       test=test, control="max", correct="holland")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 summ <- result$summary
 pval <- result$corrected.pval
 bold <- is.na(pval)

@@ -4,8 +4,7 @@
 \alias{plotPvalues}
 \title{Plotting the p-value matrix}
 \usage{
-plotPvalues(pvalue.matrix, alg.order = NULL, show.pvalue = TRUE,
-  font.size = 5)
+plotPvalues(pvalue.matrix, alg.order = NULL, show.pvalue = TRUE, font.size = 5)
 }
 \arguments{
 \item{pvalue.matrix}{Matrix with the p-values to plot}

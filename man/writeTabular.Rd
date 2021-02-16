@@ -4,12 +4,29 @@
 \alias{writeTabular}
 \title{Write a table in LaTeX format}
 \usage{
-writeTabular(table, file = NULL, format = "g", bold = NULL,
-  italic = NULL, mark = NULL, mark.char = "*", na.as = "n/a",
-  align = "l", hrule = NULL, vrule = NULL, bty = c("t", "b", "l", "r"),
-  print.col.names = TRUE, print.row.names = TRUE, digits = 3,
-  wrap.as.table = FALSE, table.position = "h", caption = NULL,
-  caption.position = "b", centering = FALSE, label = NULL)
+writeTabular(
+  table,
+  file = NULL,
+  format = "g",
+  bold = NULL,
+  italic = NULL,
+  mark = NULL,
+  mark.char = "*",
+  na.as = "n/a",
+  align = "l",
+  hrule = NULL,
+  vrule = NULL,
+  bty = c("t", "b", "l", "r"),
+  print.col.names = TRUE,
+  print.row.names = TRUE,
+  digits = 3,
+  wrap.as.table = FALSE,
+  table.position = "h",
+  caption = NULL,
+  caption.position = "b",
+  centering = FALSE,
+  label = NULL
+)
 }
 \arguments{
 \item{table}{A data frame with the information to write}

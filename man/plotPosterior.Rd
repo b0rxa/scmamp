@@ -4,8 +4,15 @@
 \alias{plotPosterior}
 \title{Plotting the (marginal) posterior densities in Bayesian analyses}
 \usage{
-plotPosterior(results, parameter = 1, num.points = 1000, plot.rope = TRUE,
-  plot.samples = TRUE, alpha = NULL, ...)
+plotPosterior(
+  results,
+  parameter = 1,
+  num.points = 1000,
+  plot.rope = TRUE,
+  plot.samples = TRUE,
+  alpha = NULL,
+  ...
+)
 }
 \arguments{
 \item{results}{A list containing, at least three elements, one named \code{approximate}, which is
