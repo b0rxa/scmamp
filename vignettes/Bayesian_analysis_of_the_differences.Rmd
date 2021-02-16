@@ -11,9 +11,9 @@ vignette: >
 ---
 # Time for a change ...
 
-Since the very begining, the use of statistical tests has been surrounded by controversy. For decades staticians have highlighted the weak points of these statistical tools and, in the last years, a concern about their misuse in scientifc works has been added. Indeed, in different domains researches have started to move from classical statistical tests to other methods that provide further insights about the data analysed.
+Since the very beginning, the use of statistical tests has been surrounded by controversy. For decades staticians have highlighted the weak points of these statistical tools and, in the last years, a concern about their misuse in scientific works has been added. Indeed, in different domains researches have started to move from classical statistical tests to other methods that provide further insights about the data analysed.
 
-As its title suggests, with @benavoli2017 this recomendation has also arrived to the empirical comparison of algorithms (in the particular topic of classification algorithms). This paper proposes some Bayesian approaches to compare pairs of classifiers in individual datasets as well as in groups of datasets.
+As its title suggests, with @benavoli2017 this recommendation has also arrived to the empirical comparison of algorithms (in the particular topic of classification algorithms). This paper proposes some Bayesian approaches to compare pairs of classifiers in individual datasets as well as in groups of datasets.
 
 We have included the methods proposed in @benavoli2017 in `scmamp`, and this tutorial will show you how you can make use of them. The code included is an adapttion of that provided by the authors of the paper, available at [github](https://github.com/BayesianTestsML/tutorial).
 

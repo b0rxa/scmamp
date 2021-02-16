@@ -10,11 +10,11 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-One of the latest additions to the package is a Bayesian model to analyse rankings of algorithms. In this vignette we will give a brief introduction to this model and some basic ideas about what kind of inference can we do using it.
+One of the latest additions to the package is a Bayesian model to analyse rankings of algorithms (@calvo2018; @calvo2019). In this vignette we will give a brief introduction to this model and some basic ideas about what kind of inference can we do using it.
 
 ## Plackett-Luce model for rankings
 
-The Bayesian model implemented in the package is based on the Plackett-Luce (PL) model for rankings [REF!!]. In the Plackett-Luce model we have a parameter, the weight, for each element in the ranking. We will denote as $w_i$ the weight of the $i$-th element. This model assumes that the probability of an item being before another item in a ranking is independent of the rest of the items. 
+The Bayesian model implemented in the package is based on the Plackett-Luce (PL) model for rankings (@Plackett1975TheAO). In the Plackett-Luce model we have a parameter, the weight, for each element in the ranking. We will denote as $w_i$ the weight of the $i$-th element. This model assumes that the probability of an item being before another item in a ranking is independent of the rest of the items. 
 
 For a given ranking (or permutation) $\sigma=(\sigma_1,\ldots,\sigma_n)$ and a given set of weights $\mathbf{w}=(w_1, \ldots,w_n)$, the probability of $\sigma$ is:
 

@@ -10,11 +10,11 @@ vignette: >
 ---
 # Data loading and manipulation with scmamp
 
-The main goal of this package is makeing the statistical analysis of emprical comparisions of algorithms easy and fast. For that reason, and with the aim at being a complete solution, the package includes functions to load data and manipulate data, as well as to format the results for its further use in publications. This vignettes shows the use of these functions.
+The main goal of this package is making the statistical analysis of empirical comparisons of algorithms easy and fast. For that reason, and with the aim at being a complete solution, the package includes functions to load data and manipulate data, as well as to format the results for its further use in publications. This vignettes shows the use of these functions.
 
 ## Loading the data
 
-The data matrices required by the package funtions should have one row per problem and a number of columns. The columns can be divided into two subsets, descriptors of the problem and results obtained by the algorithms applied to that problem. The package comes with three examples of data sets:
+The data matrices required by the package functions should have one row per problem and a number of columns. The columns can be divided into two subsets, descriptors of the problem and results obtained by the algorithms applied to that problem. The package comes with three examples of data sets:
 
 ```{r, prompt=TRUE}
 library(scmamp)
@@ -128,7 +128,7 @@ Note that, in this case, the file has to be process to build a matrix in compari
 
 Now, instead of an argument to determine which columns include the results we have two arguments, `alg.col` and `value.col`, that have to be either the name or the index of the columns that contain the algorithm used and the value obtained, respectively. Additionally, as in the previous functions there is an argument to indicate the name of the columns, in case the file has not a header.
 
-As in the case of the comparision format, the package includes a function to load all the files in a directory: `readExperimentDir`. Conversely to the previous function, as in this case the information about the algorithm can be either inside the file or in its name, instead of the `alg.col` argument that can be the name or the index, now we have an argument, `alg.var.name`, that can only be a string; This string should be a column name or the name assigned to any of the variables extracted from the file name.
+As in the case of the comparison format, the package includes a function to load all the files in a directory: `readExperimentDir`. Conversely to the previous function, as in this case the information about the algorithm can be either inside the file or in its name, instead of the `alg.col` argument that can be the name or the index, now we have an argument, `alg.var.name`, that can only be a string; This string should be a column name or the name assigned to any of the variables extracted from the file name.
 
 Similarly to the function `readComparisonDir`, we have two parameters, `name` and `fname.pattern`, to define how the name of the files will be processed. An example of the use of this function is the following.
 
