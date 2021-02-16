@@ -23,10 +23,11 @@ multipleComparisonTest(
 
 \item{test}{Parameter that indicates the statistical test to be used. It can be either a string indicating one of the available test or a function. As a string, it can take the following values:
 \itemize{
-  \item {\code{'friedman'} - Friedman test, as in Garcia and Herrera (2010)}
-  \item {\code{'aligned ranks'} Friedman's Aligned Ranks test, as in Garcia and Herrera (2010)}
-  \item {\code{'quade'} - Quade test, as in Garcia and Herrera (2010)} 
-  \item {\code{'anova'} - ANOVA test, as in Test 22 in Kanji (2006).}
+   \item {\code{'aligned ranks'} Friedman's Aligned Ranks test, as in Garcia and Herrera (2010)}
+   \item {\code{'anova'} - ANOVA test, as in Test 22 in Kanji (2006).}
+   \item {\code{'friedman'} - Friedman test, as in Garcia and Herrera (2010)}
+   \item {\code{'iman'} - Iman Davenport’s modification of Friedman’s test, as in Demsar (2006)} 
+   \item {\code{'quade'} - Quade test, as in Garcia and Herrera (2010)} 
 }
 
 If a function is provided, then it has to have as first argument a matrix containing the columns to be compared. The function has to return a  list with, at least, an element named \code{p.value} (as the \code{htest} objects that are usually returned by R's test implementations).}
