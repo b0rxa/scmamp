@@ -12,7 +12,7 @@
 
 <meta name="author" content="Borja Calvo and Guzmán Santafé" />
 
-<meta name="date" content="2021-02-16" />
+<meta name="date" content="2021-06-16" />
 
 <title>Data loading and manipulation with scmamp</title>
 
@@ -28,11 +28,19 @@
     </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -133,16 +141,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Data loading and manipulation with scmamp</h1>
 <h4 class="author">Borja Calvo and Guzmán Santafé</h4>
-<h4 class="date">2021-02-16</h4>
+<h4 class="date">2021-06-16</h4>
 
 
 
 <div id="data-loading-and-manipulation-with-scmamp" class="section level1">
 <h1>Data loading and manipulation with scmamp</h1>
-<p>The main goal of this package is makeing the statistical analysis of emprical comparisions of algorithms easy and fast. For that reason, and with the aim at being a complete solution, the package includes functions to load data and manipulate data, as well as to format the results for its further use in publications. This vignettes shows the use of these functions.</p>
+<p>The main goal of this package is making the statistical analysis of empirical comparisons of algorithms easy and fast. For that reason, and with the aim at being a complete solution, the package includes functions to load data and manipulate data, as well as to format the results for its further use in publications. This vignettes shows the use of these functions.</p>
 <div id="loading-the-data" class="section level2">
 <h2>Loading the data</h2>
-<p>The data matrices required by the package funtions should have one row per problem and a number of columns. The columns can be divided into two subsets, descriptors of the problem and results obtained by the algorithms applied to that problem. The package comes with three examples of data sets:</p>
+<p>The data matrices required by the package functions should have one row per problem and a number of columns. The columns can be divided into two subsets, descriptors of the problem and results obtained by the algorithms applied to that problem. The package comes with three examples of data sets:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(scmamp)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">data</span>(data_gh_2008)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">head</span>(data.gh<span class="fl">.2008</span>)</span></code></pre></div>
@@ -266,7 +274,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 6 1000  0.049      230    214   214   208   211   206     246     229</code></pre>
 <p>Note that, in this case, the file has to be process to build a matrix in comparison format and, thus, loading the data from this type of structure is computationally more expensive. Therefore, it is highly recommended to use the comparison format to store the results.</p>
 <p>Now, instead of an argument to determine which columns include the results we have two arguments, <code>alg.col</code> and <code>value.col</code>, that have to be either the name or the index of the columns that contain the algorithm used and the value obtained, respectively. Additionally, as in the previous functions there is an argument to indicate the name of the columns, in case the file has not a header.</p>
-<p>As in the case of the comparision format, the package includes a function to load all the files in a directory: <code>readExperimentDir</code>. Conversely to the previous function, as in this case the information about the algorithm can be either inside the file or in its name, instead of the <code>alg.col</code> argument that can be the name or the index, now we have an argument, <code>alg.var.name</code>, that can only be a string; This string should be a column name or the name assigned to any of the variables extracted from the file name.</p>
+<p>As in the case of the comparison format, the package includes a function to load all the files in a directory: <code>readExperimentDir</code>. Conversely to the previous function, as in this case the information about the algorithm can be either inside the file or in its name, instead of the <code>alg.col</code> argument that can be the name or the index, now we have an argument, <code>alg.var.name</code>, that can only be a string; This string should be a column name or the name assigned to any of the variables extracted from the file name.</p>
 <p>Similarly to the function <code>readComparisonDir</code>, we have two parameters, <code>name</code> and <code>fname.pattern</code>, to define how the name of the files will be processed. An example of the use of this function is the following.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">rm</span>(<span class="st">&quot;data.raw&quot;</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> dir <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="fu">system.file</span>(<span class="st">&quot;loading_tests&quot;</span>, <span class="at">package=</span><span class="st">&quot;scmamp&quot;</span>), </span>

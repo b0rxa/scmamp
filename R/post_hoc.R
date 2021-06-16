@@ -730,7 +730,7 @@ adjustHolland <- function(pvalues) {
 #' @return A vector or matrix with the corrected p-values
 #' @details The test has been implemented according to the version in Garcia \emph{et al.} (2010), page 2680-2682.
 #' @references S. Garcia, A. Fernandez, J. Luengo and F. Herrera (2010) Advanced nonparametric tests for multiple comparison in the design of experiments in computational intelligence and data mining: Experimental analysis of power. \emph{Information Sciences}, 180, 2044-2064.
-#' @references H. Finner (1993) On a monotocity problem in ste-down mulitple test procedures. \emph{Journal of the American Statistical Association}, 88, 920-923.
+#' @references H. Finner (1993) On a monotocity problem in step-down mulitple test procedures. \emph{Journal of the American Statistical Association}, 88, 920-923.
 #' @examples
 #' data(data_gh_2008)
 #' raw.pvalues <- friedmanPost(data.gh.2008)

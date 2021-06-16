@@ -91,3 +91,12 @@ colMeans(results$posterior)
 sample.a <- matrix(data.kcv.example$AlgC, byrow=TRUE, nrow=10)
 sample.b <- matrix(data.kcv.example$AlgD, byrow=TRUE, nrow=10)
 
+## ---- prompt=TRUE, message=FALSE, warning=FALSE-------------------------------
+results <- bHierarchicalTest(sample.a, sample.b, rho=0.1, rope=c(-0.01, 0.01), nsim=2000, nchains=5)
+
+## ----prompt=TRUE , fig.width=7, fig.height=7----------------------------------
+plotSimplex(results, A="Alg. C", B="Alg. D", posterior.label=TRUE, alpha=0.5)
+
+## ---- prompt=TRUE, message=FALSE----------------------------------------------
+results$additional$per.dataset
+

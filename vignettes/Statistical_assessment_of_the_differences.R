@@ -42,8 +42,8 @@ pv.adj <- adjustBergmannHommel(pv.matrix)
 pv.adj
 
 ## ----prompt=TRUE,eval=FALSE---------------------------------------------------
-#  source("http://www.bioconductor.org/biocLite.R")
-#  biocLite("Rgraphviz")
+#  install.packages("BiocManager")
+#  BiocManager::install("Rgraphviz")
 
 ## ----prompt=TRUE,fig.width=7 , fig.height=5-----------------------------------
 r.means <- colMeans(rankMatrix(data.gh.2008))
