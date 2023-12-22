@@ -258,11 +258,14 @@ plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
     nlines <- dim(to.join)[1]
 
     for(r in 1:nlines) {
-      id <- which(to.join[r, 1] > to.join[, 2])
-      if(length(id) == 0) {
-        row <- c(row, tail(row, 1) + 1)
+      if (r == 1) {
+        row <- 1
+        next
+      }
+      if (to.join[r, 1] > to.join[r-1, 2]) {
+        row <- c(row, 1)
       } else {
-        row <- c(row, min(row[id]))
+        row <- c(row, tail(row, 1) + 1)
       }
     }
     

@@ -35,4 +35,4 @@ Collate:
     latex.R
     loading_functions.R
     data_manipulation.R
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1

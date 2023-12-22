@@ -3,7 +3,9 @@
 \name{data.gh.2008}
 \alias{data.gh.2008}
 \title{Example in Garcia and Herrera (2008)}
-\format{A data frame with 5 columns and 30 rows}
+\format{
+A data frame with 5 columns and 30 rows
+}
 \source{
 S. Garcia and F. Herrera (2008) An Extension on "Statistical 
 Comparisons of Classifiers over Multiple Data Sets" for all Pairwise 

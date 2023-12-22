@@ -3,7 +3,9 @@
 \name{data.blum.2015}
 \alias{data.blum.2015}
 \title{Comparison of optimization algorithms in Blum \emph{et al.} (2015)}
-\format{A data frame with 10 columns and 900 rows}
+\format{
+A data frame with 10 columns and 900 rows
+}
 \source{
 C. Blum, B. Calvo and M.J. Blesa (2015)  FrogCOL and FrogMIS: New Decentralized Algorithms for Finding Large Independent Sets in Graphs. \emph{Swarm Intelligence}. In press.
 }

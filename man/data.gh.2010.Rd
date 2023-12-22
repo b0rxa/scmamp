@@ -3,7 +3,9 @@
 \name{data.gh.2010}
 \alias{data.gh.2010}
 \title{Example in Garcia and Herrera (2010)}
-\format{A data frame with 4 columns and 24 rows}
+\format{
+A data frame with 4 columns and 24 rows
+}
 \source{
 S. Garcia and F. Herrera (2010) Advanced Nonparametric Tests for 
 Multiple Comparison in the Design of Experiments in Computational Intelligence 
